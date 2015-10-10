@@ -8,12 +8,14 @@ import QtQuick.Controls.Styles 1.4
 
 Rectangle {
     property alias label: label.text
+    property alias labelSize: label.font.pixelSize
     property alias orientation: slider.orientation
     id: container
     border.width: 1
 
     Label {
         id: label
+        font.family: "Ubuntu"
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
     }
@@ -23,7 +25,7 @@ Rectangle {
         anchors.top: label.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.topMargin: 5
+        anchors.topMargin: 1
         tickmarksEnabled: true
 
             //Control Guys mess this section

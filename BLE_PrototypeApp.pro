@@ -1,13 +1,15 @@
 TEMPLATE = app
 
-QT += qml quick
+QT += qml quick bluetooth
 CONFIG += c++11
 
 HEADERS += \
-    device.h
+    VAQ.h \
+    deviceinfo.h
 
 SOURCES += main.cpp \
-    device.cpp
+    VAQ.cpp \
+    deviceinfo.cpp
 
 RESOURCES += qml.qrc
 

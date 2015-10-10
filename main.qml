@@ -1,45 +1,40 @@
 //The Qt Quick module provides graphical primitive types
 import QtQuick 2.3
 //Provide a resolution independent GUI (let scaling be done automatically)
-import QtQuick.Layouts 1.1
+import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.3
 
 
-//The univesral layout of the application
-GridLayout{
+
+Rectangle {
     id: universe
-    columns: 3
-    rows: 2
+    anchors.fill: parent
 
-    ColumnLayout {
-        id: translatoryKnobs
+    GridLayout{
+        anchors.fill: parent
+        flow: GridLayout.TopToBottom
+        rows: 4
 
-        SliderTranslatory {Layout.preferredWidth: 300 ; Layout.preferredHeight: 50 ; label:"X-Axis"}
-        SliderTranslatory {Layout.preferredWidth: 300 ; Layout.preferredHeight: 50 ; label:"Y-Axis"}
-        SliderTranslatory {Layout.preferredWidth: 300 ; Layout.preferredHeight: 50 ; label:"Z-Axis"}
-    }
+        Rectangle   {Layout.preferredWidth: Math.round(universe.width / 2); Layout.preferredHeight: Math.round(universe.height / 2.5); color: "grey"; Layout.columnSpan: 2}
 
-    Rectangle {
-        id: to_be_used_sometime_in_the_future_till_then_will_remain_blank
-        width: 300
-        height: 150
+        SliderMOTOR {Layout.preferredWidth: Math.round(universe.width / 4); Layout.preferredHeight: Math.round(universe.width/15); label:"X-Axis"; labelSize: 12+universe.width/200}
+        SliderMOTOR {Layout.preferredWidth: universe.width / 4; Layout.preferredHeight: universe.width/15; label:"Y-Axis"; labelSize: 12+universe.width/200}
+        SliderMOTOR {Layout.preferredWidth: universe.width / 4; Layout.preferredHeight: universe.width/15; label:"Z-Axis"; labelSize: 12+universe.width/200}
 
-        SliderLED {}
+        Image {
+            Layout.rowSpan: 3
+            Layout.preferredWidth: universe.width/5
+            Layout.preferredHeight: width
+            source: "qrc:/pics/knob.png"
+        }
 
+        CameraControls{Layout.preferredHeight: universe.height / 2; labelSize: 12+universe.width/200}
 
+        SliderMOTOR {Layout.preferredWidth: universe.width / 4 ; Layout.preferredHeight: universe.width/15; label:"Pitch"; labelSize: 12+universe.width/200}
+        SliderMOTOR {Layout.preferredWidth: universe.width / 4 ; Layout.preferredHeight: universe.width/15; label:"Roll"; labelSize: 12+universe.width/200}
+     }
+ }
 
-
-    }
-
-    ColumnLayout {
-        id: rotationalKnobs
-
-        SliderTranslatory {Layout.preferredWidth: 300 ; Layout.preferredHeight: 50 ; label:"Yaw"}
-        SliderTranslatory {Layout.preferredWidth: 300 ; Layout.preferredHeight: 50 ; label:"Pitch"}
-        SliderTranslatory {Layout.preferredWidth: 300 ; Layout.preferredHeight: 50 ; label:"Roll"}
-    }
-
-}
 
 
 
