@@ -1,5 +1,5 @@
 //The Qt Quick module provides graphical primitive types
-import QtQuick 2.3
+import QtQuick 2.1
 //Provide a resolution independent GUI (let scaling be done automatically)
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.3

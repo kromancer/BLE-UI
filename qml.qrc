@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>main_backup.qml</file>
         <file>pics/Power.png</file>
         <file>SliderMOTOR.qml</file>
         <file>CameraControls.qml</file>

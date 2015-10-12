@@ -14,7 +14,9 @@ int main(int argc, char *argv[])
 
     //The Qt resource system is a platform-independent mechanism for storing binary files in the application's executable.
     view.setSource(QUrl("qrc:/main.qml"));
+
     view.rootContext()->setContextProperty("VAQ", &vaq);
+
     view.setMinimumWidth(700);
     view.setMinimumHeight(700);
 

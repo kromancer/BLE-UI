@@ -3,7 +3,7 @@
 
 
 
-VAQ::VAQ(): m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
+VAQ::VAQ(): sensorfound(false), m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
 {
     m_deviceDiscoveryAgent = new QBluetoothDeviceDiscoveryAgent();
     connect(m_deviceDiscoveryAgent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo&)),this, SLOT(addDevice(const QBluetoothDeviceInfo&)));
@@ -26,10 +26,19 @@ void VAQ::deviceSearch()
 }
 void VAQ::addDevice(const QBluetoothDeviceInfo &device)
 {
-    qWarning() << "Discovered LE Device name: " << device.name() << " Address: " << device.address().toString();
-    DeviceInfo *dev = new DeviceInfo(device);
-    m_devices.append(dev);
+
     qWarning() << "Low Energy device found. Scanning for more...";
+    if (device.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration)
+    {
+        qWarning() << "Discovered LE Device name: " << device.name() << " Address: " << device.address().toString();
+        if(!sensorfound)
+        {
+            DeviceInfo *dev = new DeviceInfo(device);
+            if(dev->getName() == "Sandvik")
+                qWarning() << "Found Sandvik device";
+                m_devices.append(dev);
+         }
+    }
     return;
 }
 void VAQ::scanFinished()
@@ -54,7 +63,7 @@ void VAQ::controllerError(QLowEnergyController::Error)
 
 void VAQ::serviceDiscovered(const QBluetoothUuid &gatt)
 {
-    qWarning() << "Found something";
+    qWarning() << "Found Service";
     return;
 }
 
@@ -62,8 +71,8 @@ void VAQ::serviceDiscovered(const QBluetoothUuid &gatt)
 void VAQ::serviceScanDone()
 {
     // IO: "{F000AA64-0451-4000-B000-000000000000}"
-    // Luxometer: "{F000AA70-0451-4000-B000-000000000000}"
-    m_service = m_control->createServiceObject( QBluetoothUuid(QUuid("{F000AA64-0451-4000-B000-000000000000}") ) );
+    // Luxometer: "{F000AA70-0451-4000-B000-00000000000
+    m_service = m_control->createServiceObject( QBluetoothUuid(QUuid("{0000CCC0-0000-1000-8000-00805F9B34FB}") ) );
     connect(m_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(serviceStateChanged(QLowEnergyService::ServiceState)));
     connect(m_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
     connect(m_service, SIGNAL(error(QLowEnergyService::ServiceError)), this, SLOT( serviceError(QLowEnergyService::ServiceError)));
@@ -84,7 +93,7 @@ void VAQ::serviceScanDone()
 
 void VAQ::deviceDisconnected()
 {
-    qWarning() << "Disconnected by user request";
+    qWarning() << "Disconnected";
     return;
 }
 
@@ -92,6 +101,7 @@ void VAQ::deviceDisconnected()
 void VAQ::connectToService()
 {
     m_currentDevice.setDevice(((DeviceInfo*)m_devices.at(0))->getDevice());
+
     m_control = new QLowEnergyController( m_currentDevice.getDevice(), this );
 
     connect(m_control, SIGNAL(connected()), this, SLOT(deviceConnected()));
@@ -119,6 +129,8 @@ void VAQ::deviceConnected()
 }
 // ******************************************************************
 
+
+
 // ******************************************************************
 // QLowEnergyService stuff
 void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
@@ -126,10 +138,12 @@ void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
     qWarning() << "Service State changed to: " << newState;
     if (newState==3)
     {
-        const QLowEnergyCharacteristic IOconfig = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA66-0451-4000-B000-000000000000}") ) );
-        m_service->writeCharacteristic(IOconfig, QByteArray::fromHex("01"));
-        const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA65-0451-4000-B000-000000000000}") ) );
-        m_service->writeCharacteristic(IOData, QByteArray::fromHex("0F"));
+        //const QLowEnergyCharacteristic IOconfig = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA66-0451-4000-B000-000000000000}") ) );
+        //m_service->writeCharacteristic(IOconfig, QByteArray::fromHex("01"));
+        //const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA65-0451-4000-B000-000000000000}") ) );
+        //m_service->writeCharacteristic(IOData, QByteArray::fromHex("0F"));
+        const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{0000ccc1-0000-1000-8000-00805f9b34fb}") ) );
+        m_service->writeCharacteristic(IOData, QByteArray::fromHex("03"));
     }
     return;
 }
