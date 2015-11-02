@@ -40,6 +40,7 @@ private slots:
     void serviceError(QLowEnergyService::ServiceError err);
 
 private:
+    bool sensorfound;
     QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
     QList<QObject*> m_devices;
     DeviceInfo m_currentDevice;
