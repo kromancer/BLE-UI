@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick bluetooth
+QT += qml quick bluetooth multimedia
 CONFIG += c++11
 
 HEADERS += \
@@ -12,6 +12,8 @@ SOURCES += main.cpp \
     deviceinfo.cpp
 
 RESOURCES += qml.qrc
+
+LIBS += -lvlc-qt -lvlc-qt-widgets
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
