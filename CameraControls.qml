@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 import QtQuick 2.0
 import QtQuick.Controls 1.3
-=======
 import QtQuick 2.1
 import QtQuick.Controls 1.2
->>>>>>> b2ae70e04952363e80972674f7fc76038f49ec88
 
 Rectangle {
     property int labelSize

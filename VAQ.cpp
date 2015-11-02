@@ -101,13 +101,10 @@ void VAQ::deviceDisconnected()
 void VAQ::connectToService()
 {
     m_currentDevice.setDevice(((DeviceInfo*)m_devices.at(0))->getDevice());
-<<<<<<< HEAD
+
     QBluetoothAddress tmp(m_currentDevice.getAddress());
     m_control = new QLowEnergyController( tmp, this );
-=======
-
     m_control = new QLowEnergyController( m_currentDevice.getDevice(), this );
->>>>>>> b2ae70e04952363e80972674f7fc76038f49ec88
 
     connect(m_control, SIGNAL(connected()), this, SLOT(deviceConnected()));
 
