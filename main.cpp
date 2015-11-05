@@ -2,7 +2,6 @@
 //QGuiApplication contains the main event loop, where all events from the window system and other sources are processed and dispatched.
 #include <QGuiApplication>
 #include "VAQ.h"
-#include "camera.h"
 
 
 int main(int argc, char *argv[])
@@ -10,8 +9,6 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQuickView view;
-
-    view.engine()->addImageProvider(QLatin1String("camera"), new Camera);
 
     VAQ vaq;
 

@@ -1,6 +1,6 @@
 #include "VAQ.h"
 #include "deviceinfo.h"
-#include <QtTest>
+
 
 
 VAQ::VAQ(): sensorfound(false), m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
@@ -147,9 +147,9 @@ void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
         const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{0000ccc1-0000-1000-8000-00805f9b34fb}") ) );
         for(int i=0; i<3; i++){
             m_service->writeCharacteristic(IOData, QByteArray::fromHex("01"));
-            QTest::qSleep(1000);
+            //QTest::qSleep(1000);
             m_service->writeCharacteristic(IOData, QByteArray::fromHex("02"));
-            QTest::qSleep(1000);
+            //QTest::qSleep(1000);
             m_service->writeCharacteristic(IOData, QByteArray::fromHex("03"));
         }
     }

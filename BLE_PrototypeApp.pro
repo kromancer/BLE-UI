@@ -9,18 +9,17 @@ CONFIG += c++11
 
 HEADERS += \
     VAQ.h \
-    deviceinfo.h \
-    camera.h
+    deviceinfo.h
 
 SOURCES += main.cpp \
     VAQ.cpp \
-    deviceinfo.cpp \
-    camera.cpp
+    deviceinfo.cpp
+
 
 RESOURCES += qml.qrc
 
 
-LIBS += -lvlc-qt -lvlc-qt-widgets
+#LIBS += -lvlc-qt -lvlc-qt-widgets
 
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
