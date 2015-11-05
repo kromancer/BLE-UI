@@ -34,7 +34,7 @@ Rectangle {
         anchors.top: sliderLED.top
         anchors.left: sliderLED.right
         onClicked: {
-            ;
+
         }
     }
 

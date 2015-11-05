@@ -1,18 +1,29 @@
 #ifndef CAMERA_H
 #define CAMERA_H
+#include "fangxian.h"
 #include <QQuickImageProvider>
 #include <opencv2/opencv.hpp>
 
-class Camera: public QQuickImageProvider
+
+
+
+
+//using namespace FlyCapture2;
+using namespace std;
+
+
+
+class Kostis: public QQuickImageProvider
 {
 public:
-    Camera();
+    Kostis();
     QImage requestImage(const QString& id, QSize* size, const QSize& requestedSize);
-public slots:
-    QImage captureFrame();
+
 private:
-    cv::VideoCapture stream;
+    Fangxian fan;
 };
+
+
 
 
 #endif // CAMERA_H

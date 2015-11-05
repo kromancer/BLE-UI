@@ -18,7 +18,7 @@ Rectangle {
 
         //Rectangle   {Layout.preferredWidth: Math.round(universe.width / 2); Layout.preferredHeight: Math.round(universe.height / 2.5); color: "grey"; Layout.columnSpan: 2}
 
-        /* Camera access through opencv
+        // Camera access through opencv
         Image {
             id: display;
             cache: false;
@@ -32,9 +32,9 @@ Rectangle {
                 onTriggered: parent.source = "image://camera/image" + Math.random()
             }
         }
-        */
 
-        // QtQuick native support
+
+        /* QtQuick native support
         VideoOutput {
             source: camera
             Layout.preferredWidth: Math.round(universe.width / 2);
@@ -46,6 +46,7 @@ Rectangle {
                 // You can adjust various settings in here
             }
         }
+        */
 
 
 

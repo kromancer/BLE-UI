@@ -2,7 +2,8 @@
 //QGuiApplication contains the main event loop, where all events from the window system and other sources are processed and dispatched.
 #include <QGuiApplication>
 #include "VAQ.h"
-#include "camera.h"
+#include "kostis.h"
+#include "fangxian.h"
 
 
 int main(int argc, char *argv[])
@@ -11,22 +12,23 @@ int main(int argc, char *argv[])
 
     QQuickView view;
 
-    view.engine()->addImageProvider(QLatin1String("camera"), new Camera);
-
-    VAQ vaq;
+    Kostis kos;
 
 
-    //The Qt resource system is a platform-independent mechanism for storing binary files in the application's executable.
+
+
+
+
     view.setSource(QUrl("qrc:/main.qml"));
 
-    view.rootContext()->setContextProperty("VAQ", &vaq);
+
+    view.engine()->addImageProvider(QLatin1String("camera"), &kos);
+
+
+
 
     view.setMinimumWidth(700);
     view.setMinimumHeight(700);
-
-
-
-    //view.setResizeMode(QQuickView::SizeViewToRootObject);
     view.show();
     return app.exec();
 }
