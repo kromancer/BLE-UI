@@ -24,8 +24,13 @@ Rectangle {
         anchors.top: label.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.bottom: parent.bottom
+
         anchors.topMargin: 1
-        tickmarksEnabled: true
+        anchors.bottomMargin: 1
+
+        //The tick marks refuse to play nice
+        //tickmarksEnabled: true
 
             //Control Guys mess this section
             value: 0
@@ -39,7 +44,7 @@ Rectangle {
         id: tickmarksLabel
         anchors.top: slider.bottom
         anchors.topMargin: 3
-        //text: "Ideally we label the bar"
+        text: slider.value
     }
 
 
