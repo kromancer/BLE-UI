@@ -1,6 +1,6 @@
 #include "VAQ.h"
 #include "deviceinfo.h"
-
+//#include <QtTest>
 
 
 VAQ::VAQ(): sensorfound(false), m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
@@ -100,10 +100,9 @@ void VAQ::deviceDisconnected()
 
 void VAQ::connectToService()
 {
+    /*
     m_currentDevice.setDevice(((DeviceInfo*)m_devices.at(0))->getDevice());
 
-    QBluetoothAddress tmp(m_currentDevice.getAddress());
-    m_control = new QLowEnergyController( tmp, this );
     m_control = new QLowEnergyController( m_currentDevice.getDevice(), this );
 
     connect(m_control, SIGNAL(connected()), this, SLOT(deviceConnected()));
@@ -119,7 +118,7 @@ void VAQ::connectToService()
     qWarning() << "I will try to connect to the device: " << m_currentDevice.getAddress();
 
     m_control->connectToDevice();
-
+    */
     return;
 }
 

@@ -17,20 +17,45 @@ import QtMultimedia 5.0
 Rectangle {
         id: universe
         anchors.fill: parent
-           border.width: 1
+        border.width: 1
 
         Rectangle {
                 //VIDEO OUTPUT RECTANGLE
                 width: Math.round(2*universe.width/3)
                 height: Math.round(universe.height/2)
 
+
                 id: streamwindow
                 color: "grey"
 
-                MediaPlayer {
-                        id: player
-                        //example stream, it's a bit dark in the first part
-                        source: "rtmp://184.72.239.149/vod/mp4:bigbuckbunny_450.mp4"
+
+                Image {
+                    id: display;
+                    cache: false;
+                    anchors.fill: parent
+
+
+                    Timer{
+                        id: displaytimer
+                        interval: 50;
+                        running: false;
+                        repeat: true
+                        onTriggered: parent.source = "image://camera/image" + Math.random()
+                    }
+                }
+
+
+                /* QtQuick native support
+                VideoOutput {
+                    source: camera
+                    Layout.preferredWidth: Math.round(universe.width / 2);
+                    Layout.preferredHeight: Math.round(universe.height / 2.5);
+                    Layout.columnSpan: 2;
+                    Camera {
+                        id: camera
+
+                        // You can adjust various settings in here
+                    }
                 }
 
                 VideoOutput {
@@ -38,25 +63,46 @@ Rectangle {
                         source: player
                         anchors.fill: parent
                 }
+                */
+                //fullscreen toggle button
+                Button {
+                    text: "Fullscreen"
+                    anchors.right: streamwindow.right
+                    anchors.bottom: streamwindow.bottom
+                    onClicked: {
+                        if(streamwindow.height == universe.height){
+                            streamwindow.width = Math.round(2*universe.width/3)
+                            streamwindow.height = Math.round(universe.height/2)
+                        }else{
+                            streamwindow.height = universe.height
+                            streamwindow.width = universe.width
+                        }
+                    }
+                }
         }
 
         Rectangle{
-                //LIGHTSLIDER AND DEBUG BUTTON RECTANGLE
+                //cameracontrols AND DEBUG BUTTON RECTANGLE
                 anchors.left: streamwindow.right
                 width: Math.round(universe.width/3)
                 height: Math.round(universe.height/2)
             border.width: 1
 
-                id:lightslider
-                CameraControls{anchors.centerIn: parent; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200}
+                id:cameracontrols
+                CameraControls{id: sliderLED; anchors.bottom: cameracontrols.bottom; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "What"}
+                CameraControls{id: controller2; anchors.bottom: cameracontrols.bottom; anchors.left: sliderLED.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "are"}
+                CameraControls{id: controller3; anchors.bottom: cameracontrols.bottom; anchors.left: controller2.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "these"}
+                CameraControls{id: controller4; anchors.bottom: cameracontrols.bottom; anchors.left: controller3.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "for?"}
+
                 Grid{
                         id: demogrid
                         rows:2
 
                         Button {
-                                text: "Remote video demo"
+                                text: "Start capture"
                                 onClicked: {
-                                        player.play();
+                                        displaytimer.running = !displaytimer.running
+                                        //player.play();
                                         //VAQ.deviceSearch();
                                 }
                         }
@@ -81,7 +127,7 @@ Rectangle {
 
                 id: xyzcontrols
 
-            SliderMOTOR {id: zslider; anchors.right: parent.right; anchors.top: parent.top; anchors.bottom: yslider.bottom;  orientation: Qt.Vertical; height: Math.round(parent.height); width: Math.round(parent.width/4); label:"Pitch"; labelSize: 12+universe.width/200}
+            SliderMOTOR {id: zslider; anchors.right: parent.right; anchors.top: parent.top; anchors.bottom: yslider.bottom;  orientation: Qt.Vertical; height: Math.round(parent.height); width: Math.round(parent.width/4); label:"Z-Axis"; labelSize: 12+universe.width/200}
             SliderMOTOR {id: xslider; anchors.right: zslider.left; height:Math.round(parent.height/4); width: Math.round(parent.width); label:"X-Axis"; labelSize: 12+universe.width/200}
             SliderMOTOR {id: yslider; anchors.right: zslider.left; anchors.topMargin: 20; anchors.top: xslider.bottom; height:Math.round(parent.height/4); width: Math.round(parent.width); label:"Y-Axis"; labelSize: 12+universe.width/200}
         }
@@ -89,6 +135,7 @@ Rectangle {
         Rectangle{
                 border.width: 1
 
+                anchors.top: xyzcontrols.top
                 anchors.left: xyzcontrols.right
                 anchors.bottom: parent.bottom
                 width: Math.round(universe.width/3)
@@ -96,7 +143,8 @@ Rectangle {
                 id:knobrectangle
 
                 Image {
-                        anchors.centerIn: parent
+                        anchors.top: knobrectangle.top
+
                         id: knob
                         Layout.rowSpan: 3
                         Layout.preferredWidth: universe.width/5
@@ -110,6 +158,7 @@ Rectangle {
 
         Rectangle{
             border.width: 1
+            anchors.top: knobrectangle.top
             anchors.left: knobrectangle.right
             anchors.bottom: parent.bottom
 
@@ -117,7 +166,7 @@ Rectangle {
             height: Math.round(universe.height/2)
 
             SliderMOTOR {id: pitch; anchors.top: parent.top; orientation: Qt.Vertical; height: Math.round(parent.height/1.8); width: Math.round(parent.width/4); label:"Pitch"; labelSize: 12+universe.width/200}
-            SliderMOTOR {anchors.bottomMargin: 30; anchors.topMargin: 24;anchors.top: pitch.bottom; anchors.bottom: parent.bottom; height:Math.round(parent.height/4); width: Math.round(parent.width); label:"Roll"; labelSize: 12+universe.width/200}
+            SliderMOTOR {anchors.top: pitch.bottom; anchors.bottom: parent.bottom; height:Math.round(parent.height/4); width: Math.round(parent.width); label:"Roll"; labelSize: 12+universe.width/200}
         }
 
         SliderMOTOR {

@@ -44,7 +44,7 @@ Rectangle {
         id: tickmarksLabel
         anchors.top: slider.bottom
         anchors.topMargin: 3
-        text: slider.value
+        //text: slider.value
     }
 
 
