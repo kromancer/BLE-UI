@@ -29,7 +29,7 @@ Rectangle {
 
             Timer{
                 interval: 50; running: true; repeat: true
-                onTriggered: parent.source = "image://camera/image" + Math.random()
+                //onTriggered: parent.source = "image://camera/image" + Math.random()
             }
         }
 
@@ -54,12 +54,7 @@ Rectangle {
         SliderMOTOR {Layout.preferredWidth: universe.width / 4; Layout.preferredHeight: universe.width/15; label:"Y-Axis"; labelSize: 12+universe.width/200}
         SliderMOTOR {Layout.preferredWidth: universe.width / 4; Layout.preferredHeight: universe.width/15; label:"Z-Axis"; labelSize: 12+universe.width/200}
 
-        Image {
-            Layout.rowSpan: 3
-            Layout.preferredWidth: universe.width/5
-            Layout.preferredHeight: width
-            source: "qrc:/pics/knob.png"
-        }
+        YawKnob{}
 
         CameraControls{Layout.preferredHeight: universe.height / 2; labelSize: 12+universe.width/200}
 
