@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>pics/Power.png</file>
         <file>SliderMOTOR.qml</file>
         <file>CameraControls.qml</file>
         <file>main.qml</file>
-        <file>pics/knob.png</file>
+        <file>YawKnob.qml</file>
+        <file>pics/knob4.png</file>
     </qresource>
 </RCC>

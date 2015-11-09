@@ -1,21 +1,17 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.3
 import QtQuick 2.1
 import QtQuick.Controls 1.2
 
 Rectangle {
-    property alias label: sliderlabel.text
     property int labelSize
     id: container
     border.width: 1
-    //color: "brown"
+    color: "brown"
     Slider {
-        id: controllerSlider
+        id: sliderLED
         orientation: Qt.Vertical
         height: parent.height / 2
         anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.centerIn: parent
+        anchors. verticalCenter: parent.verticalCenter
 
             //Control Guys mess this section
             value: 0
@@ -26,16 +22,20 @@ Rectangle {
     }
 
     Label {
-        id: sliderlabel
-        width: 28
-        height: 15
-        anchors.top: controllerSlider.bottom
-        anchors.horizontalCenter: controllerSlider.horizontalCenter
+        anchors.top: sliderLED.bottom
+        anchors.horizontalCenter: sliderLED.horizontalCenter
         font.family: "Ubuntu"
         font.pixelSize: labelSize
-        text: "Your text here" //Should be set when created
-        anchors.horizontalCenterOffset: -8
-        anchors.topMargin: 8
+        text: "Light"
+    }
+
+    Button {
+        text: "Demo"
+        anchors.top: sliderLED.top
+        anchors.left: sliderLED.right
+        onClicked: {
+
+        }
     }
 
 }
