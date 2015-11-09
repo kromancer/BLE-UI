@@ -89,10 +89,10 @@ Rectangle {
             border.width: 1
 
                 id:cameracontrols
-                CameraControls{id: sliderLED; anchors.bottom: cameracontrols.bottom; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "What"}
-                CameraControls{id: controller2; anchors.bottom: cameracontrols.bottom; anchors.left: sliderLED.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "are"}
-                CameraControls{id: controller3; anchors.bottom: cameracontrols.bottom; anchors.left: controller2.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "these"}
-                CameraControls{id: controller4; anchors.bottom: cameracontrols.bottom; anchors.left: controller3.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; label: "for?"}
+                CameraControls{id: sliderLED; anchors.bottom: cameracontrols.bottom; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; }
+                CameraControls{id: controller2; anchors.bottom: cameracontrols.bottom; anchors.left: sliderLED.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
+                CameraControls{id: controller3; anchors.bottom: cameracontrols.bottom; anchors.left: controller2.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
+                CameraControls{id: controller4; anchors.bottom: cameracontrols.bottom; anchors.left: controller3.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
 
                 Grid{
                         id: demogrid
@@ -141,7 +141,8 @@ Rectangle {
                 width: Math.round(universe.width/3)
                 height: Math.round(universe.height/2)
                 id:knobrectangle
-
+                YawKnob{}
+                /*
                 Image {
                         anchors.top: knobrectangle.top
 
@@ -151,6 +152,7 @@ Rectangle {
                         Layout.preferredHeight: width
                         source: "qrc:/pics/knob.png"
                 }
+                */
         }
 
 
