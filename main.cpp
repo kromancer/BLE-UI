@@ -2,9 +2,9 @@
 //QGuiApplication contains the main event loop, where all events from the window system and other sources are processed and dispatched.
 #include <QGuiApplication>
 #include "VAQ.h"
-#include "kostis.h"
+#include "frame_provider.h"
 #include "fangxian.h"
-
+#include "cam_settings.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,9 +12,9 @@ int main(int argc, char *argv[])
 
     QQuickView view;
 
-    Kostis kos;
+    FrameProvider kos;
 
-
+    CamSettings cam_settings(&kos.fan.our_cam);
 
 
 
@@ -22,7 +22,10 @@ int main(int argc, char *argv[])
     view.setSource(QUrl("qrc:/main.qml"));
 
 
+
+    view.rootContext()->setContextProperty("cam_settings", &cam_settings);
     view.engine()->addImageProvider(QLatin1String("camera"), &kos);
+
 
 
 

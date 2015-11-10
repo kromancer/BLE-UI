@@ -15,10 +15,12 @@ Rectangle {
 
             //Control Guys mess this section
             value: 0
-            minimumValue: 0
-            maximumValue: 10
+            minimumValue: -11
+            maximumValue: 24
             stepSize: 1
             //Control Guys ideally stop here, or else they get their heads chopped off
+
+         onValueChanged: cam_settings.setGain(value);
     }
 
     Label {

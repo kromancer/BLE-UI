@@ -19,93 +19,30 @@ Rectangle {
         anchors.fill: parent
         border.width: 1
 
-        Rectangle {
-                //VIDEO OUTPUT RECTANGLE
-                width: Math.round(2*universe.width/3)
-                height: Math.round(universe.height/2)
 
 
-                id: streamwindow
-                color: "grey"
+        CameraDisplay { id: cameraDisplay }
 
 
-                Image {
-                    id: display;
-                    cache: false;
-                    anchors.fill: parent
 
 
-                    Timer{
-                        id: displaytimer
-                        interval: 50;
-                        running: false;
-                        repeat: true
-                        onTriggered: parent.source = "image://camera/image" + Math.random()
-                    }
-                }
-
-
-                /* QtQuick native support
-                VideoOutput {
-                    source: camera
-                    Layout.preferredWidth: Math.round(universe.width / 2);
-                    Layout.preferredHeight: Math.round(universe.height / 2.5);
-                    Layout.columnSpan: 2;
-                    Camera {
-                        id: camera
-
-                        // You can adjust various settings in here
-                    }
-                }
-
-                VideoOutput {
-                        id: videoOutput
-                        source: player
-                        anchors.fill: parent
-                }
-                */
-                //fullscreen toggle button
-                Button {
-                    text: "Fullscreen"
-                    anchors.right: streamwindow.right
-                    anchors.bottom: streamwindow.bottom
-                    onClicked: {
-                        if(streamwindow.height == universe.height){
-                            streamwindow.width = Math.round(2*universe.width/3)
-                            streamwindow.height = Math.round(universe.height/2)
-                        }else{
-                            streamwindow.height = universe.height
-                            streamwindow.width = universe.width
-                        }
-                    }
-                }
-        }
 
         Rectangle{
                 //cameracontrols AND DEBUG BUTTON RECTANGLE
-                anchors.left: streamwindow.right
+                anchors.left: cameraDisplay.right
                 width: Math.round(universe.width/3)
                 height: Math.round(universe.height/2)
-            border.width: 1
+                border.width: 1
 
                 id:cameracontrols
                 CameraControls{id: sliderLED; anchors.bottom: cameracontrols.bottom; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; }
-                CameraControls{id: controller2; anchors.bottom: cameracontrols.bottom; anchors.left: sliderLED.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
-                CameraControls{id: controller3; anchors.bottom: cameracontrols.bottom; anchors.left: controller2.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
-                CameraControls{id: controller4; anchors.bottom: cameracontrols.bottom; anchors.left: controller3.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
+                CameraControls{id: auto_exposure; anchors.bottom: cameracontrols.bottom; anchors.left: sliderLED.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
+                //CameraControls{id: controller3; anchors.bottom: cameracontrols.bottom; anchors.left: controller2.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
+                //CameraControls{id: controller4; anchors.bottom: cameracontrols.bottom; anchors.left: controller3.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
 
                 Grid{
                         id: demogrid
                         rows:2
-
-                        Button {
-                                text: "Start capture"
-                                onClicked: {
-                                        displaytimer.running = !displaytimer.running
-                                        //player.play();
-                                        //VAQ.deviceSearch();
-                                }
-                        }
 
                         Button {
                                 text: "Bluetooth demo"
@@ -121,7 +58,7 @@ Rectangle {
                 border.width: 1
 
 
-                anchors.top: streamwindow.bottom
+                anchors.top: cameraDisplay.bottom
                 width: Math.round(universe.width/3)
                 height: Math.round(universe.height/2)
 
@@ -133,6 +70,7 @@ Rectangle {
         }
 
         Rectangle{
+                id:knobrectangle
                 border.width: 1
 
                 anchors.top: xyzcontrols.top
@@ -140,19 +78,10 @@ Rectangle {
                 anchors.bottom: parent.bottom
                 width: Math.round(universe.width/3)
                 height: Math.round(universe.height/2)
-                id:knobrectangle
-                YawKnob{}
-                /*
-                Image {
-                        anchors.top: knobrectangle.top
 
-                        id: knob
-                        Layout.rowSpan: 3
-                        Layout.preferredWidth: universe.width/5
-                        Layout.preferredHeight: width
-                        source: "qrc:/pics/knob.png"
+                YawKnob{
+                    anchors.fill: parent
                 }
-                */
         }
 
 
@@ -179,6 +108,29 @@ Rectangle {
         }
 }
 
+
+// Graveyard of, potentially usefull for debugging, code.
+
+
+/* QtQuick native support
+VideoOutput {
+    source: camera
+    Layout.preferredWidth: Math.round(universe.width / 2);
+    Layout.preferredHeight: Math.round(universe.height / 2.5);
+    Layout.columnSpan: 2;
+    Camera {
+        id: camera
+
+        // You can adjust various settings in here
+    }
+}
+
+VideoOutput {
+        id: videoOutput
+        source: player
+        anchors.fill: parent
+}
+*/
 
 
 

@@ -1,8 +1,8 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef FRAME_PROVIDER_H
+#define FRAME_PROVIDER_H
 #include "fangxian.h"
 #include <QQuickImageProvider>
-#include <opencv2/opencv.hpp>
+
 
 
 
@@ -13,13 +13,11 @@ using namespace std;
 
 
 
-class Kostis: public QQuickImageProvider
+class FrameProvider: public QQuickImageProvider
 {
 public:
-    Kostis();
+    FrameProvider();
     QImage requestImage(const QString& id, QSize* size, const QSize& requestedSize);
-
-private:
     Fangxian fan;
 };
 

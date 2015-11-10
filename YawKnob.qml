@@ -2,15 +2,35 @@ import QtQuick 2.3
 
 Rectangle
   {
+      anchors.fill: parent
+
+      Image{
+          id: knobImageId
+          source: "pics/knob4.png"
+          scale: knobScale
+          rotation: startRotation
+          anchors.horizontalCenter: parent.horizontalCenter
+      }
+
+      MouseArea{
+          anchors.fill: parent
+          hoverEnabled: true
+          onMouseXChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
+          onMouseYChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
+          //onHoveredChanged: knobImageId.opacity = containsMouse ?  hoverOpacity :  1.0
+      }
+
+
+      //***********************************************************
+      // Functionality Section
+      //***********************************************************
+
       //Knob coordinates
       property int knobCenterX: width/2
       property int knobCenterY: height/2
 
       //Knob Image scaling
       property real knobScale: .8
-
-      //Knob background pad
-      property int knobBgPad: 4
 
       //Indicator's starting position
       property int startRotation: 0
@@ -25,12 +45,9 @@ Rectangle
       property real incrementPerDeg : 1
       property real totalAngle : 360
 
-
-
       //Old value and current value
       property real oldValue : minValue
       property real currentValue : minValue
-
 
       function getEventAngle(event)
       {
@@ -75,26 +92,5 @@ Rectangle
           knobImageId.rotation = -angle_deg//positive for this function means clockwise
           oldValue = new_value
           print("Radians: ", angle_rad.toFixed(2),"Degrees: ", angle_deg.toFixed(0))
-      }
-
-      id: knobBgId
-      width : knobImageId.width * knobScale + knobBgPad
-      height : width
-      radius : width/2
-      color: "gainsboro"
-      anchors.horizontalCenter: parent.horizontalCenter
-      Image{
-          id: knobImageId
-          source: "pics/knob4.png"
-          scale: knobScale
-          rotation: startRotation
-          anchors.centerIn: parent
-      }
-      MouseArea{
-          anchors.fill: parent
-          hoverEnabled: true
-          onMouseXChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
-          onMouseYChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
-          //onHoveredChanged: knobImageId.opacity = containsMouse ?  hoverOpacity :  1.0
       }
   }
