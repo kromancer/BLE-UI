@@ -1,7 +1,46 @@
-#include "fangxian.h"
+#include "camera.h"
 
 
-Fangxian::Fangxian()
+// Withing QML whenever we call the update method on a PG_Camera object, this method is invoked
+void PG_Camera::paint(QPainter *painter)
+{
+    // I hope that this calls the move assignment operator
+    QImage frame = getFrame();
+
+    painter->drawImage(contentsBoundingRect(),frame);
+
+    return;
+}
+
+// Super easy. The method is called from the FileDialog item, onAccepted.
+void PG_Camera::saveFrame(QString path)
+{
+    // I hope that this calls the move assignment operator
+    QImage frame = getFrame();
+
+    frame.save(path);
+
+    return;
+}
+
+QImage PG_Camera::getFrame()
+{
+    FlyCapture2::Image rawImage, rgbImage;
+
+    error = our_cam.RetrieveBuffer( &rawImage );
+
+    rawImage.Convert(FlyCapture2::PIXEL_FORMAT_RGB8, &rgbImage);
+
+    QImage dest((const uchar *) rgbImage.GetData(), rgbImage.GetCols(), rgbImage.GetRows(), QImage::Format_RGB888);
+
+    dest.bits();
+
+    return dest;
+}
+
+
+
+PG_Camera::PG_Camera(QQuickItem *parent): QQuickPaintedItem(parent)
 {
     // Discover GigE cameras
     unsigned int numCamInfo;
@@ -34,9 +73,6 @@ Fangxian::Fangxian()
         printError( error );
     }
     printCameraInfo(&cam_info);
-
-
-
 
 
     // Create channel of communication with the camera
@@ -77,6 +113,24 @@ Fangxian::Fangxian()
         printError( error );
     }
 
+    auto_exposure.type = AUTO_EXPOSURE;
+    auto_exposure.onOff = true;
+    auto_exposure.autoManualMode = false;
+    auto_exposure.absControl = true;
+
+    shutter.type = SHUTTER;
+    shutter.onOff = true;
+    shutter.autoManualMode = false;
+    shutter.absControl = true;
+
+    gain.type = GAIN;
+    gain.autoManualMode = false;
+    gain.absControl = true;
+
+    brightness.type = BRIGHTNESS;
+    brightness.absControl = true;
+
+
 
     // Start Capturing
     cout << "Starting image capture..." << endl;
@@ -88,20 +142,25 @@ Fangxian::Fangxian()
 
 }
 
-Fangxian::~Fangxian()
+PG_Camera::~PG_Camera()
 {
-
+    our_cam.StopCapture();
+    our_cam.Disconnect();
 }
 
 
-void Fangxian::printCameraSettings()
+/******************************************************************************
+ * CAMERA INFO SETTINGS
+ ******************************************************************************/
+
+void PG_Camera::printCameraSettings()
 {
     cout << "Camera Settings" << endl;
     cout << "Max height: " << imageSettingsInfo.maxHeight << " Max width: " << imageSettingsInfo.maxWidth << endl;
 }
 
 
-void Fangxian::printBuildInfo()
+void PG_Camera::printBuildInfo()
 {
     FlyCapture2::FC2Version fc2Version;
     FlyCapture2::Utilities::GetLibraryVersion( &fc2Version );
@@ -117,7 +176,7 @@ void Fangxian::printBuildInfo()
     qWarning("Button pressed\n");
 }
 
-void Fangxian::printCameraInfo( FlyCapture2::CameraInfo* pCamInfo )
+void PG_Camera::printCameraInfo( FlyCapture2::CameraInfo* pCamInfo )
 {
     ostringstream macAddress;
     macAddress << hex << setw(2) << setfill('0') << (unsigned int)pCamInfo->macAddress.octets[0] << ":" <<
@@ -168,7 +227,7 @@ void Fangxian::printCameraInfo( FlyCapture2::CameraInfo* pCamInfo )
 
 
 
-void Fangxian::printStreamChannelInfo( FlyCapture2::GigEStreamChannel* pStreamChannel )
+void PG_Camera::printStreamChannelInfo( FlyCapture2::GigEStreamChannel* pStreamChannel )
 {
     ostringstream ipAddress;
     ipAddress << (unsigned int)pStreamChannel->destinationIpAddress.octets[0] << "." <<
@@ -183,6 +242,49 @@ void Fangxian::printStreamChannelInfo( FlyCapture2::GigEStreamChannel* pStreamCh
     cout << "Inter packet delay: " << pStreamChannel->interPacketDelay << endl;
     cout << "Destination IP address: " << ipAddress.str() << endl;
     cout << "Source port (on camera): " << pStreamChannel->sourcePort << endl << endl;
+}
+
+
+/******************************************************************************
+ * CAMERA SETTINGS FUNCTIONS
+ ******************************************************************************/
+
+// value is in milliseconds for 0.044ms to 32s
+void PG_Camera::setShutter(unsigned int value)
+{
+    shutter.absValue = value;
+    qWarning("Changed shutter parameter: %d\n", value);
+    our_cam.SetProperty(&shutter);
+    return;
+}
+
+// This needs investigation, something about EV
+void PG_Camera::setAutoExposure(float value)
+{
+    auto_exposure.absValue = value;
+    qWarning("Setting auto exposure to: %f\n", value);
+    our_cam.SetProperty(&auto_exposure);
+    return;
+}
+
+
+// value is a percentage
+void PG_Camera::setBrightness(float value)
+{
+    brightness.absValue = value;
+    qWarning("Setting brightness value to: %f\n", value);
+    our_cam.SetProperty(&brightness);
+    return;
+}
+
+
+// value is in db from -11 to 24
+void PG_Camera::setGain(float value)
+{
+    gain.absValue = value;
+    our_cam.SetProperty(&gain);
+    qWarning("Setting gain to: %f\n", value);
+    return;
 }
 
 
@@ -214,13 +316,7 @@ void Fangxian::printStreamChannelInfo( FlyCapture2::GigEStreamChannel* pStreamCh
 
 
 
-
-
-
-
-
-
-void Fangxian::printError( FlyCapture2::Error error )
+void PG_Camera::printError( FlyCapture2::Error error )
 {
     error.PrintErrorTrace();
 }

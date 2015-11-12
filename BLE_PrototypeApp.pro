@@ -6,16 +6,12 @@ CONFIG += c++11
 HEADERS += \
     VAQ.h \
     deviceinfo.h \
-    fangxian.h \
-    cam_settings.h \
-    frame_provider.h
+    camera.h
 
 SOURCES += main.cpp \
     VAQ.cpp \
     deviceinfo.cpp \
-    fangxian.cpp \
-    cam_settings.cpp \
-    frame_provider.cpp
+    camera.cpp
 
 RESOURCES += qml.qrc
 

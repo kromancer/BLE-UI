@@ -2,19 +2,17 @@
 //QGuiApplication contains the main event loop, where all events from the window system and other sources are processed and dispatched.
 #include <QGuiApplication>
 #include "VAQ.h"
-#include "frame_provider.h"
-#include "fangxian.h"
-#include "cam_settings.h"
+#include "camera.h"
+
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-
     QQuickView view;
+    qmlRegisterType<PG_Camera>("mymodule", 1, 0, "PG_Camera");
 
-    FrameProvider kos;
-
-    CamSettings cam_settings(&kos.fan.our_cam);
+    //FrameProvider kos;
+    //CamSettings cam_settings(&pg_camera);
 
 
 
@@ -22,16 +20,18 @@ int main(int argc, char *argv[])
     view.setSource(QUrl("qrc:/main.qml"));
 
 
-
-    view.rootContext()->setContextProperty("cam_settings", &cam_settings);
-    view.engine()->addImageProvider(QLatin1String("camera"), &kos);
-
-
+    //view.rootContext()->setContextProperty("pg_camera", &pg_camera);
+    //view.rootContext()->setContextProperty("cam_settings", &cam_settings);
+    //view.engine()->addImageProvider(QLatin1String("camera"), &kos);
 
 
 
-    view.setMinimumWidth(700);
-    view.setMinimumHeight(700);
+
+
+    view.setMinimumWidth(1288);
+    view.setMinimumHeight(964);
+    view.setMaximumWidth(1288);
+    view.setMaximumHeight(980);
     view.show();
     return app.exec();
 }

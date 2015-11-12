@@ -17,41 +17,25 @@ import QtMultimedia 5.0
 Rectangle {
         id: universe
         anchors.fill: parent
-        border.width: 1
-
-
-
-        CameraDisplay { id: cameraDisplay }
 
 
 
 
+        CameraPanel { id: cameraDisplay; }
 
-        Rectangle{
-                //cameracontrols AND DEBUG BUTTON RECTANGLE
-                anchors.left: cameraDisplay.right
-                width: Math.round(universe.width/3)
-                height: Math.round(universe.height/2)
-                border.width: 1
-
-                id:cameracontrols
-                CameraControls{id: sliderLED; anchors.bottom: cameracontrols.bottom; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200; }
-                CameraControls{id: auto_exposure; anchors.bottom: cameracontrols.bottom; anchors.left: sliderLED.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
-                //CameraControls{id: controller3; anchors.bottom: cameracontrols.bottom; anchors.left: controller2.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
-                //CameraControls{id: controller4; anchors.bottom: cameracontrols.bottom; anchors.left: controller3.right; height:Math.round(parent.height/1.5); width: Math.round(parent.width/4); labelSize: 12+universe.width/200;}
-
-                Grid{
-                        id: demogrid
-                        rows:2
-
-                        Button {
-                                text: "Bluetooth demo"
-                                onClicked: {
-                                        VAQ.deviceSearch();
-                                }
-                        }
-                }
+        CameraSettingsPanel {
+            id: cameraSettings;
+            textSize: 12+universe.width/200
+            anchors.left: cameraDisplay.right
+            anchors.top: parent.top
+            width: Math.round(universe.width/3)
+            height: Math.round(universe.height/2)
         }
+
+
+
+
+
 
         Rectangle{
                 //X, Y, Z COORDINATE RECTANGLE

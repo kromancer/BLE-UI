@@ -1,15 +1,16 @@
 <RCC>
     <qresource prefix="/">
         <file>SliderMOTOR.qml</file>
-        <file>CameraControls.qml</file>
+        <file>SliderLED.qml</file>
         <file>main.qml</file>
         <file>YawKnob.qml</file>
         <file>pics/knob4.png</file>
-        <file>CameraDisplay.qml</file>
+        <file>CameraPanel.qml</file>
         <file>pics/snapshot2.svg</file>
         <file>pics/maximize.png</file>
         <file>pics/minimize.png</file>
         <file>pics/play.png</file>
         <file>pics/pause.png</file>
+        <file>CameraSettingsPanel.qml</file>
     </qresource>
 </RCC>

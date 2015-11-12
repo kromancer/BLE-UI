@@ -1,15 +1,11 @@
 import QtQuick 2.1
 import QtQuick.Dialogs 1.1
+import mymodule 1.0
 
 
 
 Rectangle {
         id: streamwindow
-
-
-        // Expose the timer running property
-        property alias running: displaytimer.running
-
 
         color: "grey"
         state: "MINIMIZED"
@@ -17,7 +13,7 @@ Rectangle {
             State {
                 name: "MINIMIZED"
                 PropertyChanges { target: streamwindow; width: Math.round(2*universe.width/3) }
-                PropertyChanges { target: streamwindow; height: Math.round(universe.height/2) }
+                PropertyChanges { target: streamwindow; height: Math.round(6*width/8) }
                 PropertyChanges { target: fullscreen; source: "qrc:/pics/maximize.png" }
             },
             State {
@@ -27,49 +23,37 @@ Rectangle {
             }
         ]
 
+       // Frame Display
+       PG_Camera {
+           id: camera
+           anchors.fill: parent
 
-        // Camera stream display canvas
-        Canvas {
-            id: display;
-            anchors.fill: parent
+           state: "PAUSED"
+           states: [
+               State {
+                   name: "PAUSED"
+                   PropertyChanges { target: displaytimer; running: false }
+                   PropertyChanges { target: start_button; source: "qrc:/pics/play.png"}
 
-            state: "PAUSED"
-            states: [
-                State {
-                    name: "PAUSED"
-                    PropertyChanges { target: displaytimer; running: false }
-                    PropertyChanges { target: start_button; source: "qrc:/pics/play.png"}
-
-                },
-                State {
-                    name: "RUNNING"
-                    PropertyChanges { target: displaytimer; running: true }
-                    PropertyChanges { target: start_button; source: "qrc:/pics/pause.png"}
-                }
-            ]
-
-
-            Image {
-                id: frame;
-                anchors.fill: parent;
-                cache: false
-            }
-
-            onPaint: {
-                frame.source = "image://camera/image" + Math.random()
-                loadImage(frame)
-            }
-
-            onImageLoaded: {
-                var ctx = getContext("2d")
-                ctx.drawImage(frame,0,0)
-            }
+               },
+               State {
+                   name: "RUNNING"
+                   PropertyChanges { target: displaytimer; running: true }
+                   PropertyChanges { target: start_button; source: "qrc:/pics/pause.png"}
+               }
+           ]
 
             Timer{
                 id: displaytimer
                 interval: 100;
                 repeat: true
-                onTriggered: display.requestPaint()
+                onTriggered: camera.update()
+            }
+
+            Connections {
+                target: cameraSettings
+                onGainChanged: camera.setGain(gain_value)
+                onBrightnessChanged: camera.setBrightness(bright_value)
             }
 
         }
@@ -81,7 +65,7 @@ Rectangle {
         Rectangle {
             id: ribbon
             anchors.bottom: parent.bottom
-            height: Math.round(parent.width / 6)
+            height: Math.round(parent.width / 8)
             width: parent.width
             color: "white"
             opacity: 0.6
@@ -104,9 +88,8 @@ Rectangle {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    display.state = "PAUSED"
+                    camera.state = "PAUSED"
                     fileDialog.open()
-
                 }
             }
          }
@@ -117,10 +100,17 @@ Rectangle {
             title: "Please choose a directory"
             folder: shortcuts.home
             onAccepted: {
-                console.log("You chose: " + Qt.resolvedUrl(fileDialog.fileUrl).toString())
+                //**********************************************************************************************************************
+                // Why on earth don't they provide a function to convert a qml url to a string, representing the system's absolute path?
+                //**********************************************************************************************************************
+                var path = fileDialog.fileUrl.toString();
+                // remove prefixed "file:///"
+                path = path.replace(/^(file:\/{2})/,"");
+                // unescape html codes like '%23' for '#'
+                var cleanPath = decodeURIComponent(path);
 
-                display.save(Qt.resolvedUrl(fileDialog.fileUrl).toString() +  "/Snapshot" + Math.random() + ".bmp")
-                Qt.quit()
+                camera.saveFrame(cleanPath + "/Snapshot" + Math.random() + ".bmp")
+                console.log(cleanPath)
             }
             onRejected: {
                 console.log("Saving snapshot cancelled")
@@ -178,11 +168,11 @@ Rectangle {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (display.state == "PAUSED"){
-                        display.state = "RUNNING"
+                    if (camera.state == "PAUSED"){
+                        camera.state = "RUNNING"
                     }
                     else{
-                        display.state = "PAUSED"
+                        camera.state = "PAUSED"
                     }
                 }
             }
