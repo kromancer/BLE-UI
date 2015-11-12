@@ -11,7 +11,7 @@
 #include <QLowEnergyController>
 #include <QLowEnergyService>
 #include "deviceinfo.h"
-
+#include "stdint.h"
 
 class VAQ: public QObject
 {
@@ -22,6 +22,8 @@ public:
     VAQ();
     ~VAQ();
     void blinkLED();
+
+    Q_INVOKABLE void setYaw(uint8_t value);
 
 public slots:
      void deviceSearch();
@@ -41,11 +43,13 @@ private slots:
 
 private:
     bool sensorfound;
-    QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
-    QList<QObject*> m_devices;
     DeviceInfo m_currentDevice;
+    QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
     QLowEnergyController *m_control;
     QLowEnergyService *m_service;
+    QList<QObject*> m_devices;
+
+
 };
 
 

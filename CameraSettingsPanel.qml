@@ -114,7 +114,15 @@ Rectangle{
 
 
 
-
+        // Connect Button
+        Button {
+                anchors.bottom: parent.bottom
+                text: "Connect to Stage"
+                onClicked: {
+                        VAQ.deviceSearch();
+                }
+        }
+        //////////////////////////////////////////////////////
 
 
 

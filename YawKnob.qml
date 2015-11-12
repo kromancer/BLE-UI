@@ -13,7 +13,7 @@ Rectangle
       }
 
       MouseArea{
-          anchors.fill: parent
+          anchors.fill: knobImageId
           hoverEnabled: true
           onMouseXChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
           onMouseYChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)

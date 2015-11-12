@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
     QQuickView view;
     qmlRegisterType<PG_Camera>("mymodule", 1, 0, "PG_Camera");
 
-    //FrameProvider kos;
-    //CamSettings cam_settings(&pg_camera);
+    VAQ vaq;
+
 
 
 
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     view.setSource(QUrl("qrc:/main.qml"));
 
 
-    //view.rootContext()->setContextProperty("pg_camera", &pg_camera);
+    view.rootContext()->setContextProperty("VAQ", &vaq);
     //view.rootContext()->setContextProperty("cam_settings", &cam_settings);
     //view.engine()->addImageProvider(QLatin1String("camera"), &kos);
 
