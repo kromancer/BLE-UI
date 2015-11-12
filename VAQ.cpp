@@ -3,9 +3,15 @@
 //#include <QtTest>
 
 
-void VAQ::setYaw(uint8_t value)
+void VAQ::setYaw(char value)
 {
-
+    if(m_service->state() == 3)
+    {
+        qWarning("Changing Yaw Value\n");
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000005-0000-1000-8000-00805f9b34fb}") ));
+        m_service->writeCharacteristic(Yaw, QByteArray(1,value));
+    }
+    return;
 }
 
 
@@ -79,7 +85,7 @@ void VAQ::serviceScanDone()
 {
     // IO: "{F000AA64-0451-4000-B000-000000000000}"
     // Luxometer: "{F000AA70-0451-4000-B000-00000000000}"
-    //
+
     m_service = m_control->createServiceObject( QBluetoothUuid(QUuid("{0000CCC1-0000-1000-8000-00805F9B34FB}") ) );
     connect(m_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(serviceStateChanged(QLowEnergyService::ServiceState)));
     connect(m_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
@@ -94,7 +100,7 @@ void VAQ::serviceScanDone()
     else
     {
         qWarning() << "I am connected to the Stage Movement Service";
-
+        m_service->discoverDetails();
     }
     return;
 }
@@ -146,11 +152,12 @@ void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
     qWarning() << "Service State changed to: " << newState;
     if (newState==3)
     {
+        qWarning("Now you can proceed with moving things!");
         //const QLowEnergyCharacteristic IOconfig = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA66-0451-4000-B000-000000000000}") ) );
         //m_service->writeCharacteristic(IOconfig, QByteArray::fromHex("01"));
         //const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA65-0451-4000-B000-000000000000}") ) );
         //m_service->writeCharacteristic(IOData, QByteArray::fromHex("0F"));
-        const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{0000ccc1-0000-1000-8000-00805f9b34fb}") ) );
+        /*const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{0000ccc1-0000-1000-8000-00805f9b34fb}") ) );
         for(int i=0; i<3; i++){
             m_service->writeCharacteristic(IOData, QByteArray::fromHex("01"));
             //QTest::qSleep(1000);
@@ -158,6 +165,7 @@ void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
             //QTest::qSleep(1000);
             m_service->writeCharacteristic(IOData, QByteArray::fromHex("03"));
         }
+                 */
     }
     return;
 }
@@ -175,12 +183,4 @@ void VAQ::serviceError(QLowEnergyService::ServiceError err)
 }
 // ******************************************************************
 
-// ******************************************************************
-// Demo application
-void VAQ::blinkLED()
-{
-    qWarning() << "I will try to blink the LED now";
-    qWarning() << m_service->serviceUuid();
-    m_service->discoverDetails();
-    return;
-}
+

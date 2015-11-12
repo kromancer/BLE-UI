@@ -39,6 +39,9 @@ Rectangle
       property real degreesPerRadian : 180.0/Math.PI
       property real radiansPerRev : 2 * Math.PI
 
+      //Resolution of Yaw Knob
+      property int resolutionDegrees: 5
+
       //Maximum and minimum value
       property real maxValue: 359
       property real minValue: 0
@@ -46,8 +49,8 @@ Rectangle
       property real totalAngle : 360
 
       //Old value and current value
-      property real oldValue : minValue
-      property real currentValue : minValue
+      property int oldValue : minValue
+      property int currentValue : minValue
 
       function getEventAngle(event)
       {
@@ -92,5 +95,6 @@ Rectangle
           knobImageId.rotation = -angle_deg//positive for this function means clockwise
           oldValue = new_value
           print("Radians: ", angle_rad.toFixed(2),"Degrees: ", angle_deg.toFixed(0))
+          VAQ.setYaw(currentValue);
       }
   }

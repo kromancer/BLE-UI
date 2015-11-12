@@ -23,7 +23,7 @@ public:
     ~VAQ();
     void blinkLED();
 
-    Q_INVOKABLE void setYaw(uint8_t value);
+    Q_INVOKABLE void setYaw(char value);
 
 public slots:
      void deviceSearch();
