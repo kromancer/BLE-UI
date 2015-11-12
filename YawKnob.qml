@@ -4,30 +4,9 @@ Rectangle
   {
       anchors.fill: parent
 
-      Image{
-          id: knobImageId
-          source: "pics/knob4.png"
-          scale: knobScale
-          rotation: startRotation
-          anchors.horizontalCenter: parent.horizontalCenter
-      }
-
-      MouseArea{
-          anchors.fill: knobImageId
-          hoverEnabled: true
-          onMouseXChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
-          onMouseYChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
-          //onHoveredChanged: knobImageId.opacity = containsMouse ?  hoverOpacity :  1.0
-      }
-
-
-      //***********************************************************
-      // Functionality Section
-      //***********************************************************
-
       //Knob coordinates
-      property int knobCenterX: width/2
-      property int knobCenterY: height/2
+      property int knobCenterX: knobImageId.x + knobImageId.width/2
+      property int knobCenterY: knobImageId.y + knobImageId.height/2
 
       //Knob Image scaling
       property real knobScale: .8
@@ -40,17 +19,34 @@ Rectangle
       property real radiansPerRev : 2 * Math.PI
 
       //Resolution of Yaw Knob
-      property int resolutionDegrees: 5
+      property real resolutionDegrees: 1.8
 
-      //Maximum and minimum value
-      property real maxValue: 359
-      property real minValue: 0
-      property real incrementPerDeg : 1
-      property real totalAngle : 360
 
       //Old value and current value
-      property int oldValue : minValue
-      property int currentValue : minValue
+      property real oldValue : 0
+      property int currentValue : 0
+
+
+      onCurrentValueChanged: VAQ.setYaw(currentValue)
+
+      Image{
+          id: knobImageId
+          source: "pics/knob4.png"
+          scale: knobScale
+          rotation: startRotation
+          anchors.centerIn: parent
+      }
+
+      MouseArea{
+          anchors.fill: parent
+          hoverEnabled: true
+          onMouseXChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
+          onMouseYChanged: if (pressedButtons === Qt.LeftButton) handleKnobMove(mouse)
+      }
+
+      //***********************************************************
+      // Functionality Section
+      //***********************************************************
 
       function getEventAngle(event)
       {
@@ -65,36 +61,29 @@ Rectangle
           var angle = Math.atan2(y_,x_);
           if(angle < 0) angle += radiansPerRev; // add 2*PI to make the angle range from 0 to 2*PI
 
-          /*
+          // Some Debugging Info
           print("*******************************")
           print("Knob center coordinates: ", knobCenterX, knobCenterY)
           print("Event coordinates: ", event.x, event.y)
           print("Event coordinates relative to knobCenter: ", x, y)
           print("Event coordinates rotated by 270 cc: ", x_, y_)
-          */
-          return angle;
-      }
 
-      function getValueFromAngle(angle)
-      {
-          var result = angle //* incrementPerDeg + midValue
-          return result.toFixed(0)
+          return angle;
       }
 
       function handleKnobMove(mouseEvent)
       {
           var angle_rad = getEventAngle(mouseEvent)
           var angle_deg = angle_rad * degreesPerRadian
+          var delta = Math.abs(angle_deg - oldValue)
 
-          var new_value = getValueFromAngle(angle_deg)
+          if (delta >= resolutionDegrees)
+          {
+            currentValue = Math.floor(angle_deg / resolutionDegrees)
 
-          //to be used
-          var delta = Math.abs(new_value - oldValue)
+            oldValue = currentValue * 1.8
 
-          currentValue = new_value
-          knobImageId.rotation = -angle_deg//positive for this function means clockwise
-          oldValue = new_value
-          print("Radians: ", angle_rad.toFixed(2),"Degrees: ", angle_deg.toFixed(0))
-          VAQ.setYaw(currentValue);
+            knobImageId.rotation = -oldValue
+          }
       }
   }

@@ -8,7 +8,7 @@ void VAQ::setYaw(char value)
     if(m_service->state() == 3)
     {
         qWarning("Changing Yaw Value\n");
-        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000005-0000-1000-8000-00805f9b34fb}") ));
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
         m_service->writeCharacteristic(Yaw, QByteArray(1,value));
     }
     return;
