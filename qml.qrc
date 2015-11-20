@@ -11,6 +11,8 @@
         <file>pics/minimize.png</file>
         <file>pics/play.png</file>
         <file>pics/pause.png</file>
-        <file>CameraSettingsPanel.qml</file>
+        <file>pics/settings2.png</file>
+        <file>StagePanel.qml</file>
+        <file>pics/move.png</file>
     </qresource>
 </RCC>

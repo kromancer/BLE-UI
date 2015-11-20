@@ -1,6 +1,18 @@
+
+# This is a hacky way to copy this damned .glade file (an xml file describing the ui of the camera settings
+# to the build directory
+copydata.commands = $(COPY) $$PWD/FlyCapture2GUI_GTK.glade $$OUT_PWD
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+
+
+QMAKE_EXTRA_TARGETS += first copydata
+
 TEMPLATE = app
 
 QT += qml quick bluetooth testlib multimedia widgets
+
 CONFIG += c++11
 
 HEADERS += \
@@ -15,17 +27,12 @@ SOURCES += main.cpp \
 
 RESOURCES += qml.qrc
 
-
 INCLUDEPATH += /usr/include/flycapture/
-LIBS += -L"usr/lib/libflycapture.so" -lflycapture
+
+LIBS += -lflycapture -lflycapturegui
+
+DISTFILES += \
+    FlyCapture2GUI_GTK.glade
 
 
-
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
-
-# Default rules for deployment.
-include(deployment.pri)
-
-DISTFILES +=
 

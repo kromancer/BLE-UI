@@ -5,26 +5,33 @@ import mymodule 1.0
 
 
 Rectangle {
-        id: streamwindow
+        id: root
+        signal minimized
+        signal maximized
+        property real iconScale
+        property real ribbonHeight
+        property var stagePanelComponent
+        property var stagePanelWindow
 
         color: "grey"
         state: "MINIMIZED"
         states: [
             State {
                 name: "MINIMIZED"
-                PropertyChanges { target: streamwindow; width: Math.round(2*universe.width/3) }
-                PropertyChanges { target: streamwindow; height: Math.round(6*width/8) }
+                //PropertyChanges { target: root; width: 634 }
+                //PropertyChanges { target: root; height: 482 }
                 PropertyChanges { target: fullscreen; source: "qrc:/pics/maximize.png" }
             },
             State {
                 name: "MAXIMIZED"
-                PropertyChanges { target: streamwindow; anchors.fill: parent }
+                //PropertyChanges { target: root; width: 1268 }
+                //PropertyChanges { target: root; height: 964 }
                 PropertyChanges { target: fullscreen; source: "qrc:/pics/minimize.png" }
             }
         ]
 
        // Frame Display
-       PG_Camera {
+       PGCamera {
            id: camera
            anchors.fill: parent
 
@@ -49,13 +56,6 @@ Rectangle {
                 repeat: true
                 onTriggered: camera.update()
             }
-
-            Connections {
-                target: cameraSettings
-                onGainChanged: camera.setGain(gain_value)
-                onBrightnessChanged: camera.setBrightness(bright_value)
-            }
-
         }
         //////////////////////////////////////////////////
 
@@ -65,7 +65,7 @@ Rectangle {
         Rectangle {
             id: ribbon
             anchors.bottom: parent.bottom
-            height: Math.round(parent.width / 8)
+            height: ribbonHeight
             width: parent.width
             color: "white"
             opacity: 0.6
@@ -75,6 +75,49 @@ Rectangle {
 
 
 
+        // Stage Movement Button
+        Image {
+            id: stageMovement
+            anchors.bottom: parent.bottom
+            anchors.top: ribbon.top
+            anchors.left: parent.left
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "qrc:/pics/move.png"
+            scale: iconScale
+
+            state: "NOT_EXPOSED"
+            states: [
+                State {
+                    name: "NOT_EXPOSED"
+                    PropertyChanges { target: stageMovement; visible: true }
+                },
+                State {
+                    name: "EXPOSED"
+                    PropertyChanges { target: stageMovement; visible: false }
+                }
+            ]
+
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    stageMovement.state = "EXPOSED"
+                    stagePanelWindow.closing.connect(toggleState)
+                    stagePanelWindow.show()
+                }
+
+                function toggleState()
+                {
+                    stageMovement.state = "NOT_EXPOSED"
+                }
+            }
+        }
+
+
+
+        //////////////////////////////////////////////////////////////
+
         // Snapshot button and directory choice dialog
         Image {
             id: snapshot
@@ -82,8 +125,10 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: ribbon.top
             source: "qrc:/pics/snapshot2.svg"
+            scale: iconScale
             fillMode: Image.PreserveAspectFit
             smooth: true
+
 
             MouseArea{
                 anchors.fill: parent
@@ -132,19 +177,18 @@ Rectangle {
             anchors.top: ribbon.top
             fillMode: Image.PreserveAspectFit
             smooth: true
+            scale: iconScale
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if(streamwindow.state == "MAXIMIZED"){
-                        streamwindow.width = Math.round(2*universe.width/3)
-                        streamwindow.height = Math.round(universe.height/2)
-                        streamwindow.state = "MINIMIZED"
+                    if(root.state == "MAXIMIZED"){
+                        root.state = "MINIMIZED"
+                        minimized()
 
                     }else{
-                        streamwindow.height = universe.height
-                        streamwindow.width = universe.width
-                        streamwindow.state = "MAXIMIZED"
+                        root.state = "MAXIMIZED"
+                        maximized()
                     }
 
                 }
@@ -164,6 +208,7 @@ Rectangle {
             anchors.top: ribbon.top
             fillMode: Image.PreserveAspectFit
             smooth: true
+            scale: iconScale
 
             MouseArea{
                 anchors.fill: parent
@@ -177,5 +222,41 @@ Rectangle {
                 }
             }
         }
+        /////////////////////////////////////////////////////////////
+
+
+        // Settings Button
+        Image {
+            id: settings_button
+            anchors.bottom: parent.bottom
+            anchors.top: ribbon.top
+            anchors.right: ribbon.right
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "qrc:/pics/settings2.png"
+            scale: iconScale
+            state: "NOT_EXPOSED"
+            states: [
+                State {
+                    name: "NOT_EXPOSED"
+                    PropertyChanges { target: settings_button; visible: true }
+                },
+                State {
+                    name: "EXPOSED"
+                    PropertyChanges { target: settings_button; visible: false }
+                }
+            ]
+
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    settings_button.state = "EXPOSED"
+                    camera.showSettings()
+                    settings_button.state = "NOT_EXPOSED"
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////
 
 }

@@ -1,9 +1,7 @@
 import QtQuick 2.3
 
 Rectangle
-  {
-      anchors.fill: parent
-
+{
       //Knob coordinates
       property int knobCenterX: knobImageId.x + knobImageId.width/2
       property int knobCenterY: knobImageId.y + knobImageId.height/2
@@ -27,7 +25,7 @@ Rectangle
       property int currentValue : 0
 
 
-      onCurrentValueChanged: VAQ.setYaw(currentValue)
+      //onCurrentValueChanged: VAQ.setYaw(currentValue)
 
       Image{
           id: knobImageId

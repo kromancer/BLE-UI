@@ -1,7 +1,11 @@
 #include "camera.h"
 
+/******************************************************************************
+ * METHODS FOR ACQUISITION, DISPLAY AND STORAGE OF IMAGE STREAM
+ ******************************************************************************/
 
-// Withing QML whenever we call the update method on a PG_Camera object, this method is invoked
+// Withing QML whenever we call the update method on a PG_Camera object, this method is invoked.
+// The update is requested by the QML timer, located in CameraPanel.qml
 void PG_Camera::paint(QPainter *painter)
 {
     // I hope that this calls the move assignment operator
@@ -23,6 +27,7 @@ void PG_Camera::saveFrame(QString path)
     return;
 }
 
+
 QImage PG_Camera::getFrame()
 {
     FlyCapture2::Image rawImage, rgbImage;
@@ -38,8 +43,24 @@ QImage PG_Camera::getFrame()
     return dest;
 }
 
+/******************************************************************************
+ * MAGIC METHOD FOR SHOWING CAMERA SETTINGS WINDOW
+ ******************************************************************************/
 
+void PG_Camera::showSettings()
+{
+    CameraControlDlg settingsWindow;
 
+    settingsWindow.Connect(&our_cam);
+
+    settingsWindow.Show();
+
+    return;
+}
+
+/******************************************************************************
+ * CONSTRUCTOR
+ ******************************************************************************/
 PG_Camera::PG_Camera(QQuickItem *parent): QQuickPaintedItem(parent)
 {
     // Discover GigE cameras
@@ -81,6 +102,7 @@ PG_Camera::PG_Camera(QQuickItem *parent): QQuickPaintedItem(parent)
     {
         printError( error );
     }
+
     // We do not understand this:
     our_chan.destinationIpAddress.octets[0] = 224;
     our_chan.destinationIpAddress.octets[1] = 0;
@@ -113,24 +135,6 @@ PG_Camera::PG_Camera(QQuickItem *parent): QQuickPaintedItem(parent)
         printError( error );
     }
 
-    auto_exposure.type = AUTO_EXPOSURE;
-    auto_exposure.onOff = true;
-    auto_exposure.autoManualMode = false;
-    auto_exposure.absControl = true;
-
-    shutter.type = SHUTTER;
-    shutter.onOff = true;
-    shutter.autoManualMode = false;
-    shutter.absControl = true;
-
-    gain.type = GAIN;
-    gain.autoManualMode = false;
-    gain.absControl = true;
-
-    brightness.type = BRIGHTNESS;
-    brightness.absControl = true;
-
-
 
     // Start Capturing
     cout << "Starting image capture..." << endl;
@@ -139,7 +143,6 @@ PG_Camera::PG_Camera(QQuickItem *parent): QQuickPaintedItem(parent)
     {
         printError( error );
     }
-
 }
 
 PG_Camera::~PG_Camera()
@@ -150,7 +153,7 @@ PG_Camera::~PG_Camera()
 
 
 /******************************************************************************
- * CAMERA INFO SETTINGS
+ * CAMERA STATUS METHODS, USED FOR DEBUGGING, CALLED IN THE CONSTRUCTOR
  ******************************************************************************/
 
 void PG_Camera::printCameraSettings()
@@ -224,9 +227,6 @@ void PG_Camera::printCameraInfo( FlyCapture2::CameraInfo* pCamInfo )
     cout << "Default gateway - " << defaultGateway.str() << endl << endl;
 }
 
-
-
-
 void PG_Camera::printStreamChannelInfo( FlyCapture2::GigEStreamChannel* pStreamChannel )
 {
     ostringstream ipAddress;
@@ -243,77 +243,6 @@ void PG_Camera::printStreamChannelInfo( FlyCapture2::GigEStreamChannel* pStreamC
     cout << "Destination IP address: " << ipAddress.str() << endl;
     cout << "Source port (on camera): " << pStreamChannel->sourcePort << endl << endl;
 }
-
-
-/******************************************************************************
- * CAMERA SETTINGS FUNCTIONS
- ******************************************************************************/
-
-// value is in milliseconds for 0.044ms to 32s
-void PG_Camera::setShutter(unsigned int value)
-{
-    shutter.absValue = value;
-    qWarning("Changed shutter parameter: %d\n", value);
-    our_cam.SetProperty(&shutter);
-    return;
-}
-
-// This needs investigation, something about EV
-void PG_Camera::setAutoExposure(float value)
-{
-    auto_exposure.absValue = value;
-    qWarning("Setting auto exposure to: %f\n", value);
-    our_cam.SetProperty(&auto_exposure);
-    return;
-}
-
-
-// value is a percentage
-void PG_Camera::setBrightness(float value)
-{
-    brightness.absValue = value;
-    qWarning("Setting brightness value to: %f\n", value);
-    our_cam.SetProperty(&brightness);
-    return;
-}
-
-
-// value is in db from -11 to 24
-void PG_Camera::setGain(float value)
-{
-    gain.absValue = value;
-    our_cam.SetProperty(&gain);
-    qWarning("Setting gain to: %f\n", value);
-    return;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void PG_Camera::printError( FlyCapture2::Error error )

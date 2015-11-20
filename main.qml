@@ -1,96 +1,67 @@
-//The Qt Quick module provides graphical primitive types
-import QtQuick 2.1
-//Provide a resolution independent GUI (let scaling be done automatically)
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.3
+import QtQuick 2.5
+import QtQuick.Controls 1.4
 
-//Qt videoplayer
-import QtMultimedia 5.0
+
+ApplicationWindow {
+    id: myWindow
+    title: "VAQ System Developped by KTH for Sandvik"
+
+    minimumWidth: 634
+    minimumHeight: 482
+
+
+    CameraPanel {
+        id: cameraPanel;
+        anchors.fill: parent
+
+        iconScale: 0.7
+        ribbonHeight: height / 11
+
+        onMinimized: {
+            myWindow.width   = 634
+            myWindow.height  = 482
+        }
+
+        onMaximized: {
+            myWindow.width  = 1268
+            myWindow.height = 964
+        }
+
+        Component.onCompleted: {
+            stagePanelComponent = Qt.createComponent("StagePanel.qml");
+            stagePanelWindow    = stagePanelComponent.createObject(myWindow);
+            myWindow.visible = true
+        }
+
+    }
+
+
+
+    onClosing: {
+        cameraPanel.destroy()
+    }
+
+
+}
+
+
 
 
 /*
- * Everything is arranges into rectangles now,
- * since it's a lot easier to manage all the sliders
- * and knobs when they're not all in one big grid
- */
-
-Rectangle {
-        id: universe
-        anchors.fill: parent
-
-
-
-
-        CameraPanel { id: cameraDisplay; }
-
-        CameraSettingsPanel {
-            id: cameraSettings;
-            textSize: 12+universe.width/200
-            anchors.left: cameraDisplay.right
-            anchors.top: parent.top
-            width: Math.round(universe.width/3)
-            height: Math.round(universe.height/2)
+        StagePanel  {
+            id: stagePanel
+            anchors.top: cameraPanel.bottom
+            anchors.bottom: universe.bottom
         }
+*/
 
 
 
 
 
 
-        Rectangle{
-                //X, Y, Z COORDINATE RECTANGLE
-                border.width: 1
 
 
-                anchors.top: cameraDisplay.bottom
-                width: Math.round(universe.width/3)
-                height: Math.round(universe.height/2)
-
-                id: xyzcontrols
-
-            SliderMOTOR {id: zslider; anchors.right: parent.right; anchors.top: parent.top; anchors.bottom: yslider.bottom;  orientation: Qt.Vertical; height: Math.round(parent.height); width: Math.round(parent.width/4); label:"Z-Axis"; labelSize: 12+universe.width/200}
-            SliderMOTOR {id: xslider; anchors.right: zslider.left; height:Math.round(parent.height/4); width: Math.round(parent.width); label:"X-Axis"; labelSize: 12+universe.width/200}
-            SliderMOTOR {id: yslider; anchors.right: zslider.left; anchors.topMargin: 20; anchors.top: xslider.bottom; height:Math.round(parent.height/4); width: Math.round(parent.width); label:"Y-Axis"; labelSize: 12+universe.width/200}
-        }
-
-        Rectangle{
-                id:knobrectangle
-                border.width: 1
-
-                anchors.top: xyzcontrols.top
-                anchors.left: xyzcontrols.right
-                anchors.bottom: parent.bottom
-                width: Math.round(universe.width/3)
-                height: Math.round(universe.height/2)
-
-                YawKnob{
-                    anchors.fill: parent
-                }
-        }
-
-
-
-
-        Rectangle{
-            border.width: 1
-            anchors.top: knobrectangle.top
-            anchors.left: knobrectangle.right
-            anchors.bottom: parent.bottom
-
-            width: Math.round(universe.width/3)
-            height: Math.round(universe.height/2)
-
-            SliderMOTOR {id: pitch; anchors.top: parent.top; orientation: Qt.Vertical; height: Math.round(parent.height/1.8); width: Math.round(parent.width/4); label:"Pitch"; labelSize: 12+universe.width/200}
-            SliderMOTOR {anchors.top: pitch.bottom; anchors.bottom: parent.bottom; height:Math.round(parent.height/4); width: Math.round(parent.width); label:"Roll"; labelSize: 12+universe.width/200}
-        }
-
-        SliderMOTOR {
-                id: sliderMOTOR1
-                x: -61
-                y: -68
-                antialiasing: false
-        }
-}
 
 
 // Graveyard of, potentially usefull for debugging, code.
@@ -117,4 +88,15 @@ VideoOutput {
 */
 
 
+/*
+// Connect Button
+Button {
+        anchors.bottom: parent.bottom
+        text: "Connect to Stage"
+        onClicked: {
+            VAQ.deviceSearch();
+        }
+}
+//////////////////////////////////////////////////////
+*/
 

@@ -7,6 +7,7 @@
 #include <QtQuick>
 #include <QImage>
 #include <FlyCapture2.h>
+#include <FlyCapture2GUI.h>
 #include <sstream>
 #include <iomanip>
 #include <iostream>
@@ -32,11 +33,8 @@ public:
     Q_INVOKABLE void printStreamChannelInfo(GigEStreamChannel*);
     Q_INVOKABLE void printCameraSettings();
 
-    // Modifying camera settings methods
-    Q_INVOKABLE void setAutoExposure(float);
-    Q_INVOKABLE void setShutter(unsigned int);
-    Q_INVOKABLE void setGain(float);
-    Q_INVOKABLE void setBrightness(float);
+    // Show camera settings window
+    Q_INVOKABLE void showSettings();
 
 
 private:
@@ -48,7 +46,10 @@ private:
     GigEStreamChannel our_chan;
     GigEImageSettingsInfo imageSettingsInfo;
     QImage getFrame();
-    Property brightness, shutter, gain, auto_exposure;
+
+
+
+
 
 
     void printError(Error);
