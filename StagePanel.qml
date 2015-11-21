@@ -22,7 +22,7 @@ ApplicationWindow {
         anchors.top: parent.top
 
 
-        state: "CONNECTED"
+        state: "NOT_CONNECTED"
         states: [
             State {
                 name: "NOT_CONNECTED"

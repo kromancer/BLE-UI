@@ -134,24 +134,29 @@ connectToService ==> m_control.connectToDevice
 ****************************************************/
 void VAQ::connectToService()
 {
-    m_currentDevice.setDevice(((DeviceInfo*)m_devices.at(0))->getDevice());
+    if (!m_devices.isEmpty())
+    {
+        m_currentDevice.setDevice(((DeviceInfo*)m_devices.at(0))->getDevice());
 
-    m_control = new QLowEnergyController( m_currentDevice.getDevice(), this );
+        m_control = new QLowEnergyController( m_currentDevice.getDevice(), this );
 
-    connect(m_control, SIGNAL(connected()), this, SLOT(deviceConnected()));
+        connect(m_control, SIGNAL(connected()), this, SLOT(deviceConnected()));
 
-    connect(m_control, SIGNAL( serviceDiscovered(QBluetoothUuid) ), this, SLOT( serviceDiscovered(QBluetoothUuid) ) );
+        connect(m_control, SIGNAL( serviceDiscovered(QBluetoothUuid) ), this, SLOT( serviceDiscovered(QBluetoothUuid) ) );
 
-    connect(m_control, SIGNAL( discoveryFinished() ), this, SLOT( serviceScanDone() ) );
+        connect(m_control, SIGNAL( discoveryFinished() ), this, SLOT( serviceScanDone() ) );
 
-    connect(m_control, SIGNAL (error(QLowEnergyController::Error)), this, SLOT(controllerError(QLowEnergyController::Error)));
+        connect(m_control, SIGNAL (error(QLowEnergyController::Error)), this, SLOT(controllerError(QLowEnergyController::Error)));
 
-    connect(m_control, SIGNAL( disconnected()), this, SLOT(deviceDisconnected()));
+        connect(m_control, SIGNAL( disconnected()), this, SLOT(deviceDisconnected()));
 
-    qWarning() << "I will try to connect to the device: " << m_currentDevice.getAddress();
+        qWarning() << "I will try to connect to the device: " << m_currentDevice.getAddress();
 
-    m_control->connectToDevice();
-
+        m_control->connectToDevice();
+    }
+    else{
+        qWarning() << "Device named Sandvik not found" ;
+    }
     return;
 }
 
