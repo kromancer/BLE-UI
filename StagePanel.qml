@@ -18,19 +18,23 @@ ApplicationWindow {
         anchors.fill: parent
 
 
-        Slider {
-            id: roll
-            x: 130
-            y: 99
-            width: 110
+        // Connect Button
+        Button {
+            x: 162
+            text: "Connect to Stage"
             anchors.horizontalCenter: yawKnob.horizontalCenter
-            anchors.bottom: yawKnob.top
-            anchors.bottomMargin: 63
+            anchors.top: parent.top
+            anchors.topMargin: 0
+                onClicked: {
+                    VAQ.deviceSearch();
+                }
         }
 
+        // Translatory Sliders
         Slider {
             id: xAxis
             x: 130
+            updateValueWhileDragging: false
             stepSize: 1
             tickmarksEnabled: false
             minimumValue: -10
@@ -39,26 +43,51 @@ ApplicationWindow {
             anchors.top: yawKnob.bottom
             anchors.topMargin: 63
             anchors.horizontalCenter: yawKnob.horizontalCenter
+
+            onValueChanged: {
+                VAQ.setX(value)
+            }
         }
 
         Slider {
             id: yAxis
             x: 27
             y: 98
+            updateValueWhileDragging: false
             anchors.right: yawKnob.left
             anchors.rightMargin: 63
             anchors.verticalCenter: yawKnob.verticalCenter
             orientation: Qt.Vertical
+
+            onValueChanged: {
+                VAQ.setY(value)
+            }
         }
 
         Slider {
             id: zAxis
             x: 390
             y: 98
+            updateValueWhileDragging: false
             anchors.right: yAxis.left
             anchors.rightMargin: 18
             anchors.verticalCenter: yawKnob.verticalCenter
             orientation: Qt.Vertical
+
+            onValueChanged: {
+                VAQ.setZ(value)
+            }
+        }
+
+        Slider {
+            id: roll
+            x: 130
+            y: 99
+            width: 110
+            updateValueWhileDragging: false
+            anchors.horizontalCenter: yawKnob.horizontalCenter
+            anchors.bottom: yawKnob.top
+            anchors.bottomMargin: 63
         }
 
         YawKnob {
@@ -67,8 +96,8 @@ ApplicationWindow {
             y: 158
             width: 100
             height: 100
-            anchors.verticalCenterOffset: 23
-            anchors.horizontalCenterOffset: 0
+            anchors.verticalCenterOffset: 28
+            anchors.horizontalCenterOffset: 5
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
         }
@@ -77,6 +106,7 @@ ApplicationWindow {
             id: pitch
             y: 147
             height: 110
+            updateValueWhileDragging: false
             anchors.left: yawKnob.right
             anchors.leftMargin: 63
             anchors.verticalCenter: yawKnob.verticalCenter

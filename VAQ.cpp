@@ -1,21 +1,62 @@
 #include "VAQ.h"
 #include "deviceinfo.h"
-//#include <QtTest>
 
 
-void VAQ::setYaw(char value)
+/***************************************************
+Motor Controlling Methods
+****************************************************/
+void VAQ::setX(char value)
 {
-    if(m_service->state() == 3)
+    if(connectedToStage)
     {
         qWarning("Changing Yaw Value\n");
+        // Later on we must put it somewhere else, so that we do not recreate it everytime
         const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
         m_service->writeCharacteristic(Yaw, QByteArray(1,value));
     }
     return;
 }
 
+void VAQ::setY(char value)
+{
+    if(connectedToStage)
+    {
+        qWarning("Changing Yaw Value\n");
+        // Later on we must put it somewhere else, so that we do not recreate it everytime
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
+        m_service->writeCharacteristic(Yaw, QByteArray(1,value));
+    }
+    return;
+}
 
-VAQ::VAQ(): sensorfound(false), m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
+void VAQ::setZ(char value)
+{
+    if(connectedToStage)
+    {
+        qWarning("Changing Yaw Value\n");
+        // Later on we must put it somewhere else, so that we do not recreate it everytime
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
+        m_service->writeCharacteristic(Yaw, QByteArray(1,value));
+    }
+    return;
+}
+
+void VAQ::setYaw(char value)
+{
+    if(connectedToStage)
+    {
+        qWarning("Changing Yaw Value\n");
+        // Later on we must put it somewhere else, so that we do not recreate it everytime
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
+        m_service->writeCharacteristic(Yaw, QByteArray(1,value));
+    }
+    return;
+}
+
+/***************************************************
+Constructor & Destructor
+****************************************************/
+VAQ::VAQ(): connectedToStage(false), sensorfound(false), m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
 {
     m_deviceDiscoveryAgent = new QBluetoothDeviceDiscoveryAgent();
     connect(m_deviceDiscoveryAgent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo&)),this, SLOT(addDevice(const QBluetoothDeviceInfo&)));
@@ -28,8 +69,18 @@ VAQ::~VAQ()
     m_devices.clear();
 }
 
-// ***************************************************
-//QBluetoothDiscoveryAgent stuff
+/***************************************************
+QBluetoothDiscoveryAgent stuff
+****************************************************
+
+button press ==> deviceSearch ==> m_deviceDiscoveryAgent.start
+
+    SIGNAL                  CALLBACK
+    ------                  --------
+    deviceDiscovered        addDevice
+    finished                scanFinished ===> connectToService
+
+****************************************************/
 void VAQ::deviceSearch()
 {
     m_deviceDiscoveryAgent->start();
@@ -60,58 +111,27 @@ void VAQ::scanFinished()
     connectToService();
     return;
 }
-//***************************************************
 
 
 
-// **************************************************
-// QLowEnergyController stuff
-void VAQ::controllerError(QLowEnergyController::Error)
-{
-    qWarning() << "Welcome to the Candy Shop";
-    return;
-}
+/***************************************************
+QLowEnergyController stuff
+****************************************************
+
+connectToService ==> m_control.connectToDevice
+
+    SIGNAL                  CALLBACK
+    ------                  --------
+    connected               deviceConnected
+    serviceDiscovered       serviceDiscovered (gives just a print)
+    discoveryFinished       serviceScanDone ==>
+                                            if successfull in discoverying stage movement service
+                                                m_service.discoverService
+                                            else
+                                                m_device.disconnect
 
 
-
-void VAQ::serviceDiscovered(const QBluetoothUuid &gatt)
-{
-    qWarning() << "Found Service";
-    return;
-}
-
-
-void VAQ::serviceScanDone()
-{
-    // IO: "{F000AA64-0451-4000-B000-000000000000}"
-    // Luxometer: "{F000AA70-0451-4000-B000-00000000000}"
-
-    m_service = m_control->createServiceObject( QBluetoothUuid(QUuid("{0000CCC1-0000-1000-8000-00805F9B34FB}") ) );
-    connect(m_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(serviceStateChanged(QLowEnergyService::ServiceState)));
-    connect(m_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
-    connect(m_service, SIGNAL(error(QLowEnergyService::ServiceError)), this, SLOT( serviceError(QLowEnergyService::ServiceError)));
-    if (!m_service)
-    {
-        qWarning() << "Service not found";
-        m_control->disconnectFromDevice();
-        delete m_control;
-        m_control = 0;
-    }
-    else
-    {
-        qWarning() << "I am connected to the Stage Movement Service";
-        m_service->discoverDetails();
-    }
-    return;
-}
-
-void VAQ::deviceDisconnected()
-{
-    qWarning() << "Disconnected";
-    return;
-}
-
-
+****************************************************/
 void VAQ::connectToService()
 {
     m_currentDevice.setDevice(((DeviceInfo*)m_devices.at(0))->getDevice());
@@ -135,37 +155,78 @@ void VAQ::connectToService()
     return;
 }
 
+
 void VAQ::deviceConnected()
 {
     qWarning() << "I am connected to the device" ;
     m_control->discoverServices();
     return;
 }
-// ******************************************************************
+
+void VAQ::serviceDiscovered(const QBluetoothUuid &gatt)
+{
+    qWarning() << "Found Service";
+    return;
+}
+
+// This is where you need to hardwire uuid of service
+void VAQ::serviceScanDone()
+{
+    m_service = m_control->createServiceObject( QBluetoothUuid(QUuid("{0000CCC1-0000-1000-8000-00805F9B34FB}") ) );
+    connect(m_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(serviceStateChanged(QLowEnergyService::ServiceState)));
+    connect(m_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
+    connect(m_service, SIGNAL(error(QLowEnergyService::ServiceError)), this, SLOT( serviceError(QLowEnergyService::ServiceError)));
+    if (!m_service)
+    {
+        qWarning() << "Service not found";
+        m_control->disconnectFromDevice();
+        delete m_control;
+        m_control = 0;
+    }
+    else
+    {
+        qWarning() << "I am connected to the Stage Movement Service";
+        m_service->discoverDetails();
+    }
+    return;
+}
+
+void VAQ::deviceDisconnected()
+{
+    qWarning() << "Disconnected";
+    connectedToStage = false;
+    return;
+}
+
+void VAQ::controllerError(QLowEnergyController::Error error)
+{
+    qWarning() << "QLowEnergyController Error: " << error;
+    return;
+}
 
 
 
-// ******************************************************************
-// QLowEnergyService stuff
+
+
+/******************************************************************
+QLowEnergyService stuff
+
+serviceScanDone ==> m_service.discoverDetails
+
+    SIGNAL                  CALLBACK
+    ------                  --------
+    stateChanged            serviceStateChanged
+                                if state == 3
+                                    connectedToStage = true
+                                    (maybe emit a singal for the GUI)
+******************************************************************/
 void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
 {
     qWarning() << "Service State changed to: " << newState;
     if (newState==3)
     {
         qWarning("Now you can proceed with moving things!");
-        //const QLowEnergyCharacteristic IOconfig = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA66-0451-4000-B000-000000000000}") ) );
-        //m_service->writeCharacteristic(IOconfig, QByteArray::fromHex("01"));
-        //const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA65-0451-4000-B000-000000000000}") ) );
-        //m_service->writeCharacteristic(IOData, QByteArray::fromHex("0F"));
-        /*const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{0000ccc1-0000-1000-8000-00805f9b34fb}") ) );
-        for(int i=0; i<3; i++){
-            m_service->writeCharacteristic(IOData, QByteArray::fromHex("01"));
-            //QTest::qSleep(1000);
-            m_service->writeCharacteristic(IOData, QByteArray::fromHex("02"));
-            //QTest::qSleep(1000);
-            m_service->writeCharacteristic(IOData, QByteArray::fromHex("03"));
-        }
-                 */
+        connectedToStage = true;
     }
     return;
 }
@@ -181,6 +242,43 @@ void VAQ::serviceError(QLowEnergyService::ServiceError err)
     qWarning() << "Service error code: " << err;
     return;
 }
-// ******************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*******************************************************************
+ * GRAVEYARD OF POTENTIALLY USEFUL CODE
+ * *****************************************************************
+
+SERVICE UUIDS
+-------------
+IO: "{F000AA64-0451-4000-B000-000000000000}"
+Luxometer: "{F000AA70-0451-4000-B000-00000000000}"
+
+
+UNKNOWN STUFF
+-------------
+        //const QLowEnergyCharacteristic IOconfig = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA66-0451-4000-B000-000000000000}") ) );
+        //m_service->writeCharacteristic(IOconfig, QByteArray::fromHex("01"));
+        //const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{F000AA65-0451-4000-B000-000000000000}") ) );
+        //m_service->writeCharacteristic(IOData, QByteArray::fromHex("0F"));
+        /*const QLowEnergyCharacteristic IOData = m_service->characteristic( QBluetoothUuid(QUuid("{0000ccc1-0000-1000-8000-00805f9b34fb}") ) );
+        for(int i=0; i<3; i++){
+            m_service->writeCharacteristic(IOData, QByteArray::fromHex("01"));
+            //QTest::qSleep(1000);
+            m_service->writeCharacteristic(IOData, QByteArray::fromHex("02"));
+            //QTest::qSleep(1000);
+            m_service->writeCharacteristic(IOData, QByteArray::fromHex("03"));
+        }
+*/
 
 

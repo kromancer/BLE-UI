@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine view(QUrl("qrc:/main.qml"));
 
+    // We can call this guys methods from QML
     view.rootContext()->setContextProperty("VAQ", &vaq);
 
     return app.exec();

@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>SliderMOTOR.qml</file>
-        <file>SliderLED.qml</file>
         <file>main.qml</file>
         <file>YawKnob.qml</file>
         <file>pics/knob4.png</file>

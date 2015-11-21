@@ -23,6 +23,9 @@ public:
     ~VAQ();
     void blinkLED();
 
+    Q_INVOKABLE void setX(char value);
+    Q_INVOKABLE void setY(char value);
+    Q_INVOKABLE void setZ(char value);
     Q_INVOKABLE void setYaw(char value);
 
 public slots:
@@ -43,6 +46,7 @@ private slots:
 
 private:
     bool sensorfound;
+    bool connectedToStage;
     DeviceInfo m_currentDevice;
     QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
     QLowEnergyController *m_control;
