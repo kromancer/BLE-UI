@@ -14,10 +14,13 @@ int main(int argc, char *argv[])
 
     VAQ vaq;
 
-    QQmlApplicationEngine view(QUrl("qrc:/main.qml"));
+    QQmlApplicationEngine view;
 
     // We can call this guys methods from QML
+
     view.rootContext()->setContextProperty("VAQ", &vaq);
+
+    view.load(QUrl("qrc:/main.qml"));
 
     return app.exec();
 }

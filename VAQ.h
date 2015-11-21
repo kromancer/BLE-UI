@@ -32,6 +32,9 @@ public slots:
      void deviceSearch();
      void connectToService();
 
+signals:
+     void stageIsConnected();
+
 private slots:
     void addDevice(const QBluetoothDeviceInfo&);
     void scanFinished();

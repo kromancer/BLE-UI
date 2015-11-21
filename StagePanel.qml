@@ -6,169 +6,242 @@ import QtQuick.Controls 1.4
 
 
 ApplicationWindow {
+    id: applicationWindow1
     width: 457
     height: 408
     title: "Stage Control"
+
     Rectangle {
         id: root
+        anchors.right: parent.right
         anchors.rightMargin: 0
-        anchors.bottomMargin: 0
+        anchors.left: parent.left
         anchors.leftMargin: 0
-        anchors.topMargin: 0
-        anchors.fill: parent
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+
+
+        state: "CONNECTED"
+        states: [
+            State {
+                name: "NOT_CONNECTED"
+                PropertyChanges { target: connectButton; visible: true }
+                PropertyChanges { target: xAxis; visible: false }
+                PropertyChanges { target: yAxis; visible: false }
+                PropertyChanges { target: zAxis; visible: false }
+                PropertyChanges { target: roll;  visible: false }
+                PropertyChanges { target: pitch; visible: false }
+                PropertyChanges { target: yaw;   visible: false }
+            },
+            State {
+                name: "CONNECTED"
+                PropertyChanges { target: connectButton; visible: false }
+                PropertyChanges { target: xAxis; visible: true }
+                PropertyChanges { target: yAxis; visible: true }
+                PropertyChanges { target: zAxis; visible: true  }
+                PropertyChanges { target: roll;  visible: true  }
+                PropertyChanges { target: pitch; visible: true  }
+                PropertyChanges { target: yaw;   visible: true  }
+            }
+        ]
+
+
+        Connections {
+            target: VAQ
+            onStageIsConnected: {console.log("shit")}
+        }
+
 
 
         // Connect Button
         Button {
+            id: connectButton
             x: 162
+            y: 0
             text: "Connect to Stage"
-            anchors.horizontalCenter: yawKnob.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 0
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     VAQ.deviceSearch();
                 }
         }
 
         // Translatory Sliders
-        Slider {
+        Rectangle {
             id: xAxis
-            x: 130
-            updateValueWhileDragging: false
-            stepSize: 1
-            tickmarksEnabled: false
-            minimumValue: -10
-            maximumValue: 10
-            value: 0
-            anchors.top: yawKnob.bottom
-            anchors.topMargin: 63
-            anchors.horizontalCenter: yawKnob.horizontalCenter
+            x: 117
+            width: 192
+            height: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: yaw.bottom
+            anchors.topMargin: 67
 
-            onValueChanged: {
-                VAQ.setX(value)
+            Slider {
+                id: xSlider
+                anchors.fill: parent
+                x: 130
+                updateValueWhileDragging: false
+                stepSize: 1
+                tickmarksEnabled: false
+                minimumValue: -10
+                maximumValue: 10
+                value: 0
+
+                onValueChanged: {
+                    VAQ.setX(value)
+                }
+            }
+            Label {
+                id: xLabel
+                x: 214
+                text: qsTr("X")
+                anchors.top: xSlider.bottom
+                anchors.topMargin: 6
+                anchors.horizontalCenter: xSlider.horizontalCenter
+                font.bold: true
+                font.pointSize: 16
             }
         }
 
-        Slider {
+        Rectangle {
             id: yAxis
-            x: 27
-            y: 98
-            updateValueWhileDragging: false
-            anchors.right: yawKnob.left
-            anchors.rightMargin: 63
-            anchors.verticalCenter: yawKnob.verticalCenter
-            orientation: Qt.Vertical
+            x: 80
+            width: 50
+            height: 192
+            anchors.verticalCenterOffset: 0
+            anchors.verticalCenter: parent.verticalCenter
 
-            onValueChanged: {
-                VAQ.setY(value)
+            Slider {
+                id: ySlider
+                anchors.fill: parent
+                x: 27
+                y: 98
+                updateValueWhileDragging: false
+                orientation: Qt.Vertical
+
+                onValueChanged: {
+                    VAQ.setY(value)
+                }
+            }
+            Label {
+                id: yLabel
+                x: 0
+                y: 455
+                text: qsTr("Y")
+                anchors.bottom: ySlider.top
+                anchors.bottomMargin: 0
+                anchors.horizontalCenter: ySlider.horizontalCenter
+                font.bold: true
+                font.pointSize: 16
             }
         }
 
-        Slider {
+
+        Rectangle{
             id: zAxis
-            x: 390
-            y: 98
-            updateValueWhileDragging: false
+            width: 50
+            height: 192
             anchors.right: yAxis.left
-            anchors.rightMargin: 18
-            anchors.verticalCenter: yawKnob.verticalCenter
-            orientation: Qt.Vertical
+            anchors.rightMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
 
-            onValueChanged: {
-                VAQ.setZ(value)
+            Slider {
+                id: zSlider
+                anchors.fill: parent
+                x: 390
+                y: 98
+                updateValueWhileDragging: false
+
+                orientation: Qt.Vertical
+
+                onValueChanged: {
+                    VAQ.setZ(value)
+                }
+            }
+            Label {
+                id: zLabel
+                x: 33
+                y: 180
+                text: qsTr("Z")
+                anchors.horizontalCenter: zSlider.horizontalCenter
+                anchors.bottom: zSlider.top
+                anchors.bottomMargin: 0
+                font.bold: true
+                font.pointSize: 16
             }
         }
 
-        Slider {
+
+        Rectangle {
             id: roll
-            x: 130
-            y: 99
-            width: 110
-            updateValueWhileDragging: false
-            anchors.horizontalCenter: yawKnob.horizontalCenter
-            anchors.bottom: yawKnob.top
-            anchors.bottomMargin: 63
+            width: 100
+            height: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: yaw.top
+            anchors.bottomMargin: 70
+            Slider {
+                id: rollSlider
+                anchors.fill: parent
+                x: 130
+                y: 99
+                width: 110
+                updateValueWhileDragging: false
+            }
+            Label {
+                id: rollLabel
+                x: 213
+                y: 149
+                text: qsTr("Roll")
+                anchors.horizontalCenter: rollSlider.horizontalCenter
+                anchors.bottom: rollSlider.top
+                anchors.bottomMargin: 6
+                font.bold: true
+                font.pointSize: 11
+            }
         }
 
-        YawKnob {
-            id: yawKnob
-            x: 172
-            y: 158
-            width: 100
-            height: 100
-            anchors.verticalCenterOffset: 28
-            anchors.horizontalCenterOffset: 5
+        Rectangle {
+            id: yaw
+            width: 50
+            height: 50
+            anchors.verticalCenterOffset: 0
+            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
+            YawKnob {
+                id: yawKnob
+                anchors.fill: parent
+
+            }
         }
 
-        Slider {
+
+        Rectangle {
             id: pitch
-            y: 147
-            height: 110
-            updateValueWhileDragging: false
-            anchors.left: yawKnob.right
-            anchors.leftMargin: 63
-            anchors.verticalCenter: yawKnob.verticalCenter
-            orientation: Qt.Vertical
-        }
-
-        Label {
-            id: rollLabel
-            x: 213
-            y: 149
-            text: qsTr("Roll")
-            anchors.horizontalCenter: roll.horizontalCenter
-            anchors.bottom: roll.top
-            anchors.bottomMargin: 6
-            font.bold: true
-            font.pointSize: 11
-        }
-
-        Label {
-            id: xLabel
-            x: 214
-            text: qsTr("X")
-            anchors.top: xAxis.bottom
-            anchors.topMargin: 6
-            anchors.horizontalCenter: xAxis.horizontalCenter
-            font.bold: true
-            font.pointSize: 16
-        }
-
-        Label {
-            id: pitchLabel
-            y: 307
-            text: qsTr("Pitch")
-            anchors.left: pitch.right
-            anchors.leftMargin: 6
-            anchors.verticalCenter: pitch.verticalCenter
-            font.bold: true
-            font.pointSize: 11
-        }
-
-        Label {
-            id: yLabel
-            x: 0
-            y: 455
-            text: qsTr("Y")
-            anchors.bottom: yAxis.top
-            anchors.bottomMargin: 6
-            anchors.horizontalCenter: yAxis.horizontalCenter
-            font.bold: true
-            font.pointSize: 16
-        }
-
-        Label {
-            id: zLabel
-            x: 33
-            y: 180
-            text: qsTr("Z")
-            anchors.horizontalCenter: zAxis.horizontalCenter
-            anchors.bottom: zAxis.top
-            anchors.bottomMargin: 6
-            font.bold: true
-            font.pointSize: 16
+            width: 50
+            height: 100
+            anchors.left: yaw.right
+            anchors.leftMargin: 71
+            anchors.verticalCenter: parent.verticalCenter
+            Slider {
+                id: pitchSlider
+                anchors.fill: parent
+                y: 147
+                height: 110
+                updateValueWhileDragging: false
+                orientation: Qt.Vertical
+            }
+            Label {
+                id: pitchLabel
+                y: 307
+                text: qsTr("Pitch")
+                anchors.left: pitchSlider.right
+                anchors.leftMargin: 6
+                anchors.verticalCenter: pitchSlider.verticalCenter
+                font.bold: true
+                font.pointSize: 11
+            }
         }
     }
 }
