@@ -11,7 +11,7 @@ void VAQ::setX(char value)
     {
         qWarning("Changing Yaw Value\n");
         // Later on we must put it somewhere else, so that we do not recreate it everytime
-        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000000-0000-1000-8000-00805f9b34fb}") ));
         m_service->writeCharacteristic(Yaw, QByteArray(1,value));
     }
     return;
@@ -23,7 +23,7 @@ void VAQ::setY(char value)
     {
         qWarning("Changing Yaw Value\n");
         // Later on we must put it somewhere else, so that we do not recreate it everytime
-        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000001-0000-1000-8000-00805f9b34fb}") ));
         m_service->writeCharacteristic(Yaw, QByteArray(1,value));
     }
     return;
@@ -33,9 +33,9 @@ void VAQ::setZ(char value)
 {
     if(connectedToStage)
     {
-        qWarning("Changing Yaw Value\n");
+        qWarning("Changing Z\n");
         // Later on we must put it somewhere else, so that we do not recreate it everytime
-        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000004-0000-1000-8000-00805f9b34fb}") ));
+        const QLowEnergyCharacteristic Yaw = m_service->characteristic( QBluetoothUuid(QUuid("{00000002-0000-1000-8000-00805f9b34fb}") ));
         m_service->writeCharacteristic(Yaw, QByteArray(1,value));
     }
     return;
@@ -231,6 +231,7 @@ void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
     if (newState==3)
     {
         qWarning("Now you can proceed with moving things!");
+        stageIsConnected();
         connectedToStage = true;
     }
     return;

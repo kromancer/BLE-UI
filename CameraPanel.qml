@@ -77,6 +77,7 @@ Rectangle {
 
         // Stage Movement Button
         Image {
+
             id: stageMovement
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top

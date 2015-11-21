@@ -11,6 +11,7 @@ ApplicationWindow {
     height: 408
     title: "Stage Control"
 
+
     Rectangle {
         id: root
         anchors.right: parent.right
@@ -49,7 +50,8 @@ ApplicationWindow {
 
         Connections {
             target: VAQ
-            onStageIsConnected: {console.log("shit")}
+            onStageIsConnected: {busyIndication.running = false; root.state="CONNECTED"}
+
         }
 
 
@@ -62,12 +64,33 @@ ApplicationWindow {
             text: "Connect to Stage"
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: {
-                    VAQ.deviceSearch();
-                }
+            onClicked: {
+                busyIndication.running = !busyIndication.running
+                connectButton.visible = false
+                VAQ.deviceSearch();
+            }
+
+
+        }
+
+        BusyIndicator {
+            Text {
+                visible: busyIndication.running
+                id: busyText
+                text: "Connecting to stage"
+                font.pixelSize: 12
+                anchors.centerIn: parent
+            }
+            running: false
+            id: busyIndication
+            y: -92
+            anchors.centerIn: parent
+            clip: false
+
         }
 
         // Translatory Sliders
+
         Rectangle {
             id: xAxis
             x: 117
@@ -84,8 +107,8 @@ ApplicationWindow {
                 updateValueWhileDragging: false
                 stepSize: 1
                 tickmarksEnabled: false
-                minimumValue: -10
-                maximumValue: 10
+                minimumValue: 0
+                maximumValue: 40
                 value: 0
 
                 onValueChanged: {
@@ -102,6 +125,14 @@ ApplicationWindow {
                 font.bold: true
                 font.pointSize: 16
             }
+
+            Text {
+                id: text3
+                x: 91
+                y: 87
+                text: xSlider.value
+                font.pixelSize: 12
+            }
         }
 
         Rectangle {
@@ -117,6 +148,9 @@ ApplicationWindow {
                 anchors.fill: parent
                 x: 27
                 y: 98
+                value: 0
+                maximumValue: 40
+                stepSize: 1
                 updateValueWhileDragging: false
                 orientation: Qt.Vertical
 
@@ -135,6 +169,14 @@ ApplicationWindow {
                 font.bold: true
                 font.pointSize: 16
             }
+
+            Text {
+                id: text2
+                x: 20
+                y: 198
+                text: ySlider.value
+                font.pixelSize: 12
+            }
         }
 
 
@@ -151,6 +193,9 @@ ApplicationWindow {
                 anchors.fill: parent
                 x: 390
                 y: 98
+                value: 0
+                maximumValue: 40
+                stepSize: 1
                 updateValueWhileDragging: false
 
                 orientation: Qt.Vertical
@@ -169,6 +214,14 @@ ApplicationWindow {
                 anchors.bottomMargin: 0
                 font.bold: true
                 font.pointSize: 16
+            }
+
+            Text {
+                id: text1
+                x: 21
+                y: 198
+                text: zSlider.value
+                font.pixelSize: 12
             }
         }
 
@@ -199,6 +252,14 @@ ApplicationWindow {
                 font.bold: true
                 font.pointSize: 11
             }
+
+            Text {
+                id: text4
+                x: 106
+                y: 18
+                text: rollSlider.value
+                font.pixelSize: 12
+            }
         }
 
         Rectangle {
@@ -213,6 +274,14 @@ ApplicationWindow {
                 id: yawKnob
                 anchors.fill: parent
 
+            }
+
+            Text {
+                id: text6
+                x: 21
+                y: 106
+                text: yawKnob.currentValue
+                font.pixelSize: 12
             }
         }
 
@@ -242,7 +311,17 @@ ApplicationWindow {
                 font.bold: true
                 font.pointSize: 11
             }
+
+            Text {
+                id: text5
+                x: 21
+                y: 106
+                text: pitchSlider.value
+                font.pixelSize: 12
+            }
         }
+
+
     }
 }
 
