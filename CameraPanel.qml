@@ -47,7 +47,16 @@ Rectangle {
                    name: "RUNNING"
                    PropertyChanges { target: displaytimer; running: true }
                    PropertyChanges { target: start_button; source: "qrc:/pics/pause.png"}
+               },
+               State {
+                   name: "NOT_CONNECTED"
+                   PropertyChanges { target: notConnectedIcon; visible: true }
+                   PropertyChanges { target: start_button;     visible: false }
+                   PropertyChanges { target: snapshot;         visible: false }
+                   PropertyChanges { target: fullscreen;       visible: false }
+                   PropertyChanges { target: settings_button;  visible: false }
                }
+
            ]
 
             Timer{
@@ -55,6 +64,20 @@ Rectangle {
                 interval: 100;
                 repeat: true
                 onTriggered: camera.update()
+            }
+
+            Image {
+                id: notConnectedIcon
+                visible: false
+                anchors.centerIn: parent
+                scale: 0.5
+                source: "qrc:/pics/oops.png"
+            }
+
+            Component.onCompleted: {
+                if (!camera.cameraConnected){
+                    camera.state = "NOT_CONNECTED"
+                }
             }
         }
         //////////////////////////////////////////////////
@@ -114,10 +137,10 @@ Rectangle {
                 }
             }
         }
-
-
-
         //////////////////////////////////////////////////////////////
+
+
+
 
         // Snapshot button and directory choice dialog
         Image {

@@ -1,6 +1,86 @@
 #include "camera.h"
 
 /******************************************************************************
+ * CONSTRUCTOR & DESTRUCTOR
+ * ****************************************************************************
+ * Objects of the class are created in QML
+ * The class is registered with the QML engine in main.cpp
+ * In CameraPanel.qml the class is instantiated under the name PGCamera
+ ******************************************************************************/
+PG_Camera::PG_Camera(QQuickItem *parent): QQuickPaintedItem(parent)
+{
+    setCameraConnected(false);
+
+    // Camera Selection Dialog window
+    unsigned int num_of_cameras;
+    CameraSelectionDlg cam_selection_dlg;
+    bool ok_was_clicked;
+    cam_selection_dlg.SetTitle("Camera Selection");
+    cam_selection_dlg.ShowModal(&ok_was_clicked, &cam_uid, &num_of_cameras);
+
+    if (ok_was_clicked)
+    {
+        // Connect to the camera using the uid returned by the camera selection dialog box
+        cout << "Connecting to camera: " << cam_uid.value << endl;
+        error = our_cam.Connect(&cam_uid);
+        if (error != PGRERROR_OK) printError( error );
+
+
+        if (our_cam.IsConnected())
+        {
+            setCameraConnected(true);
+            // Print camera info
+            error = our_cam.GetCameraInfo(&cam_info);
+            if (error != PGRERROR_OK)  printError( error );
+            printCameraInfo(&cam_info);
+
+
+            // Set Initial Camera Image settings
+            GigEImageSettingsInfo defaultSettings;
+            our_cam.GetGigEImageSettingsInfo( &defaultSettings );
+            GigEImageSettings imageSettings;
+            imageSettings.offsetX = 0;
+            imageSettings.offsetY = 0;
+            imageSettings.height = defaultSettings.maxHeight;
+            imageSettings.width  = defaultSettings.maxWidth;
+            imageSettings.pixelFormat = FlyCapture2::PIXEL_FORMAT_RGB8;
+            cout << "Setting initial camera settings" << endl;
+            error = our_cam.SetGigEImageSettings( &imageSettings );
+            if (error != PGRERROR_OK)  printError( error );
+
+
+            // Start Capturing
+            cout << "Starting image capture..." << endl;
+            error = our_cam.StartCapture();
+            if (error != PGRERROR_OK)  printError( error );
+
+        }// if (our_cam.isConnected()) ENDS HERE
+    }// if (ok_was_clicked) ENDS HERE
+}// Constructor ENDS HERE
+
+PG_Camera::~PG_Camera()
+{
+    our_cam.StopCapture();
+    our_cam.Disconnect();
+}
+/******************************************************************************
+ * Q_PROPERTY cameraConnected handling
+ ******************************************************************************/
+void PG_Camera::setCameraConnected(bool val)
+{
+    if (m_cameraConnected != val)
+    {
+        m_cameraConnected = val;
+        emit cameraConnectedChanged();
+    }
+}
+
+bool PG_Camera::cameraConnected()
+{
+    return m_cameraConnected;
+}
+
+/******************************************************************************
  * METHODS FOR ACQUISITION, DISPLAY AND STORAGE OF IMAGE STREAM
  ******************************************************************************/
 
@@ -59,114 +139,12 @@ void PG_Camera::showSettings()
 }
 
 /******************************************************************************
- * CONSTRUCTOR
- ******************************************************************************/
-PG_Camera::PG_Camera(QQuickItem *parent): QQuickPaintedItem(parent)
-{
-    // Discover GigE cameras
-    unsigned int numCamInfo;
-    FlyCapture2::CameraInfo cam_disc[10];
-    error = FlyCapture2::BusManager::DiscoverGigECameras( cam_disc , &numCamInfo );
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-
-    // Get camera's id
-    error = busMgr.GetCameraFromIndex(0, &guid);
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-
-    // Connect to the camera
-    error = our_cam.Connect(&guid);
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-
-
-    // Print camera info
-    error = our_cam.GetCameraInfo(&cam_info);
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-    printCameraInfo(&cam_info);
-
-
-    // Create channel of communication with the camera
-    error = our_cam.GetGigEStreamChannelInfo( 0, &our_chan );
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-
-    // We do not understand this:
-    our_chan.destinationIpAddress.octets[0] = 224;
-    our_chan.destinationIpAddress.octets[1] = 0;
-    our_chan.destinationIpAddress.octets[2] = 0;
-    our_chan.destinationIpAddress.octets[3] = 1;
-    error = our_cam.SetGigEStreamChannelInfo( 0, &our_chan );
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-    cout << "Printing stream channel information for channel " << 0 << endl;
-    printStreamChannelInfo( &our_chan);
-
-
-    // Set Camera Image settings
-    error = our_cam.GetGigEImageSettingsInfo( &imageSettingsInfo );
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-    FlyCapture2::GigEImageSettings imageSettings;
-    imageSettings.offsetX = 0;
-    imageSettings.offsetY = 0;
-    imageSettings.height = imageSettingsInfo.maxHeight;
-    imageSettings.width = imageSettingsInfo.maxWidth;
-    imageSettings.pixelFormat = FlyCapture2::PIXEL_FORMAT_RGB8;
-    error = our_cam.SetGigEImageSettings( &imageSettings );
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-
-
-    // Start Capturing
-    cout << "Starting image capture..." << endl;
-    error = our_cam.StartCapture();
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-        printError( error );
-    }
-}
-
-PG_Camera::~PG_Camera()
-{
-    our_cam.StopCapture();
-    our_cam.Disconnect();
-}
-
-
-/******************************************************************************
  * CAMERA STATUS METHODS, USED FOR DEBUGGING, CALLED IN THE CONSTRUCTOR
  ******************************************************************************/
-
-void PG_Camera::printCameraSettings()
-{
-    cout << "Camera Settings" << endl;
-    cout << "Max height: " << imageSettingsInfo.maxHeight << " Max width: " << imageSettingsInfo.maxWidth << endl;
-}
-
-
 void PG_Camera::printBuildInfo()
 {
-    FlyCapture2::FC2Version fc2Version;
-    FlyCapture2::Utilities::GetLibraryVersion( &fc2Version );
+    FC2Version fc2Version;
+    Utilities::GetLibraryVersion( &fc2Version );
 
     ostringstream version;
     version << "FlyCapture2 library version: " << fc2Version.major << "." << fc2Version.minor << "." << fc2Version.type << "." << fc2Version.build;
@@ -231,9 +209,9 @@ void PG_Camera::printStreamChannelInfo( FlyCapture2::GigEStreamChannel* pStreamC
 {
     ostringstream ipAddress;
     ipAddress << (unsigned int)pStreamChannel->destinationIpAddress.octets[0] << "." <<
-                (unsigned int)pStreamChannel->destinationIpAddress.octets[1] << "." <<
-                (unsigned int)pStreamChannel->destinationIpAddress.octets[2] << "." <<
-                (unsigned int)pStreamChannel->destinationIpAddress.octets[3];
+                 (unsigned int)pStreamChannel->destinationIpAddress.octets[1] << "." <<
+                 (unsigned int)pStreamChannel->destinationIpAddress.octets[2] << "." <<
+                 (unsigned int)pStreamChannel->destinationIpAddress.octets[3];
 
     cout << "Network interface: " << pStreamChannel->networkInterfaceIndex << endl;
     cout << "Host Port: " << pStreamChannel->hostPort << endl;
@@ -249,3 +227,58 @@ void PG_Camera::printError( FlyCapture2::Error error )
 {
     error.PrintErrorTrace();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/********************************************************************
+ * GRAVEYARD OF POTENTIALLY USEFULL CODE
+ ********************************************************************
+    // Create channel of communication with the camera
+    error = our_cam.GetGigEStreamChannelInfo( 0, &our_chan );
+    if (error != FlyCapture2::PGRERROR_OK)
+    {
+        printError( error );
+    }
+
+    // We do not understand this:
+    our_chan.destinationIpAddress.octets[0] = 224;
+    our_chan.destinationIpAddress.octets[1] = 0;
+    our_chan.destinationIpAddress.octets[2] = 0;
+    our_chan.destinationIpAddress.octets[3] = 1;
+    error = our_cam.SetGigEStreamChannelInfo( 0, &our_chan );
+    if (error != FlyCapture2::PGRERROR_OK)
+    {
+        printError( error );
+    }
+    cout << "Printing stream channel information for channel " << 0 << endl;
+    printStreamChannelInfo( &our_chan);
+*/

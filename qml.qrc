@@ -12,5 +12,6 @@
         <file>pics/settings2.png</file>
         <file>StagePanel.qml</file>
         <file>pics/move.png</file>
+        <file>pics/oops.png</file>
     </qresource>
 </RCC>

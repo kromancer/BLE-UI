@@ -18,7 +18,10 @@ using namespace std;
 using namespace FlyCapture2;
 class PG_Camera: public QQuickPaintedItem
 {
-Q_OBJECT
+    Q_OBJECT
+    // This property is responsible for setting the sad face in the GUI
+    Q_PROPERTY(bool cameraConnected READ cameraConnected WRITE setCameraConnected NOTIFY cameraConnectedChanged)
+
 public:
     PG_Camera(QQuickItem *parent = 0);
     ~PG_Camera();
@@ -28,30 +31,26 @@ public:
     Q_INVOKABLE void saveFrame(QString);
 
     // Camera info methods
+    void setCameraConnected(bool);
+    bool cameraConnected();
     Q_INVOKABLE void printBuildInfo();
     Q_INVOKABLE void printCameraInfo(CameraInfo*);
     Q_INVOKABLE void printStreamChannelInfo(GigEStreamChannel*);
-    Q_INVOKABLE void printCameraSettings();
 
     // Show camera settings window
     Q_INVOKABLE void showSettings();
 
+signals:
+    // Not Utilized
+    void cameraConnectedChanged();
 
 private:
+    bool m_cameraConnected;
+    PGRGuid cam_uid;
     GigECamera our_cam;
     CameraInfo cam_info;
-    Error error;
-    PGRGuid guid;
-    BusManager busMgr;
-    GigEStreamChannel our_chan;
-    GigEImageSettingsInfo imageSettingsInfo;
     QImage getFrame();
-
-
-
-
-
-
+    Error error;
     void printError(Error);
 };
 
