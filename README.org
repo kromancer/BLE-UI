@@ -1,0 +1,65 @@
+
+* Camera Selection
+ 
+The first window that pops when the application is first launched
+
+[[./DemoPics/CameraSelection.png]]
+
+
+
+* Camera Connected
+
+After the camera selection window, the user is presented with the main application window.
+This is how the main GUI window looks when camera contectivity has been successfully established.
+In the bottom of the panel there is a toolbar ribbon that contains the following buttons (left to right):
+   -  Show/hide stage control window
+   -  Play/pause image stream
+   -  Capture image. By pressing this button a directory selection dialog window pops, 
+      where the user specifies where the image shall be saved. The format used is bmp.
+   -  Maximize/minimize size. Maximized, the size is 1288 x 964. Minimized is half.
+   -  Show/hide camera settings window.
+
+[[./DemoPics/MainWindow.png]]
+  
+
+* Camera Not Connected
+This how the main GUI window looks if:
+   - Connection to the camera fails
+   - The user pressed Cancel / Closed the Camera Selection Window
+
+From this screen the user can only access the stage related parameters, by clicking on the toolbar ribbon's leftmost button.
+
+[[./DemoPics/CameraNotAvailable.png]]
+
+
+
+* Camera Settings
+
+The window that pops when the user presses the camera settings window.
+
+[[./DemoPics/CameraSettings.png]]
+
+
+* Connect to Stage
+
+By clicking on the toolbar ribbon's leftmost button the following window pops.
+The user has still visual/functional access to the main camera display window.
+
+[[./DemoPics/ConnectToStage.png]]
+
+
+* Connecting to Stage
+
+After clicking the Connect to Stage button, the GUI attempts to connect to the sensor tag located on the stage.
+So far, that sensor tag's parameters are hardwired.
+The process takes some time, since we are doing a full LE scan.
+
+[[./DemoPics/ConnectingToStage.png]]
+
+
+* Stage Control
+
+After successfull connection to the sensor tag the stage control window becomes like this:
+(This will change overtime, to provide more functionallity)
+
+[[./DemoPics/StageControl.png]]
