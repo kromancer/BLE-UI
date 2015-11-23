@@ -11,7 +11,7 @@ This how the UI looks if:
    - Connection to the camera fails
    - The user pressed Cancel / Closed the Camera Selection Window
 
-From this screen the user can only access the stage related parameters, by clicking on the toolbar ribbon's leftmost button.
+From this screen the user can perform stage movement, by clicking on the toolbar ribbon's leftmost button.
 
 [[./DemoPics/CameraNotAvailable.png]]
 
