@@ -35,8 +35,6 @@ ApplicationWindow {
 
     }
 
-
-
     onClosing: {
         cameraPanel.destroy()
     }

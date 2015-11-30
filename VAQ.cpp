@@ -181,6 +181,11 @@ void VAQ::serviceScanDone()
     connect(m_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(serviceStateChanged(QLowEnergyService::ServiceState)));
     connect(m_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
     connect(m_service, SIGNAL(error(QLowEnergyService::ServiceError)), this, SLOT( serviceError(QLowEnergyService::ServiceError)));
+
+    //This is for the subscription service
+    connect(m_service, SIGNAL(characteristicChanged(QLowEnergyCharacteristic,QByteArray)),
+               this, SLOT(updateSubscriptionValue(QLowEnergyCharacteristic,QByteArray)));
+
     if (!m_service)
     {
         qWarning() << "Service not found";
@@ -193,6 +198,7 @@ void VAQ::serviceScanDone()
         qWarning() << "I am connected to the Stage Movement Service";
         m_service->discoverDetails();
     }
+
     return;
 }
 
@@ -209,10 +215,6 @@ void VAQ::controllerError(QLowEnergyController::Error error)
     return;
 }
 
-
-
-
-
 /******************************************************************
 QLowEnergyService stuff
 
@@ -225,11 +227,24 @@ serviceScanDone ==> m_service.discoverDetails
                                     connectedToStage = true
                                     (maybe emit a singal for the GUI)
 ******************************************************************/
+
 void VAQ::serviceStateChanged(QLowEnergyService::ServiceState newState)
 {
     qWarning() << "Service State changed to: " << newState;
     if (newState==3)
     {
+        const QLowEnergyCharacteristic hrChar = m_service->characteristic(QBluetoothUuid(QUuid("{00000006-0000-1000-8000-00805f9b34fb}")));
+        if (!hrChar.isValid()) {
+            qWarning() << "Subscription Data not found.";
+
+        }else{
+            const QLowEnergyDescriptor m_notificationDesc = hrChar.descriptor(
+                        QBluetoothUuid::ClientCharacteristicConfiguration);
+            if (m_notificationDesc.isValid()) {
+                m_service->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
+                qWarning() << "Measuring";
+            }
+        }
         qWarning("Now you can proceed with moving things!");
         stageIsConnected();
         connectedToStage = true;
@@ -248,17 +263,6 @@ void VAQ::serviceError(QLowEnergyService::ServiceError err)
     qWarning() << "Service error code: " << err;
     return;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*******************************************************************
@@ -286,5 +290,53 @@ UNKNOWN STUFF
             m_service->writeCharacteristic(IOData, QByteArray::fromHex("03"));
         }
 */
+
+/************************************
+ *
+ * This is for the subscription service
+ *
+ *
+ ************************************/
+
+
+void VAQ::updateSubscriptionValue(const QLowEnergyCharacteristic &c, const QByteArray &value)
+{
+
+    // ignore any other changes other than the subscription service
+    if (c.uuid() != QBluetoothUuid(QBluetoothUuid(QUuid("{00000006-0000-1000-8000-00805f9b34fb}"))) ){
+        return;
+    }
+
+    const char *data = value.constData();
+    quint8 flags = data[0];
+    qWarning() << flags;
+
+    switch(flags){
+    case 1:
+        emit stageIsReset();
+    break;
+
+    case 2:
+        emit stageIsBusy();
+    break;
+
+    case 3:
+        emit stageIsIdle();
+    break;
+
+    case 4:
+        emit busReadError();
+    break;
+
+    case 5:
+        emit busWriteError();
+    break;
+
+    default:
+    break;
+    }
+
+    return;
+}
 
 

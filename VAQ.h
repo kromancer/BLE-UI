@@ -34,6 +34,14 @@ public slots:
 
 signals:
      void stageIsConnected();
+     //signals emitted when receiving subscription signals
+     //emitted              received
+     void stageIsReset();   //1
+     void stageIsBusy();    //2
+     void stageIsIdle();    //3
+     void busReadError();   //4
+     void busWriteError();  //5
+
 
 private slots:
     void addDevice(const QBluetoothDeviceInfo&);
@@ -46,6 +54,10 @@ private slots:
     void serviceStateChanged(QLowEnergyService::ServiceState newState);
     void serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data);
     void serviceError(QLowEnergyService::ServiceError err);
+    //subscription stuff
+    void updateSubscriptionValue(const QLowEnergyCharacteristic &c, const QByteArray &value);
+
+
 
 private:
     bool sensorfound;
@@ -55,7 +67,6 @@ private:
     QLowEnergyController *m_control;
     QLowEnergyService *m_service;
     QList<QObject*> m_devices;
-
 
 };
 
