@@ -11,7 +11,6 @@ ApplicationWindow {
     height: 408
     title: "Stage Control"
 
-
     Rectangle {
         id: root
         anchors.right: parent.right
@@ -26,7 +25,7 @@ ApplicationWindow {
         state: "NOT_CONNECTED"
         states: [
             State {
-                name: "NOT_CONNECTED"
+                name: "CONNECTED"
                 PropertyChanges { target: connectButton; visible: true }
                 PropertyChanges { target: xAxis; visible: false }
                 PropertyChanges { target: yAxis; visible: false }
@@ -36,7 +35,7 @@ ApplicationWindow {
                 PropertyChanges { target: yaw;   visible: false }
             },
             State {
-                name: "CONNECTED"
+                name: "NOT_CONNECTED"
                 PropertyChanges { target: connectButton; visible: false }
                 PropertyChanges { target: xAxis; visible: true }
                 PropertyChanges { target: yAxis; visible: true }
@@ -51,9 +50,40 @@ ApplicationWindow {
         Connections {
             target: VAQ
             onStageIsConnected: {busyIndication.running = false; root.state="CONNECTED"}
+            onBusWriteError: { VAQ.incrementFailureCount(); }
+            onBusHasFailed: {busErrorButton.visible = true}
 
         }
 
+
+        Button {
+            id: busErrorButton
+            anchors.left: errorButton.right
+            visible: false
+            text: "Three errors received!"
+            onClicked: {
+                //RESET ALL VALUES AND SEND RESET TO BLUETOOTH TAG
+                VAQ.resetFailureCount();
+                busErrorButton.visible = false;
+                xSlider.value = 0;
+                ySlider.value = 0;
+                zSlider.value = 0;
+                yawKnob.currentValue = 0;
+                rollSlider.value = 0;
+                pitchSlider.value = 0;
+            }
+
+        }
+
+
+        Button {
+            id: errorButton
+            text: "I emit errors!"
+            //This is for debug purposes only
+            onClicked: {
+                VAQ.emitError();
+            }
+        }
 
 
         // Connect Button
@@ -72,6 +102,7 @@ ApplicationWindow {
 
 
         }
+
 
         BusyIndicator {
             Text {

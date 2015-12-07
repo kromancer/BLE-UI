@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     deviceinfo.cpp \
     camera.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += \
+    qml.qrc
 
 INCLUDEPATH += /usr/include/flycapture/
 

@@ -12,6 +12,10 @@ Rectangle {
         property real ribbonHeight
         property var stagePanelComponent
         property var stagePanelWindow
+        property var ledPanelComponent
+        property var ledPanelWindow
+
+
 
         color: "grey"
         state: "MINIMIZED"
@@ -138,6 +142,47 @@ Rectangle {
             }
         }
         //////////////////////////////////////////////////////////////
+        // LED Control Button
+        Image {
+
+            id: ledControl
+            anchors.bottom: parent.bottom
+            anchors.top: ribbon.top
+            anchors.right: parent.right
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "qrc:/pics/LedSettings.png"
+            scale: iconScale
+
+            state: "NOT_EXPOSED"
+            states: [
+                State {
+                    name: "NOT_EXPOSED"
+                    PropertyChanges { target: ledControl; visible: true }
+                },
+                State {
+                    name: "EXPOSED"
+                    PropertyChanges { target: ledControl; visible: false }
+                }
+            ]
+
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    ledControl.state = "EXPOSED"
+                    ledPanelWindow.closing.connect(toggleState)
+                    ledPanelWindow.show()
+                }
+
+                function toggleState()
+                {
+                    ledControl.state = "NOT_EXPOSED"
+                }
+            }
+        }
+        /////////////////////////////////////////////////////////////////
+
 
 
 

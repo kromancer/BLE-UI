@@ -23,10 +23,22 @@ public:
     ~VAQ();
     void blinkLED();
 
+
+    //LED control methods
+    Q_INVOKABLE void setLED(char value);
+
+    //Stage control methods
     Q_INVOKABLE void setX(char value);
     Q_INVOKABLE void setY(char value);
     Q_INVOKABLE void setZ(char value);
     Q_INVOKABLE void setYaw(char value);
+
+    //Failure handling methods
+    Q_INVOKABLE void incrementFailureCount();
+    Q_INVOKABLE void resetFailureCount();
+
+    //This is for debug purposes only
+    Q_INVOKABLE void emitError();
 
 public slots:
      void deviceSearch();
@@ -41,7 +53,8 @@ signals:
      void stageIsIdle();    //3
      void busReadError();   //4
      void busWriteError();  //5
-
+     //When we failed three times, this is emitted
+     void busHasFailed();
 
 private slots:
     void addDevice(const QBluetoothDeviceInfo&);
@@ -60,6 +73,7 @@ private slots:
 
 
 private:
+    int failureCount;
     bool sensorfound;
     bool connectedToStage;
     DeviceInfo m_currentDevice;

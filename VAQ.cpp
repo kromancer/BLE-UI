@@ -2,6 +2,64 @@
 #include "deviceinfo.h"
 
 
+
+
+//This is for debug purposes only
+void VAQ::emitError(){
+    emit busWriteError();
+}
+
+
+//When the application gets a bus error three times there's definatly something wrong with the tag
+void VAQ::incrementFailureCount(){
+    failureCount++;
+    if (failureCount == 5){
+        emit busHasFailed();
+
+
+        /*if(connectedToStage)
+        {
+            qWarning("Writing to reset\n");
+            // Later on we must put it somewhere else, so that we do not recreate it everytime
+            const QLowEnergyCharacteristic Reset = m_service->characteristic( QBluetoothUuid(QUuid("{00000007-0000-1000-8000-00805f9b34fb}") ));
+            m_service->writeCharacteristic(Reset, QByteArray(1,value));
+        }*/
+    }
+}
+
+void VAQ::resetFailureCount(){
+    failureCount = 0;
+    setX(0);
+    setY(0);
+    setZ(0);
+    //setRoll(0);
+    //setPitch(0);
+    setYaw(0);
+
+    /*if(connectedToStage)
+    {
+        qWarning("Writing to reset\n");
+        // Later on we must put it somewhere else, so that we do not recreate it everytime
+        const QLowEnergyCharacteristic Reset = m_service->characteristic( QBluetoothUuid(QUuid("{00000007-0000-1000-8000-00805f9b34fb}") ));
+        m_service->writeCharacteristic(Reset, QByteArray(1,value));
+    }*/
+}
+
+/***************************************************
+LED Controlling Methods
+****************************************************/
+void VAQ::setLED(char value){
+    if(connectedToStage)
+    {
+        qWarning("Changing LED Value\n");
+        // Later on we must put it somewhere else, so that we do not recreate it everytime
+        const QLowEnergyCharacteristic LED = m_service->characteristic( QBluetoothUuid(QUuid("{00000000-0000-1000-8000-00805f9b34fb}") ));
+        m_service->writeCharacteristic(LED, QByteArray(1,value));
+    }
+    return;
+}
+
+
 /***************************************************
 Motor Controlling Methods
 ****************************************************/
@@ -56,7 +114,7 @@ void VAQ::setYaw(char value)
 /***************************************************
 Constructor & Destructor
 ****************************************************/
-VAQ::VAQ(): connectedToStage(false), sensorfound(false), m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
+VAQ::VAQ():failureCount(0), connectedToStage(false), sensorfound(false), m_control(0), m_service(0), m_currentDevice(QBluetoothDeviceInfo())
 {
     m_deviceDiscoveryAgent = new QBluetoothDeviceDiscoveryAgent();
     connect(m_deviceDiscoveryAgent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo&)),this, SLOT(addDevice(const QBluetoothDeviceInfo&)));
@@ -335,7 +393,6 @@ void VAQ::updateSubscriptionValue(const QLowEnergyCharacteristic &c, const QByte
     default:
     break;
     }
-
     return;
 }
 

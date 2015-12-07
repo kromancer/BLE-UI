@@ -30,8 +30,13 @@ ApplicationWindow {
         Component.onCompleted: {
             stagePanelComponent = Qt.createComponent("StagePanel.qml");
             stagePanelWindow    = stagePanelComponent.createObject(myWindow);
+
+            ledPanelComponent = Qt.createComponent("LedPanel.qml");
+            ledPanelWindow    = ledPanelComponent.createObject(myWindow);
+
             myWindow.visible = true
         }
+
 
     }
 

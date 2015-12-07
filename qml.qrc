@@ -13,5 +13,7 @@
         <file>StagePanel.qml</file>
         <file>pics/move.png</file>
         <file>pics/oops.png</file>
+        <file>pics/LedSettings.png</file>
+        <file>LedPanel.qml</file>
     </qresource>
 </RCC>
