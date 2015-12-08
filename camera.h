@@ -1,6 +1,9 @@
-// Within this class we have encapsulated all the functionality related to the camera
-// The PG_Camera object is exposed and handled by the QML context
-// In the main.cpp we just register this class to the QML Type System (qmlRegisterType)
+/* ***************************************************************************************
+ * CLASS OVERVIEW: PG_Camera
+ * ***************************************************************************************
+ * Within this class we have encapsulated all the functionality related to the camera.
+ * The PG_Camera object is exposed and handled by the QML context
+ * In the main.cpp we just register this class to the QML Type System (qmlRegisterType) */
 
 #ifndef PG_CAMERA_H
 #define PG_CAMERA_H

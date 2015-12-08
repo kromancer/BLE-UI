@@ -38,9 +38,9 @@ ApplicationWindow {
 
 
         Connections {
-            target: VAQ
+            target: BLE
             onStageIsConnected: {busyIndication.running = false; root2.state="CONNECTED"}
-            onBusWriteError: { VAQ.incrementFailureCount(); }
+            //onBusWriteError: { VAQ.incrementFailureCount(); }
             //onBusHasFailed: {busErrorButton.visible = true}
 
         }

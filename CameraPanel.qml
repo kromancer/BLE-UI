@@ -142,16 +142,18 @@ Rectangle {
             }
         }
         //////////////////////////////////////////////////////////////
+
+
         // LED Control Button
         Image {
 
             id: ledControl
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top
-            anchors.right: parent.right
+            anchors.left: stageMovement.right
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "qrc:/pics/LedSettings.png"
+            source: "qrc:/pics/led.png"
             scale: iconScale
 
             state: "NOT_EXPOSED"

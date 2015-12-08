@@ -1,5 +1,5 @@
-#ifndef VAQ_H
-#define VAQ_H
+#ifndef BLUETOOTH_H
+#define BLUETOOTH_H
 
 #include <QString>
 #include <QDebug>
@@ -10,19 +10,14 @@
 #include <QBluetoothDeviceInfo>
 #include <QLowEnergyController>
 #include <QLowEnergyService>
-#include "deviceinfo.h"
 #include "stdint.h"
 
-class VAQ: public QObject
+class Bluetooth: public QObject
 {
     Q_OBJECT
-
-
 public:
-    VAQ();
-    ~VAQ();
-    void blinkLED();
-
+    Bluetooth();
+    ~Bluetooth();
 
     //LED control methods
     Q_INVOKABLE void setLED(char value);
@@ -31,14 +26,8 @@ public:
     Q_INVOKABLE void setX(char value);
     Q_INVOKABLE void setY(char value);
     Q_INVOKABLE void setZ(char value);
-    Q_INVOKABLE void setYaw(char value);
-
-    //Failure handling methods
-    Q_INVOKABLE void incrementFailureCount();
-    Q_INVOKABLE void resetFailureCount();
-
-    //This is for debug purposes only
-    Q_INVOKABLE void emitError();
+    //Q_INVOKABLE void setYaw(char value);
+    Q_INVOKABLE void resetStage();
 
 public slots:
      void deviceSearch();
@@ -46,46 +35,52 @@ public slots:
 
 signals:
      void stageIsConnected();
-     //signals emitted when receiving subscription signals
+     //Signals emitted when receiving status notifications
      //emitted              received
      void stageIsReset();   //1
      void stageIsBusy();    //2
      void stageIsIdle();    //3
-     void busReadError();   //4
-     void busWriteError();  //5
-     //When we failed three times, this is emitted
-     void busHasFailed();
+     void busError();       //4
+
 
 private slots:
+    // Slots for capturing QBluetoothDeviceDiscoveryAgent's signals
     void addDevice(const QBluetoothDeviceInfo&);
     void scanFinished();
+    // Slots for capturing QLowEnergyController's signals
     void deviceConnected();
     void serviceDiscovered(const QBluetoothUuid &gatt);
     void serviceScanDone();
     void controllerError(QLowEnergyController::Error);
     void deviceDisconnected();
+    // Slots for capturing QLowEnergyServicel's signals
     void serviceStateChanged(QLowEnergyService::ServiceState newState);
     void serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data);
     void serviceError(QLowEnergyService::ServiceError err);
-    //subscription stuff
-    void updateSubscriptionValue(const QLowEnergyCharacteristic &c, const QByteArray &value);
+    void statusNotification(const QLowEnergyCharacteristic &c, const QByteArray &value);
 
 
 
 private:
-    int failureCount;
-    bool sensorfound;
+    bool motorsSensorTagFound;
     bool connectedToStage;
-    DeviceInfo m_currentDevice;
+    QBluetoothDeviceInfo motorsSensorTag;
     QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
     QLowEnergyController *m_control;
     QLowEnergyService *m_service;
-    QList<QObject*> m_devices;
-
+    QLowEnergyCharacteristic X_char;
+    QLowEnergyCharacteristic Y_char;
+    QLowEnergyCharacteristic Z_char;
+    QLowEnergyCharacteristic Roll_char;
+    QLowEnergyCharacteristic Pitch_char;
+    QLowEnergyCharacteristic Yaw_char;
+    QLowEnergyCharacteristic Status_char;
+    QLowEnergyCharacteristic Reset_char;
+    QLowEnergyCharacteristic LED_char;
 };
 
 
 
-#endif // DEVICE_H
+#endif // BLUETOOTH_H
 
 

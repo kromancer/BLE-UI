@@ -16,14 +16,12 @@ QT += qml quick bluetooth testlib multimedia widgets
 CONFIG += c++11
 
 HEADERS += \
-    VAQ.h \
-    deviceinfo.h \
-    camera.h
+    camera.h \
+    bluetooth.h
 
 SOURCES += main.cpp \
-    VAQ.cpp \
-    deviceinfo.cpp \
-    camera.cpp
+    camera.cpp \
+    bluetooth.cpp
 
 RESOURCES += \
     qml.qrc
