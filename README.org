@@ -1,4 +1,11 @@
 
+* Installing Extra Packages
+#+BEGIN_SRC bash
+git clone git@github.com:ashish157/QtKnobs.git
+cd QtKnobs
+qmake && make && make install
+#+END_SRC
+The compiled plugin (libqtknobsplugin.so on .nix systems) would be in directory imports/QtKnobs with file qmldir.
 * Camera Selection
  
 The first window that pops when the application is first launched
