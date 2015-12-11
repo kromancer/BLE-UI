@@ -6,7 +6,10 @@ cd QtKnobs
 qmake && make && make install
 #+END_SRC
 *Note that you may need to specify the complete path to qmake 5.5, if your system has a previous version.*
-For example /home/kostis/Qt_openSource/5.5/gcc_64/bin.
+For example:
+#+BEGIN_SRC bash
+/home/kostis/Qt_openSource/5.5/gcc_64/bin/qmake && make && make install
+#+END_SRC
 The compiled plugin (libqtknobsplugin.so on .nix systems) would be in directory imports/QtKnobs with file qmldir.
 
 
