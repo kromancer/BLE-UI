@@ -65,7 +65,7 @@ Rectangle {
 
             Timer{
                 id: displaytimer
-                interval: 100;
+                interval: 200;
                 repeat: true
                 onTriggered: camera.update()
             }

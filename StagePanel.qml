@@ -4,11 +4,13 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
-
+import QtKnobs 1.0
 ApplicationWindow {
     id: applicationWindow1
     width: 457
     height: 493
+    minimumWidth: 493
+    maximumWidth: 493
     minimumHeight: 500
     maximumHeight: 500
     title: "Stage Control"
@@ -182,36 +184,33 @@ ApplicationWindow {
 
 
         // Translatory Motor Controls
-        MotorX{ id: xAxis }
-        MotorY{ id: yAxis }
+        MotorX{ id: xAxis ;anchors.topMargin: 0 }
+        MotorY{ id: yAxis ; anchors.right: yaw.left;anchors.rightMargin: -1 }
         MotorZ{ id: zAxis }
 
 
         // Rotational Axises
-        MotorRoll{ id: roll }
-        MotorPitch{ id: pitch }
-        Rectangle {
+        MotorRoll{ id: roll ; step: 1; maxValue: 10;anchors.bottomMargin: 4 }
+        MotorPitch{ id: pitch ; step: 1; maxValue: 10;anchors.leftMargin: 8 }
+        Rectangle{
             id: yaw
-            width: 50
-            height: 50
-            anchors.verticalCenterOffset: 0
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            YawKnob {
+            width: 200
+            height: 200
+            anchors.verticalCenter: root.verticalCenter
+            anchors.horizontalCenter: root.horizontalCenter
+
+            Knob {
                 id: yawKnob
-                anchors.fill: parent
-
-            }
-
-            Text {
-                id: text6
-                x: 21
-                y: 106
-                text: yawKnob.currentValue
-                font.pixelSize: 12
+                style: Knob.Arc
+                value: 0
+                color: "#69BAFB"
+                textColor: "#000000"
+                maximumValue: 359
             }
         }
+
+
+
 
    } // Root rectangle ends here
 } // Application Window ends here

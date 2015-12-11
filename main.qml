@@ -1,6 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-
+import QtKnobs 1.0
 
 ApplicationWindow {
     id: myWindow
@@ -8,6 +8,7 @@ ApplicationWindow {
 
     minimumWidth: 634
     minimumHeight: 482
+
 
 
     CameraPanel {

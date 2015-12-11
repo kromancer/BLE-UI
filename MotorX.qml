@@ -5,6 +5,8 @@ Rectangle {
     id: xAxis
     property alias value: xSlider.value
     property alias minValue: xSlider.minimumValue
+    property alias maxValue: xSlider.maximumValue
+    property alias step:     xSlider.stepSize
     property bool motorIgnore: false
     x: 117
     width: 192

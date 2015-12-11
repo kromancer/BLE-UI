@@ -33,5 +33,5 @@ LIBS += -lflycapture -lflycapturegui
 DISTFILES += \
     FlyCapture2GUI_GTK.glade
 
-
+QML_IMPORT_PATH += /home/kostis/rQtKnobs/imports
 

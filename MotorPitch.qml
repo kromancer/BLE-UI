@@ -5,6 +5,8 @@ Rectangle {
     id: pitch
     property alias value: pitchSlider.value
     property alias minValue: pitchSlider.minimumValue
+    property alias maxValue: pitchSlider.maximumValue
+    property alias step:     pitchSlider.stepSize
     width: 50
     height: 100
     anchors.left: yaw.right

@@ -6,6 +6,8 @@ Rectangle {
     id: yAxis
     property alias value: ySlider.value
     property alias minValue: ySlider.minimumValue
+    property alias maxValue: ySlider.maximumValue
+    property alias step:     ySlider.stepSize
     property bool motorIgnore: false
     x: 80
     width: 50

@@ -5,6 +5,8 @@ Rectangle {
     id: roll
     property alias value: rollSlider.value
     property alias minValue: rollSlider.minimumValue
+    property alias maxValue: rollSlider.maximumValue
+    property alias step:     rollSlider.stepSize
     width: 100
     height: 50
     anchors.horizontalCenter: parent.horizontalCenter

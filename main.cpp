@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
 
     // We can call this guys methods from QML
 
+    view.addImportPath("/home/kostis/rQtKnobs/imports");
+
     view.rootContext()->setContextProperty("BLE", &ble);
 
     view.load(QUrl("qrc:/main.qml"));

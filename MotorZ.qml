@@ -6,6 +6,8 @@ Rectangle{
     id: zAxis
     property alias value: zSlider.value
     property alias minValue: zSlider.minimumValue
+    property alias maxValue: zSlider.maximumValue
+    property alias step:     zSlider.stepSize
     property bool motorIgnore: false
     width: 50
     height: 192
