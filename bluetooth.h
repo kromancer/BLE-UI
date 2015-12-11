@@ -20,12 +20,13 @@ public:
     ~Bluetooth();
 
     //LED control methods
-    Q_INVOKABLE void setLED(char value);
+    Q_INVOKABLE void setLED(int id, char value);
 
     //Stage control methods
     Q_INVOKABLE void setX(char value);
     Q_INVOKABLE void setY(char value);
     Q_INVOKABLE void setZ(char value);
+
     //Q_INVOKABLE void setYaw(char value);
     Q_INVOKABLE void resetStage();
 

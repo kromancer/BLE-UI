@@ -2,23 +2,27 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>pics/knob4.png</file>
-        <file>CameraPanel.qml</file>
+        <file>PanelCamera.qml</file>
         <file>pics/snapshot2.svg</file>
         <file>pics/maximize.png</file>
         <file>pics/minimize.png</file>
         <file>pics/play.png</file>
         <file>pics/pause.png</file>
         <file>pics/settings2.png</file>
-        <file>StagePanel.qml</file>
+        <file>PanelStage.qml</file>
         <file>pics/move.png</file>
         <file>pics/oops.png</file>
         <file>pics/LedSettings.png</file>
-        <file>LedPanel.qml</file>
         <file>pics/led.png</file>
         <file>MotorY.qml</file>
         <file>MotorX.qml</file>
         <file>MotorZ.qml</file>
         <file>MotorRoll.qml</file>
         <file>MotorPitch.qml</file>
+        <file>PanelLED.qml</file>
+        <file>pics/LEDlayout.png</file>
+        <file>pics/ledButtonSelected.png</file>
+        <file>pics/ledButton.png</file>
+        <file>pics/LEDlayoutSMALL.png</file>
     </qresource>
 </RCC>

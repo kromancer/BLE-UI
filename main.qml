@@ -11,7 +11,7 @@ ApplicationWindow {
 
 
 
-    CameraPanel {
+    PanelCamera {
         id: cameraPanel;
         anchors.fill: parent
 
@@ -29,10 +29,10 @@ ApplicationWindow {
         }
 
         Component.onCompleted: {
-            stagePanelComponent = Qt.createComponent("StagePanel.qml");
+            stagePanelComponent = Qt.createComponent("PanelStage.qml");
             stagePanelWindow    = stagePanelComponent.createObject(myWindow);
 
-            ledPanelComponent = Qt.createComponent("LedPanel.qml");
+            ledPanelComponent = Qt.createComponent("PanelLED.qml");
             ledPanelWindow    = ledPanelComponent.createObject(myWindow);
 
             myWindow.visible = true

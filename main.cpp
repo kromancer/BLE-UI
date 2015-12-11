@@ -16,8 +16,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine view;
 
-    // We can call this guys methods from QML
-
     view.addImportPath("/home/kostis/rQtKnobs/imports");
 
     view.rootContext()->setContextProperty("BLE", &ble);
