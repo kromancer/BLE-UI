@@ -146,7 +146,6 @@ Rectangle {
 
         // LED Control Button
         Image {
-
             id: ledControl
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top

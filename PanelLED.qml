@@ -5,12 +5,14 @@ import QtQuick.Controls 1.4
 
 
 ApplicationWindow{
-    width: 400
-    height: 400
-    minimumWidth: 400
-    minimumHeight: 400
-    maximumWidth: 400
-    maximumHeight: 400
+    width: 420
+    height: 420
+    minimumWidth: 420
+    minimumHeight: 420
+    maximumWidth: 420
+    maximumHeight: 420
+    color: "#ffffff"
+
     title: "LED Ring"
 
 
@@ -18,10 +20,13 @@ ApplicationWindow{
         id: root
         width: 400
         height: 400
-        anchors.fill: parent
-        property int defaultValue: 50
+        color: "#ffffff"
+        border.color: "#ffffff"
+        border.width: 0
+        anchors.centerIn: parent
         signal ledSelected(var ledID)
         property var selectedLEDid: l1
+        property bool connected:false
 
         onLedSelected: {
             selectedLEDid.source = "qrc:/pics/ledButton.png"
@@ -29,41 +34,72 @@ ApplicationWindow{
             selectedLEDid = ledID
             selectedLEDid.source = "qrc:/pics/ledButtonSelected.png"
             selectedLEDid.selected = true
+            selectedSlider.value = selectedLEDid.value
         }
+        /*
+        Image {
+            id: root
+            property int scaleFactor: 20
+            property int sliderSize: maximumWidth/scaleFactor
+            antialiasing: true
+            z: 0
+            rotation: 180
+            anchors.rightMargin: 0
+            anchors.bottomMargin: 0
+            anchors.leftMargin: 0
+            anchors.topMargin: 0
+            visible: true
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/pics/LEDlayoutSMALL.png"
+            anchors.fill: parent
+            sourceSize.height: 900
+            sourceSize.width: 900
+        }
+        */
 
+        Connections {
+            target: BLE
+            onLedIsConnected: { root.connected = true }
+        }
 
         Slider {
             id: masterSlider
-            x: 219
-            y: 115
-            width: 111
+            x: 95
+            y: 249
+            width: 214
             height: 46
             updateValueWhileDragging: false
-            value: root.defaultValue
+            value: 100
             stepSize: 1
             maximumValue: 100
             orientation: Qt.Horizontal
             onValueChanged: {
-                BLE.setLED(0, masterSlider.value);
+                if (root.connected)
+                    BLE.setLED(0, masterSlider.value);
             }
         }
 
         Slider {
             id: selectedSlider
-            x: 73
-            y: 231
-            width: 111
+            x: 95
+            y: 133
+            width: 214
             height: 50
             updateValueWhileDragging: false
-            value: root.selectedLEDid.value
+            value: 0
             stepSize: 1
             maximumValue: 100
             orientation: Qt.Horizontal
             onValueChanged:
             {
-                root.selectedLEDid.value = selectedSlider.value;
-                var value = Math.round( (selectedSlider.value / 100) * masterSlider.value  );
-                BLE.setLED(root.selectedLEDid.intID, value);
+                if (root.connected)
+                {
+                    if (root.selectedLEDid.value != selectedSlider.value)
+                    {
+                        BLE.setLED(root.selectedLEDid.intID, value);
+                        root.selectedLEDid.value = selectedSlider.value
+                    }
+                }
             }
         }
 
@@ -81,7 +117,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButtonSelected.png"
             property bool selected: true
             property int intID: 1
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -102,7 +138,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 2
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -115,7 +151,7 @@ ApplicationWindow{
         Image {
             id: l3
             x: 261
-            y: 18
+            y: 17
             width: 32
             height: 32
             antialiasing: true
@@ -123,7 +159,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 3
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -144,7 +180,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 4
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -165,7 +201,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 5
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -186,7 +222,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 6
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -198,18 +234,21 @@ ApplicationWindow{
 
         Image {
             id: l7
-            x: 349
-            y: 106
-            width: 32
-            height: 32
+            x: 347
+            y: 98
+            width: 36
+            height: 45
+            sourceSize.height: 32
+            sourceSize.width: 32
             scale: 0.9
             antialiasing: true
             fillMode: Image.PreserveAspectFit
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 7
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
+                anchors.topMargin: 0
                 anchors.fill: parent
                 onClicked: {
                     if (!l7.selected)
@@ -229,7 +268,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 8
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -250,7 +289,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 9
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -271,7 +310,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 10
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -291,7 +330,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 11
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -304,14 +343,14 @@ ApplicationWindow{
         Image {
             id: l12
             x: 350
-            y: 261
+            y: 260
             width: 32
             height: 32
             fillMode: Image.PreserveAspectFit
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 12
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -331,7 +370,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 13
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -351,7 +390,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 14
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -371,7 +410,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 15
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -391,7 +430,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 16
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -411,7 +450,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 17
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -431,7 +470,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 18
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -451,7 +490,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 19
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -471,7 +510,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 20
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -491,7 +530,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 21
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -511,7 +550,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 22
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -523,15 +562,15 @@ ApplicationWindow{
 
         Image {
             id: l23
-            x: 56
-            y: 314
+            x: 55
+            y: 313
             width: 32
             height: 32
             fillMode: Image.PreserveAspectFit
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 23
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -543,15 +582,15 @@ ApplicationWindow{
 
         Image {
             id: l24
-            x: 35
-            y: 290
+            x: 34
+            y: 289
             width: 32
             height: 32
             fillMode: Image.PreserveAspectFit
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 24
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -571,7 +610,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 25
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -591,7 +630,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 26
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -611,7 +650,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 27
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -631,7 +670,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 28
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -651,7 +690,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 29
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -671,7 +710,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 30
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -691,7 +730,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 31
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -711,7 +750,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 32
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -731,7 +770,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 33
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -751,7 +790,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 34
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -771,7 +810,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 35
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -791,7 +830,7 @@ ApplicationWindow{
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
             property int intID: 36
-            property int value: root.defaultValue
+            property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
@@ -806,26 +845,44 @@ ApplicationWindow{
         // SLIDER LABELS
         Label {
             id: label1
-            x: 73
-            y: 202
-            text: qsTr("Selected")
+            x: 110
+            y: 93
+            text: qsTr("Selected LED level")
             font.bold: true
-            font.pointSize: 19
+            font.pointSize: 15
         }
 
         Label {
             id: label2
-            x: 219
-            y: 87
-            text: qsTr("Master")
+            x: 140
+            y: 220
+            text: qsTr("Master Level")
+            font.family: "Ubuntu"
             font.bold: true
-            font.pointSize: 19
+            font.pointSize: 15
         }
     }
 }
 
 
-/* This image helped us position the LEDS in a circular fashion
+/* This images helped us position the LEDS in a circular fashion
+        Image {
+            id: skeleton
+            property int scaleFactor: 20
+            property int sliderSize: maximumWidth/scaleFactor
+            z: 0
+            rotation: 360
+            anchors.rightMargin: 0
+            anchors.bottomMargin: 0
+            anchors.leftMargin: 0
+            anchors.topMargin: 0
+            visible: true
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/pics/LEDlayoutSMALL.png"
+            anchors.fill: parent
+            sourceSize.height: 900
+            sourceSize.width: 900
+        }
     Image {
         id: root
         property int scaleFactor: 20

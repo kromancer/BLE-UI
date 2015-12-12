@@ -4,7 +4,7 @@ import QtKnobs 1.0
 
 ApplicationWindow {
     id: myWindow
-    title: "VAQ System Developped by KTH for Sandvik"
+    title: "Sandvik VAQ System"
 
     minimumWidth: 634
     minimumHeight: 482

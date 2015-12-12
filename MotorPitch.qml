@@ -12,6 +12,7 @@ Rectangle {
     anchors.left: yaw.right
     anchors.leftMargin: 71
     anchors.verticalCenter: parent.verticalCenter
+
     Slider {
         id: pitchSlider
         anchors.fill: parent
@@ -20,6 +21,7 @@ Rectangle {
         updateValueWhileDragging: false
         orientation: Qt.Vertical
     }
+
     Label {
         id: pitchLabel
         y: 307

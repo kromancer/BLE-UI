@@ -92,7 +92,6 @@ ApplicationWindow {
 
         Component.onCompleted: {
             busyIndication.running = true
-            BLE.deviceSearch();
         }
 
 
@@ -184,8 +183,8 @@ ApplicationWindow {
 
 
         // Translatory Motor Controls
-        MotorX{ id: xAxis ;anchors.topMargin: 0 }
-        MotorY{ id: yAxis ; anchors.right: yaw.left;anchors.rightMargin: -1 }
+        MotorX{ id: xAxis ; anchors.topMargin: 0 }
+        MotorY{ id: yAxis ; anchors.right: yaw.left; anchors.rightMargin: -1 }
         MotorZ{ id: zAxis }
 
 

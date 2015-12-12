@@ -10,6 +10,7 @@
 #include <QBluetoothDeviceInfo>
 #include <QLowEnergyController>
 #include <QLowEnergyService>
+#include <QCoreApplication>
 #include "stdint.h"
 
 class Bluetooth: public QObject
@@ -20,7 +21,8 @@ public:
     ~Bluetooth();
 
     //LED control methods
-    Q_INVOKABLE void setLED(int id, char value);
+    Q_INVOKABLE void setLED(char id, char value);
+
 
     //Stage control methods
     Q_INVOKABLE void setX(char value);
@@ -32,10 +34,12 @@ public:
 
 public slots:
      void deviceSearch();
-     void connectToService();
+     void connectToLEDSensorTag();
+     void connectToMotorSensorTag();
 
 signals:
      void stageIsConnected();
+     void ledIsConnected();
      //Signals emitted when receiving status notifications
      //emitted              received
      void stageIsReset();   //1
@@ -45,30 +49,45 @@ signals:
 
 
 private slots:
+    void releaseBLE();
+
     // Slots for capturing QBluetoothDeviceDiscoveryAgent's signals
     void addDevice(const QBluetoothDeviceInfo&);
     void scanFinished();
+
     // Slots for capturing QLowEnergyController's signals
-    void deviceConnected();
-    void serviceDiscovered(const QBluetoothUuid &gatt);
-    void serviceScanDone();
-    void controllerError(QLowEnergyController::Error);
-    void deviceDisconnected();
+    void m_deviceConnected();
+    void m_serviceDiscovered(const QBluetoothUuid &gatt);
+    void m_serviceScanDone();
+    void m_controllerError(QLowEnergyController::Error);
+    void m_deviceDisconnected();
+
+    void l_deviceConnected();
+    void l_serviceDiscovered(const QBluetoothUuid &gatt);
+    void l_serviceScanDone();
+    void l_controllerError(QLowEnergyController::Error);
+    void l_deviceDisconnected();
+
     // Slots for capturing QLowEnergyServicel's signals
-    void serviceStateChanged(QLowEnergyService::ServiceState newState);
-    void serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data);
-    void serviceError(QLowEnergyService::ServiceError err);
-    void statusNotification(const QLowEnergyCharacteristic &c, const QByteArray &value);
+    void m_serviceStateChanged(QLowEnergyService::ServiceState newState);
+    void m_serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data);
+    void m_serviceError(QLowEnergyService::ServiceError err);
+    void m_statusNotification(const QLowEnergyCharacteristic &c, const QByteArray &value);
+
+    void l_serviceStateChanged(QLowEnergyService::ServiceState newState);
+    void l_serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data);
+    void l_serviceError(QLowEnergyService::ServiceError err);
+
 
 
 
 private:
-    bool motorsSensorTagFound;
-    bool connectedToStage;
-    QBluetoothDeviceInfo motorsSensorTag;
+    bool motorsSensorTagFound, ledSensorTagFound;
+    bool connectedToStage, connectedToLed;
+    QBluetoothDeviceInfo motorsSensorTag, ledSensorTag;
     QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
-    QLowEnergyController *m_control;
-    QLowEnergyService *m_service;
+    QLowEnergyController *m_control, *l_control;
+    QLowEnergyService *m_service, *l_service;
     QLowEnergyCharacteristic X_char;
     QLowEnergyCharacteristic Y_char;
     QLowEnergyCharacteristic Z_char;
@@ -77,7 +96,10 @@ private:
     QLowEnergyCharacteristic Yaw_char;
     QLowEnergyCharacteristic Status_char;
     QLowEnergyCharacteristic Reset_char;
-    QLowEnergyCharacteristic LED_char;
+
+    QLowEnergyCharacteristic LEDid_char;
+    QLowEnergyCharacteristic LEDval_char;
+    QLowEnergyCharacteristic LEDmaster_char;
 };
 
 

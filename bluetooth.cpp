@@ -1,6 +1,50 @@
 #include "bluetooth.h"
 
 /***************************************************
+Constructor & Destructor
+****************************************************/
+Bluetooth::Bluetooth():
+    connectedToStage(false),
+    connectedToLed(false),
+    motorsSensorTagFound(false),
+    ledSensorTagFound(false),
+    m_control(0),
+    l_control(0),
+    m_service(0),
+    l_service(0)
+{
+    m_deviceDiscoveryAgent = new QBluetoothDeviceDiscoveryAgent();
+    connect(m_deviceDiscoveryAgent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo&)),this, SLOT(addDevice(const QBluetoothDeviceInfo&)));
+    connect(m_deviceDiscoveryAgent, SIGNAL(finished()), this, SLOT(scanFinished()));
+    connect(m_deviceDiscoveryAgent, SIGNAL(canceled()), this, SLOT(scanFinished()));
+    connect(this, SIGNAL(stageIsConnected()), this, SLOT(connectToLEDSensorTag()));
+    connect( QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(releaseBLE()));
+    deviceSearch();
+}
+
+Bluetooth::~Bluetooth()
+{
+
+}
+
+void Bluetooth::releaseBLE()
+{
+    qWarning() << "Exiting Application";
+    m_control->disconnectFromDevice();
+    delete m_control;
+    m_control = 0;
+    l_control->disconnectFromDevice();
+    delete l_control;
+    l_control = 0;
+    m_service->disconnect();
+    delete m_service;
+    m_service = 0;
+    l_service->disconnect();
+    delete l_service;
+    l_service = 0;
+}
+
+/***************************************************
 Motor Controlling Methods
 ****************************************************/
 void Bluetooth::setX(char value)
@@ -36,23 +80,26 @@ void Bluetooth::setZ(char value)
 void Bluetooth::resetStage(){
     m_service->writeCharacteristic(Reset_char, QByteArray(1,1));
 }
+
+
 /***************************************************
-Constructor & Destructor
+LED Controlling Methods
 ****************************************************/
-Bluetooth::Bluetooth(): /*motorsSensorTag(),*/ connectedToStage(false), motorsSensorTagFound(false), m_control(0), m_service(0)
-{
-    m_deviceDiscoveryAgent = new QBluetoothDeviceDiscoveryAgent();
-    connect(m_deviceDiscoveryAgent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo&)),this, SLOT(addDevice(const QBluetoothDeviceInfo&)));
-    connect(m_deviceDiscoveryAgent, SIGNAL(finished()), this, SLOT(scanFinished()));
-    connect(m_deviceDiscoveryAgent, SIGNAL(canceled()), this, SLOT(scanFinished()));
+void Bluetooth::setLED(char id, char value){
+    qWarning("Changing LED: %d Value: %d\n", id, value);
+
+    if (id!=0)
+    {
+        l_service->writeCharacteristic(LEDid_char, QByteArray(1,id));
+        l_service->writeCharacteristic(LEDval_char, QByteArray(1,value));
+    }
+    else
+        l_service->writeCharacteristic(LEDmaster_char,QByteArray(1,value));
+
+    return;
 }
 
-Bluetooth::~Bluetooth()
-{
-    m_service->~QLowEnergyService();
-    m_control->~QLowEnergyController();
-    m_deviceDiscoveryAgent->~QBluetoothDeviceDiscoveryAgent();
-}
+
 
 /***************************************************
 QBluetoothDiscoveryAgent stuff
@@ -82,22 +129,50 @@ void Bluetooth::addDevice(const QBluetoothDeviceInfo &device)
 {
     if (device.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration)
     {
-        qWarning() << "Discovered LE Device name: " << device.name() << " Address: " << device.address().toString();
-        if(device.name() == "SandviS")
+        //qWarning() << "Discovered LE Device name: " << device.name() << " Address: " << device.address().toString();
+        if(device.name() == "StageMotors")
         {
             motorsSensorTagFound = true;
             qWarning() << "Found Stage SensorTag: " << device.address();
             motorsSensorTag = device;
-            qWarning() << "Stored: " << motorsSensorTag.address();
-            m_deviceDiscoveryAgent->stop();
         }
+        else if( device.name() == "StageLEDs")
+        {
+            ledSensorTagFound = true;
+            qWarning() << "Found LED SensorTag: " << device.address();
+            ledSensorTag = device;
+        }
+        else
+            ;
+
+        if ( motorsSensorTagFound && ledSensorTagFound)
+            m_deviceDiscoveryAgent->stop();
     }
     return;
 }
+
 void Bluetooth::scanFinished()
 {
+    qWarning() << "************************************";
     qWarning() << "Scan has finished";
-    connectToService();
+    if (!motorsSensorTagFound && !ledSensorTagFound)
+        qWarning() << "None of the SensorTags was found";
+    else if (!motorsSensorTagFound)
+        qWarning() << "Motor SensorTag was not found";
+    else if (!ledSensorTagFound)
+        qWarning() << "LED SensorTag was not found";
+    else
+        qWarning() << "None of the SensorTags was found";
+
+    qWarning() << "************************************";
+
+    if (motorsSensorTagFound)
+        connectToMotorSensorTag();
+    else if(ledSensorTagFound)
+        connectToLEDSensorTag();
+    else
+        ;
+
     return;
 }
 
@@ -121,87 +196,171 @@ connectToService ==> m_control.connectToDevice
 
 
 ****************************************************/
-void Bluetooth::connectToService()
+void Bluetooth::connectToMotorSensorTag()
 {
-    if ( motorsSensorTagFound )
+    if(motorsSensorTagFound)
     {
+        // Motor Sensor Tag Stuff
         m_control = new QLowEnergyController( motorsSensorTag, this );
 
-        connect(m_control, SIGNAL(connected()), this, SLOT(deviceConnected()));
+        connect(m_control, SIGNAL(connected()), this, SLOT(m_deviceConnected()));
 
-        connect(m_control, SIGNAL( serviceDiscovered(QBluetoothUuid) ), this, SLOT( serviceDiscovered(QBluetoothUuid) ) );
+        connect(m_control, SIGNAL( serviceDiscovered(QBluetoothUuid) ), this, SLOT( m_serviceDiscovered(QBluetoothUuid) ) );
 
-        connect(m_control, SIGNAL( discoveryFinished() ), this, SLOT( serviceScanDone() ) );
+        connect(m_control, SIGNAL( discoveryFinished() ), this, SLOT( m_serviceScanDone() ) );
 
-        connect(m_control, SIGNAL (error(QLowEnergyController::Error)), this, SLOT(controllerError(QLowEnergyController::Error)));
+        connect(m_control, SIGNAL (error(QLowEnergyController::Error)), this, SLOT(m_controllerError(QLowEnergyController::Error)));
 
-        connect(m_control, SIGNAL( disconnected()), this, SLOT(deviceDisconnected()));
+        connect(m_control, SIGNAL( disconnected()), this, SLOT(m_deviceDisconnected()));
 
-        qWarning() << "I will try to connect to the device: " << motorsSensorTag.address();
+        qWarning() << "I will try to connect to the motors SensorTag ";
 
         m_control->connectToDevice();
+     }
+
+    return;
+}
+
+void Bluetooth::connectToLEDSensorTag()
+{
+    if(ledSensorTagFound)
+    {
+        l_control = new QLowEnergyController( ledSensorTag, this );
+
+        connect(l_control, SIGNAL( connected()), this, SLOT(l_deviceConnected()));
+
+        connect(l_control, SIGNAL( serviceDiscovered(QBluetoothUuid) ), this, SLOT( l_serviceDiscovered(QBluetoothUuid) ) );
+
+        connect(l_control, SIGNAL( discoveryFinished() ), this, SLOT( l_serviceScanDone() ) );
+
+        connect(l_control, SIGNAL (error(QLowEnergyController::Error)), this, SLOT(l_controllerError(QLowEnergyController::Error)));
+
+        connect(l_control, SIGNAL( disconnected()), this, SLOT(l_deviceDisconnected()));
+
+        qWarning() << "I will try to connect to the led SensorTag";
+
+        l_control->connectToDevice();
     }
-    else{
-        qWarning() << motorsSensorTag.address();
-        qWarning() << "Device named Sandvik not found" ;
-    }
+
     return;
 }
 
 
-void Bluetooth::deviceConnected()
+/******************************************************
+ * Motors SensorTag QLowEnergy controller related slots
+ * ****************************************************/
+void Bluetooth::m_deviceConnected()
 {
-    qWarning() << "I am connected to the device" ;
+    qWarning() << "I am connected to the motors SensorTag" ;
     m_control->discoverServices();
+    qWarning() << "Back from this hole to ....";
     return;
 }
 
-void Bluetooth::serviceDiscovered(const QBluetoothUuid &gatt)
+void Bluetooth::m_serviceDiscovered(const QBluetoothUuid &gatt)
 {
-    qWarning() << "Found Service";
+    qWarning() << "Found motor SensorTag service" << gatt.toString();
     return;
 }
 
 
-void Bluetooth::serviceScanDone()
+void Bluetooth::m_serviceScanDone()
 {
     // This is where the uuid of services are hardwired
     m_service = m_control->createServiceObject( QBluetoothUuid(QUuid("{0000CCC1-0000-1000-8000-00805F9B34FB}") ) );
-    connect(m_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(serviceStateChanged(QLowEnergyService::ServiceState)));
-    connect(m_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
-    connect(m_service, SIGNAL(error(QLowEnergyService::ServiceError)), this, SLOT( serviceError(QLowEnergyService::ServiceError)));
+    connect(m_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(m_serviceStateChanged(QLowEnergyService::ServiceState)));
+    connect(m_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( m_serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
+    connect(m_service, SIGNAL(error(QLowEnergyService::ServiceError)), this, SLOT( m_serviceError(QLowEnergyService::ServiceError)));
 
     //This is to enable notifications from the Status Characteristic
-    connect(m_service, SIGNAL(characteristicChanged(QLowEnergyCharacteristic,QByteArray)), this, SLOT(statusNotification(QLowEnergyCharacteristic,QByteArray)));
+    connect(m_service, SIGNAL(characteristicChanged(QLowEnergyCharacteristic,QByteArray)), this, SLOT(m_statusNotification(QLowEnergyCharacteristic,QByteArray)));
 
     if (!m_service)
     {
-        qWarning() << "Service not found";
+        qWarning() << "Motos service not found";
         m_control->disconnectFromDevice();
         delete m_control;
         m_control = 0;
     }
     else
     {
-        qWarning() << "I am connected to the Stage Movement Service";
+        qWarning() << "I am connected to the motors service";
         m_service->discoverDetails();
     }
 
     return;
 }
 
-void Bluetooth::deviceDisconnected()
+void Bluetooth::m_deviceDisconnected()
 {
     qWarning() << "Disconnected";
     connectedToStage = false;
     return;
 }
 
-void Bluetooth::controllerError(QLowEnergyController::Error error)
+void Bluetooth::m_controllerError(QLowEnergyController::Error error)
 {
-    qWarning() << "QLowEnergyController Error: " << error;
+    qWarning() << "Motor SensorTag QLowEnergyController Error: " << error;
     return;
 }
+
+/******************************************************
+ * LED SensorTag QLowEnergy controller related slots
+ * ****************************************************/
+void Bluetooth::l_deviceConnected()
+{
+    qWarning() << "I am connected to the LED SensorTag" ;
+    l_control->discoverServices();
+    return;
+}
+
+void Bluetooth::l_serviceDiscovered(const QBluetoothUuid &gatt)
+{
+    qWarning() << "Found LED service" << gatt.toString();
+    return;
+}
+
+
+void Bluetooth::l_serviceScanDone()
+{
+    // This is where the uuid of services are hardwired
+    l_service = l_control->createServiceObject( QBluetoothUuid(QUuid("{0000CCC0-0000-1000-8000-00805F9B34FB}") ) );
+    connect(l_service, SIGNAL(stateChanged(QLowEnergyService::ServiceState)), this, SLOT(l_serviceStateChanged(QLowEnergyService::ServiceState)));
+    connect(l_service, SIGNAL(characteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)), this, SLOT( l_serviceCharacteristicWritten(const QLowEnergyCharacteristic&, const QByteArray&)));
+    connect(l_service, SIGNAL(error(QLowEnergyService::ServiceError)), this, SLOT( l_serviceError(QLowEnergyService::ServiceError)));
+
+    if (!l_service)
+    {
+        qWarning() << "LED service not found";
+        l_control->disconnectFromDevice();
+        delete l_control;
+        l_control = 0;
+    }
+    else
+    {
+        qWarning() << "I am connected to the LED service";
+        l_service->discoverDetails();
+    }
+
+    return;
+}
+
+void Bluetooth::l_deviceDisconnected()
+{
+    qWarning() << "Disconnected from LED service";
+    connectedToLed = false;
+    return;
+}
+
+void Bluetooth::l_controllerError(QLowEnergyController::Error error)
+{
+    qWarning() << "LED SensorTag QLowEnergyController Error: " << error;
+    return;
+}
+
+
+
+
 
 
 /******************************************************************
@@ -216,9 +375,14 @@ serviceScanDone ==> m_service.discoverDetails
                                     connectedToStage = true
                                     (maybe emit a singal for the GUI)
 ******************************************************************/
-void Bluetooth::serviceStateChanged(QLowEnergyService::ServiceState newState)
+
+
+/*******************************************************************
+ *  Motor Service Related Stuff
+ * *****************************************************************/
+void Bluetooth::m_serviceStateChanged(QLowEnergyService::ServiceState newState)
 {
-    qWarning() << "Service State changed to: " << newState;
+    qWarning() << "Motors service State changed to: " << newState;
     if (newState==3)
     {
         // Motor movement characteristics
@@ -241,31 +405,27 @@ void Bluetooth::serviceStateChanged(QLowEnergyService::ServiceState newState)
         qWarning() << "Connecting to reset characteristic";
         Reset_char =    m_service->characteristic( QBluetoothUuid(QUuid("{00000007-0000-1000-8000-00805f9b34fb}")));
 
-        // LED master value...
-        qWarning() << "Connecting to LED control characteristics";
-        //LED_char =      m_service->characteristic( QBluetoothUuid(QUuid("{00000008-0000-1000-8000-00805f9b34fb}")));
-
         connectedToStage = true;
         qWarning("Now you can proceed with moving things");
         // Emit signal, so that the QML context (the visual objects) are aware of the situation
-        stageIsConnected();        
+        stageIsConnected();
     }
     return;
 }
 
-void Bluetooth::serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data)
+void Bluetooth::m_serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data)
 {
-    qWarning() << "I think I wrote: " << data.toInt();
+    qWarning() << "Motor characteristic written";
     return;
 }
 
-void Bluetooth::serviceError(QLowEnergyService::ServiceError err)
+void Bluetooth::m_serviceError(QLowEnergyService::ServiceError err)
 {
-    qWarning() << "Service error code: " << err;
+    qWarning() << "Motors Service error: " << err;
     return;
 }
 
-void Bluetooth::statusNotification(const QLowEnergyCharacteristic &c, const QByteArray &value)
+void Bluetooth::m_statusNotification(const QLowEnergyCharacteristic &c, const QByteArray &value)
 {
     const char *data = value.constData();
     quint8 flags = data[0];
@@ -296,99 +456,46 @@ void Bluetooth::statusNotification(const QLowEnergyCharacteristic &c, const QByt
 }
 
 
-
-
-
-
-
-
-
-
-/***************************************************
-LED Controlling Methods
-****************************************************/
-void Bluetooth::setLED(int ledID, char value){
-
-    switch( ledID )
+/*******************************************************************
+ *  LED Service Related Stuff
+ * *****************************************************************/
+void Bluetooth::l_serviceStateChanged(QLowEnergyService::ServiceState newState)
+{
+    qWarning() << "LED Service State changed to: " << newState;
+    if (newState==3)
     {
-    case 0:
-        break;
-    case 1:
-        break;
-    case 2:
-        break;
-    case 3:
-        break;
-    case 4:
-        break;
-    case 5:
-        break;
-    case 6:
-        break;
-    case 7:
-        break;
-    case 8:
-        break;
-    case 9:
-        break;
-    case 10:
-        break;
-    case 11:
-        break;
-    case 12:
-        break;
-    case 13:
-        break;
-    case 14:
-        break;
-    case 15:
-        break;
-    case 16:
-        break;
-    case 17:
-        break;
-    case 18:
-        break;
-    case 19:
-        break;
-    case 20:
-        break;
-    case 21:
-        break;
-    case 22:
-        break;
-    case 23:
-        break;
-    case 24:
-        break;
-    case 25:
-        break;
-    case 26:
-        break;
-    case 27:
-        break;
-    case 28:
-        break;
-    case 29:
-        break;
-    case 30:
-        break;
-    case 31:
-        break;
-    case 32:
-        break;
-    case 33:
-        break;
-    case 34:
-        break;
-    case 35:
-        break;
-defaul:
-        break;
-    }
+        LEDid_char      = l_service->characteristic( QBluetoothUuid(QUuid("{00000000-0000-1000-8000-00805f9b34fb}")));
+        LEDval_char     = l_service->characteristic( QBluetoothUuid(QUuid("{00000001-0000-1000-8000-00805f9b34fb}")));
+        LEDmaster_char  = l_service->characteristic( QBluetoothUuid(QUuid("{00000002-0000-1000-8000-00805f9b34fb}")));
 
+        connectedToLed = true;
+        qWarning("Now you can proceed with Lighting the Stage!");
+        // Emit signal, so that the QML context (the visual objects) are aware of the situation
+        emit ledIsConnected();
+    }
     return;
 }
+
+void Bluetooth::l_serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data)
+{
+    qWarning() << "LED characteristic written" << characteristic.uuid();
+    return;
+}
+
+void Bluetooth::l_serviceError(QLowEnergyService::ServiceError err)
+{
+    qWarning() << "LED Service error: " << err;
+    return;
+}
+
+
+
+
+
+
+
+
+
 
 
 
