@@ -24,5 +24,7 @@
         <file>pics/ledButtonSelected.png</file>
         <file>pics/ledButton.png</file>
         <file>pics/LEDlayoutSMALL.png</file>
+        <file>pics/stop.png</file>
+        <file>pics/bluetooth.png</file>
     </qresource>
 </RCC>

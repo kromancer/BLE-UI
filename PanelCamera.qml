@@ -1,6 +1,8 @@
 import QtQuick 2.1
 import QtQuick.Dialogs 1.1
 import mymodule 1.0
+import QtQuick.Controls 1.4
+
 
 
 
@@ -100,6 +102,136 @@ Rectangle {
         }
         ////////////////////////////////////////////////////////
 
+        // Bluetooth stage connect button
+        Image {
+
+            id: bluetoothsearchstage
+            anchors.bottom: parent.bottom
+            anchors.top: ribbon.top
+            anchors.left: parent.left
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "qrc:/pics/bluetooth.png"
+            scale: iconScale
+
+            state: "NOT_CONNECTED"
+            states: [
+                State {
+                    name: "NOT_CONNECTED"
+                    PropertyChanges { target: bluetoothsearchstage; visible: true }
+                    PropertyChanges { target: stageMovement; visible: false }
+                },
+                State {
+                    name: "CONNECTED"
+                    PropertyChanges { target: bluetoothsearchstage; visible: false }
+                    PropertyChanges { target: stageMovement; visible: true }
+                }
+            ]
+
+
+            Connections {
+                target: BLE
+                onStageIsConnected: { bluetoothsearchstage.state="CONNECTED"; busyIndicationStage.running=false }
+
+            }
+
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    BLE.connectToMotorSensorTag();
+                }
+            }
+
+
+
+            // Busy Indicator
+            BusyIndicator {
+                id: busyIndicationStage
+                property alias text: busyTextStage.text
+                anchors.fill: parent
+                //anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.bottomMargin: 0
+                //anchors.bottom: root.bottom
+                clip: false
+                running: true
+
+                Text {
+                    visible: busyIndicationStage.running
+                    id: busyTextStage
+                    text: "Connecting to Stage controller"
+                    anchors.left: parent.right
+                    anchors.leftMargin: 4
+                    anchors.verticalCenterOffset: 2
+                    font.pixelSize: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+
+        // Bluetooth led connect button
+        Image {
+
+            id: bluetoothsearchled
+            anchors.bottom: parent.bottom
+            anchors.top: ribbon.top
+            anchors.left: stageMovement.right
+            anchors.leftMargin: 130
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "qrc:/pics/bluetooth.png"
+            scale: iconScale
+
+            state: "NOT_CONNECTED"
+            states: [
+                State {
+                    name: "NOT_CONNECTED"
+                    PropertyChanges { target: bluetoothsearchled; visible: true }
+                    PropertyChanges { target: ledControl; visible: false }
+                },
+                State {
+                    name: "CONNECTED"
+                    PropertyChanges { target: bluetoothsearchled; visible: false }
+                    PropertyChanges { target: ledControl; visible: true }
+                }
+            ]
+
+            Connections {
+                target: BLE
+                onStageIsConnected: { bluetoothsearchled.state="CONNECTED" }
+            }
+
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    BLE.connectToLEDSensorTag();
+                }
+            }
+            // Busy Indicator
+            BusyIndicator {
+                id: busyIndicationLed
+                property alias text: busyTextLed.text
+                anchors.fill: parent
+                //anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.bottomMargin: 0
+                //anchors.bottom: root.bottom
+                clip: false
+                running: true
+
+                Text {
+                    visible: busyIndicationLed.running
+                    id: busyTextLed
+                    text: "Connecting to LED controller"
+                    anchors.left: parent.right
+                    anchors.leftMargin: 4
+                    anchors.verticalCenterOffset: 2
+                    font.pixelSize: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+
 
 
         // Stage Movement Button
@@ -150,6 +282,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top
             anchors.left: stageMovement.right
+            anchors.leftMargin: 130
             fillMode: Image.PreserveAspectFit
             smooth: true
             source: "qrc:/pics/led.png"
