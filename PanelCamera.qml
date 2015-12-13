@@ -240,6 +240,12 @@ Rectangle {
             }
         }
 
+        Button{
+            onClicked: {
+                BLE.connectToLEDService();
+            }
+        }
+
         // Bluetooth led connect button
         Image {
 

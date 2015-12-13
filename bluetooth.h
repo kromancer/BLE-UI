@@ -32,6 +32,8 @@ public:
     //Q_INVOKABLE void setYaw(char value);
     Q_INVOKABLE void resetStage();
 
+    Q_INVOKABLE void connectToLEDService();
+
 public slots:
      void deviceSearch();
      void connectToLEDSensorTag();
@@ -88,7 +90,9 @@ private slots:
 private:
     bool motorsSensorTagFound, ledSensorTagFound;
     bool connectedToStage, connectedToLed;
+
     QBluetoothDeviceInfo motorsSensorTag, ledSensorTag;
+
     QBluetoothDeviceDiscoveryAgent *m_deviceDiscoveryAgent;
     QLowEnergyController *m_control, *l_control;
     QLowEnergyService *m_service, *l_service;

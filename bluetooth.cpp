@@ -141,6 +141,7 @@ void Bluetooth::addDevice(const QBluetoothDeviceInfo &device)
             ledSensorTagFound = true;
             qWarning() << "Found LED SensorTag: " << device.address();
             ledSensorTag = device;
+            m_deviceDiscoveryAgent->stop();
         }
         else
             ;
@@ -205,7 +206,7 @@ void Bluetooth::connectToMotorSensorTag()
     if(motorsSensorTagFound)
     {
         // Motor Sensor Tag Stuff
-        m_control = new QLowEnergyController( motorsSensorTag, this );
+        m_control = new QLowEnergyController( motorsSensorTag );
 
         connect(m_control, SIGNAL(connected()), this, SLOT(m_deviceConnected()));
 
@@ -229,7 +230,7 @@ void Bluetooth::connectToLEDSensorTag()
 {
     if(ledSensorTagFound)
     {
-        l_control = new QLowEnergyController( ledSensorTag, this );
+        l_control = new QLowEnergyController( ledSensorTag );
 
         connect(l_control, SIGNAL( connected()), this, SLOT(l_deviceConnected()));
 
@@ -241,14 +242,18 @@ void Bluetooth::connectToLEDSensorTag()
 
         connect(l_control, SIGNAL( disconnected()), this, SLOT(l_deviceDisconnected()));
 
-        qWarning() << "I will try to connect to the led SensorTag";
+        //qWarning() << "I will try to connect to the LED SensorTag ";
 
-        l_control->connectToDevice();
+        //l_control->connectToDevice();
     }
 
     return;
 }
 
+void Bluetooth::connectToLEDService()
+{
+    l_control->connectToDevice();
+}
 
 /******************************************************
  * Motors SensorTag QLowEnergy controller related slots

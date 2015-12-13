@@ -22,5 +22,6 @@
         <file>pics/settings.png</file>
         <file>pics/snapshot.png</file>
         <file>pics/bluetooth_connect.png</file>
+        <file>pics/play.png</file>
     </qresource>
 </RCC>
