@@ -100,6 +100,60 @@ Rectangle {
             opacity: 0.6
 
         }
+
+
+
+
+        //Connect button
+        Image {
+
+            id: bluetoothsearchbutton
+            anchors.bottom: parent.bottom
+            anchors.top: ribbon.top
+            anchors.right: parent.right
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "qrc:/pics/bluetooth_connect.png"
+            scale: iconScale
+
+            state: "NOT_CONNECTED"
+            states: [
+                State {
+                    name: "NOT_CONNECTED"
+                    PropertyChanges { target: bluetoothsearchstage; visible: true }
+                    PropertyChanges { target: stageMovement; visible: false }
+                },
+                State {
+                    name: "CONNECTED"
+                    PropertyChanges { target: bluetoothsearchstage; visible: false }
+                    PropertyChanges { target: stageMovement; visible: true }
+                }
+            ]
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    if(!busyIndicationStage.running){
+                        BLE.deviceSearch();
+
+                        if(bluetoothsearchstage.state != "CONNECTED"){
+                            busyIndicationStage.running = true;
+                            busyIndicationStage.text = "Connecting to Stage controller"
+                        }
+
+
+                        if(bluetoothsearchled.state != "CONNECTED"){
+                            busyIndicationLed.running = true;
+                            busyIndicationLed.text = "Connecting to LED controller"
+                        }
+
+                    }
+                }
+            }
+        }
+
+
+
         ////////////////////////////////////////////////////////
 
         // Bluetooth stage connect button
@@ -111,7 +165,7 @@ Rectangle {
             anchors.left: parent.left
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "qrc:/pics/bluetooth.png"
+            source: "qrc:/pics/Empty.png"
             scale: iconScale
 
             state: "NOT_CONNECTED"
@@ -132,16 +186,31 @@ Rectangle {
             Connections {
                 target: BLE
                 onStageIsConnected: { bluetoothsearchstage.state="CONNECTED"; busyIndicationStage.running=false }
+                onMotorSensorTagNotFound: {busyIndicationStage.running = false; busyIndicationStage.text = "Motor sensor tag not found"}
 
             }
 
 
-            MouseArea{
+            /*MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    BLE.connectToMotorSensorTag();
+                    if(!busyIndicationStage.running){
+                        BLE.deviceSearch();
+
+                        if(bluetoothsearchstage.state != "CONNECTED"){
+                            busyIndicationStage.running = true;
+                            busyIndicationStage.text = "Connecting to Stage controller"
+                        }
+
+
+                        if(bluetoothsearchled.state != "CONNECTED"){
+                            busyIndicationLed.running = true;
+                            busyIndicationLed.text = "Connecting to LED controller"
+                        }
+
+                    }
                 }
-            }
+            }*/
 
 
 
@@ -157,7 +226,7 @@ Rectangle {
                 running: true
 
                 Text {
-                    visible: busyIndicationStage.running
+                    //visible: busyIndicationStage.running
                     id: busyTextStage
                     text: "Connecting to Stage controller"
                     anchors.left: parent.right
@@ -176,10 +245,10 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top
             anchors.left: stageMovement.right
-            anchors.leftMargin: 130
+            anchors.leftMargin: 140
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "qrc:/pics/bluetooth.png"
+            source: "qrc:/pics/Empty.png"
             scale: iconScale
 
             state: "NOT_CONNECTED"
@@ -199,15 +268,10 @@ Rectangle {
             Connections {
                 target: BLE
                 onStageIsConnected: { bluetoothsearchled.state="CONNECTED" }
+                onLedSensorTagNotFound: {busyIndicationLed.running = false; busyIndicationLed.text = "LED Sensor tag not found"}
+
             }
 
-
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    BLE.connectToLEDSensorTag();
-                }
-            }
             // Busy Indicator
             BusyIndicator {
                 id: busyIndicationLed
@@ -220,7 +284,7 @@ Rectangle {
                 running: true
 
                 Text {
-                    visible: busyIndicationLed.running
+                    //visible: busyIndicationLed.running
                     id: busyTextLed
                     text: "Connecting to LED controller"
                     anchors.left: parent.right

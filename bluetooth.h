@@ -47,6 +47,10 @@ signals:
      void stageIsIdle();    //3
      void busError();       //4
 
+     void ledSensorTagNotFound();
+     void motorSensorTagNotFound();
+
+
 
 private slots:
     void releaseBLE();

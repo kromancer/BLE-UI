@@ -155,14 +155,18 @@ void Bluetooth::scanFinished()
 {
     qWarning() << "************************************";
     qWarning() << "Scan has finished";
-    if (!motorsSensorTagFound && !ledSensorTagFound)
+    if (!motorsSensorTagFound && !ledSensorTagFound){
         qWarning() << "None of the SensorTags was found";
-    else if (!motorsSensorTagFound)
+        emit motorSensorTagNotFound();
+        emit ledSensorTagNotFound();
+
+    } else if (!motorsSensorTagFound){
+        emit motorSensorTagNotFound();
         qWarning() << "Motor SensorTag was not found";
-    else if (!ledSensorTagFound)
+    } else {
+        emit ledSensorTagNotFound();
         qWarning() << "LED SensorTag was not found";
-    else
-        qWarning() << "None of the SensorTags was found";
+    }
 
     qWarning() << "************************************";
 
