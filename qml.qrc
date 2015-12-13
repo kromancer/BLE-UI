@@ -1,31 +1,26 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>pics/knob4.png</file>
         <file>PanelCamera.qml</file>
-        <file>pics/snapshot2.svg</file>
-        <file>pics/maximize.png</file>
-        <file>pics/minimize.png</file>
-        <file>pics/play.png</file>
-        <file>pics/pause.png</file>
-        <file>pics/settings2.png</file>
         <file>PanelStage.qml</file>
-        <file>pics/move.png</file>
-        <file>pics/oops.png</file>
-        <file>pics/LedSettings.png</file>
-        <file>pics/led.png</file>
         <file>MotorY.qml</file>
         <file>MotorX.qml</file>
         <file>MotorZ.qml</file>
         <file>MotorRoll.qml</file>
         <file>MotorPitch.qml</file>
         <file>PanelLED.qml</file>
-        <file>pics/LEDlayout.png</file>
-        <file>pics/ledButtonSelected.png</file>
-        <file>pics/ledButton.png</file>
-        <file>pics/LEDlayoutSMALL.png</file>
-        <file>pics/stop.png</file>
-        <file>pics/bluetooth_connect.png</file>
         <file>pics/Empty.png</file>
+        <file>pics/error.png</file>
+        <file>pics/led.png</file>
+        <file>pics/ledButton.png</file>
+        <file>pics/ledButtonSelected.png</file>
+        <file>pics/maximize.png</file>
+        <file>pics/minimize.png</file>
+        <file>pics/move.png</file>
+        <file>pics/oops.png</file>
+        <file>pics/pause.png</file>
+        <file>pics/settings.png</file>
+        <file>pics/snapshot.png</file>
+        <file>pics/bluetooth_connect.png</file>
     </qresource>
 </RCC>

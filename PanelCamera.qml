@@ -139,12 +139,14 @@ Rectangle {
                         if(bluetoothsearchstage.state != "CONNECTED"){
                             busyIndicationStage.running = true;
                             busyIndicationStage.text = "Connecting to Stage controller"
+                            bluetoothsearchstage.source = "qrc:/pics/Empty.png";
                         }
 
 
                         if(bluetoothsearchled.state != "CONNECTED"){
                             busyIndicationLed.running = true;
                             busyIndicationLed.text = "Connecting to LED controller"
+                            bluetoothsearchled.source = "qrc:/pics/Empty.png";
                         }
 
                     }
@@ -186,7 +188,7 @@ Rectangle {
             Connections {
                 target: BLE
                 onStageIsConnected: { bluetoothsearchstage.state="CONNECTED"; busyIndicationStage.running=false }
-                onMotorSensorTagNotFound: {busyIndicationStage.running = false; busyIndicationStage.text = "Motor sensor tag not found"}
+                onMotorSensorTagNotFound: {bluetoothsearchstage.source = "qrc:/pics/error.png"; busyIndicationStage.running = false; busyIndicationStage.text = "Motor sensor tag not found"}
 
             }
 
@@ -268,7 +270,7 @@ Rectangle {
             Connections {
                 target: BLE
                 onStageIsConnected: { bluetoothsearchled.state="CONNECTED" }
-                onLedSensorTagNotFound: {busyIndicationLed.running = false; busyIndicationLed.text = "LED Sensor tag not found"}
+                onLedSensorTagNotFound: {bluetoothsearchled.source = "qrc:/pics/error.png"; busyIndicationLed.running = false; busyIndicationLed.text = "LED Sensor tag not found"}
 
             }
 
@@ -389,9 +391,10 @@ Rectangle {
         Image {
             id: snapshot
             anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
+            //anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: ribbon.top
-            source: "qrc:/pics/snapshot2.svg"
+            anchors.right: fullscreen.left
+            source: "qrc:/pics/snapshot.png"
             scale: iconScale
             fillMode: Image.PreserveAspectFit
             smooth: true
@@ -438,8 +441,10 @@ Rectangle {
         // Fullscreen toggle button
         Image {
             id: fullscreen
+
+            anchors.right: settings_button.left
             anchors.bottom: parent.bottom
-            anchors.left: snapshot.right
+            //anchors.left: snapshot.right
             anchors.leftMargin: 20
             anchors.top: ribbon.top
             fillMode: Image.PreserveAspectFit
@@ -497,10 +502,10 @@ Rectangle {
             id: settings_button
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top
-            anchors.right: ribbon.right
+            anchors.right: bluetoothsearchbutton.left
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "qrc:/pics/settings2.png"
+            source: "qrc:/pics/settings.png"
             scale: iconScale
             state: "NOT_EXPOSED"
             states: [
