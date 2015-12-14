@@ -59,7 +59,7 @@ ApplicationWindow{
 
         Connections {
             target: BLE
-            onLedIsConnected: { root.connected = true }
+            onLedServiceIsReady: { root.connected = true }
         }
 
         Slider {

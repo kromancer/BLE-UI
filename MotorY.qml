@@ -3,6 +3,14 @@ import QtQuick.Controls 1.4
 
 // Y axis
 Rectangle {
+    Connections {
+        target: BLE
+        onMotorIgnore: {motorIgnore = true;}
+        onYAxisMinReached: {motorIgnore = true; ySlider.value = ySlider.minimumValue; motorIgnore = false}
+        onYAxisMaxReached: {motorIgnore = true; ySlider.value = ySlider.maximumValue; motorIgnore = false}
+    }
+
+
     id: yAxis
     property alias value: ySlider.value
     property alias minValue: ySlider.minimumValue
@@ -27,8 +35,10 @@ Rectangle {
         orientation: Qt.Vertical
 
         onValueChanged: {
-            if ( !motorIgnore )
+            if ( !yAxis.motorIgnore )
+            {
                 BLE.setY(value);
+            }
         }
     }
     Label {

@@ -2,6 +2,14 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 
 Rectangle {
+
+    Connections {
+        target: BLE
+        onMotorIgnore: {motorIgnore = true;}
+        onXAxisMinReached: {motorIgnore = true; xSlider.value = xSlider.minimumValue; motorIgnore = false}
+        onXAxisMaxReached: {motorIgnore = true; xSlider.value = xSlider.maximumValue; motorIgnore = false}
+    }
+
     id: xAxis
     property alias value: xSlider.value
     property alias minValue: xSlider.minimumValue
@@ -27,8 +35,10 @@ Rectangle {
         value: 0
 
         onValueChanged: {
-            if ( !motorIgnore)
+            if ( !xAxis.motorIgnore )
+            {
                 BLE.setX(value);
+            }
         }
     }
     Label {

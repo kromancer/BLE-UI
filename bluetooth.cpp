@@ -17,14 +17,16 @@ Bluetooth::Bluetooth():
     connect(m_deviceDiscoveryAgent, SIGNAL(deviceDiscovered(const QBluetoothDeviceInfo&)),this, SLOT(addDevice(const QBluetoothDeviceInfo&)));
     connect(m_deviceDiscoveryAgent, SIGNAL(finished()), this, SLOT(scanFinished()));
     connect(m_deviceDiscoveryAgent, SIGNAL(canceled()), this, SLOT(scanFinished()));
-    connect(this, SIGNAL(stageIsConnected()), this, SLOT(connectToLEDSensorTag()));
     connect( QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(releaseBLE()));
-    deviceSearch();
 }
 
 Bluetooth::~Bluetooth()
 {
-
+    delete m_deviceDiscoveryAgent;
+    delete m_control;
+    delete l_control;
+    delete m_service;
+    delete l_service;
 }
 
 void Bluetooth::releaseBLE()
@@ -77,8 +79,41 @@ void Bluetooth::setZ(char value)
     return;
 }
 
+void Bluetooth::setRoll(char value)
+{
+    if(connectedToStage)
+    {
+        qWarning("Changing Roll\n");
+        m_service->writeCharacteristic(Roll_char, QByteArray(1,value));
+    }
+    return;
+}
+
+void Bluetooth::setPitch(char value)
+{
+    if(connectedToStage)
+    {
+        qWarning("Changing Pitch\n");
+        m_service->writeCharacteristic(Pitch_char, QByteArray(1,value));
+    }
+    return;
+}
+
+void Bluetooth::setYaw(char value)
+{
+    if(connectedToStage)
+    {
+        qWarning() << value;
+        qWarning("Changing Yaw\n");
+        m_service->writeCharacteristic(Yaw_char, QByteArray(1,value));
+    }
+    return;
+}
+
 void Bluetooth::resetStage(){
+    emit motorIgnore();
     m_service->writeCharacteristic(Reset_char, QByteArray(1,1));
+    return;
 }
 
 
@@ -120,8 +155,8 @@ The discoveryAgent emits the following signals:
 ****************************************************/
 void Bluetooth::deviceSearch()
 {
-    m_deviceDiscoveryAgent->start();
     qWarning() << "Searching for Devices";
+    m_deviceDiscoveryAgent->start();
     return;
 }
 
@@ -135,13 +170,15 @@ void Bluetooth::addDevice(const QBluetoothDeviceInfo &device)
             motorsSensorTagFound = true;
             qWarning() << "Found Stage SensorTag: " << device.address();
             motorsSensorTag = device;
+            emit motorSensorTagIsFound();
         }
         else if( device.name() == "StageLEDs")
         {
             ledSensorTagFound = true;
             qWarning() << "Found LED SensorTag: " << device.address();
             ledSensorTag = device;
-            m_deviceDiscoveryAgent->stop();
+            emit ledSensorTagIsFound();
+            //m_deviceDiscoveryAgent->stop();
         }
         else
             ;
@@ -164,20 +201,21 @@ void Bluetooth::scanFinished()
     } else if (!motorsSensorTagFound){
         emit motorSensorTagNotFound();
         qWarning() << "Motor SensorTag was not found";
-    } else {
+    } else if (!ledSensorTagFound){
         emit ledSensorTagNotFound();
         qWarning() << "LED SensorTag was not found";
     }
 
     qWarning() << "************************************";
 
+    /*
     if (motorsSensorTagFound)
         connectToMotorSensorTag();
     else if(ledSensorTagFound)
         connectToLEDSensorTag();
     else
         ;
-
+    */
     return;
 }
 
@@ -242,17 +280,13 @@ void Bluetooth::connectToLEDSensorTag()
 
         connect(l_control, SIGNAL( disconnected()), this, SLOT(l_deviceDisconnected()));
 
-        //qWarning() << "I will try to connect to the LED SensorTag ";
+        qWarning() << "I will try to connect to the LED SensorTag ";
 
-        //l_control->connectToDevice();
+        l_control->connectToDevice();
+
     }
 
     return;
-}
-
-void Bluetooth::connectToLEDService()
-{
-    l_control->connectToDevice();
 }
 
 /******************************************************
@@ -262,7 +296,6 @@ void Bluetooth::m_deviceConnected()
 {
     qWarning() << "I am connected to the motors SensorTag" ;
     m_control->discoverServices();
-    qWarning() << "Back from this hole to ....";
     return;
 }
 
@@ -294,6 +327,7 @@ void Bluetooth::m_serviceScanDone()
     else
     {
         qWarning() << "I am connected to the motors service";
+        emit motorServiceIsFound();
         m_service->discoverDetails();
     }
 
@@ -316,6 +350,14 @@ void Bluetooth::m_controllerError(QLowEnergyController::Error error)
 /******************************************************
  * LED SensorTag QLowEnergy controller related slots
  * ****************************************************/
+void Bluetooth::connectToLEDService()
+{
+    l_control->connectToDevice();
+    return;
+}
+
+
+
 void Bluetooth::l_deviceConnected()
 {
     qWarning() << "I am connected to the LED SensorTag" ;
@@ -348,6 +390,7 @@ void Bluetooth::l_serviceScanDone()
     else
     {
         qWarning() << "I am connected to the LED service";
+        emit ledServiceIsFound();
         l_service->discoverDetails();
     }
 
@@ -415,16 +458,15 @@ void Bluetooth::m_serviceStateChanged(QLowEnergyService::ServiceState newState)
         Reset_char =    m_service->characteristic( QBluetoothUuid(QUuid("{00000007-0000-1000-8000-00805f9b34fb}")));
 
         connectedToStage = true;
+        emit motorServiceIsReady();
         qWarning("Now you can proceed with moving things");
-        // Emit signal, so that the QML context (the visual objects) are aware of the situation
-        stageIsConnected();
     }
     return;
 }
 
 void Bluetooth::m_serviceCharacteristicWritten(const QLowEnergyCharacteristic& characteristic, const QByteArray& data)
 {
-    qWarning() << "Motor characteristic written";
+    qWarning() << characteristic.uuid() << " written";
     return;
 }
 
@@ -458,6 +500,46 @@ void Bluetooth::m_statusNotification(const QLowEnergyCharacteristic &c, const QB
             emit busError();
         break;
 
+        case 17:
+            emit xAxisMinReached();
+        break;
+
+        case 18:
+            emit xAxisMaxReached();
+        break;
+
+        case 19:
+            emit yAxisMinReached();
+        break;
+
+        case 20:
+            emit yAxisMaxReached();
+        break;
+
+        case 21:
+            emit zAxisMinReached();
+        break;
+
+        case 22:
+            emit zAxisMaxReached();
+        break;
+
+        case 23:
+            emit rollMinReached();
+        break;
+
+        case 24:
+            emit rollMaxReached();
+        break;
+
+        case 25:
+            emit pitchMinReached();
+        break;
+
+        case 26:
+            emit pitchMaxReached();
+        break;
+
         default:
         break;
     }
@@ -479,8 +561,8 @@ void Bluetooth::l_serviceStateChanged(QLowEnergyService::ServiceState newState)
 
         connectedToLed = true;
         qWarning("Now you can proceed with Lighting the Stage!");
-        // Emit signal, so that the QML context (the visual objects) are aware of the situation
-        emit ledIsConnected();
+        emit ledServiceIsReady();
+
     }
     return;
 }

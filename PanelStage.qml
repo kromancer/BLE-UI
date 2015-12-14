@@ -16,6 +16,32 @@ ApplicationWindow {
     title: "Stage Control"
 
     Rectangle {
+        signal resetSliders;
+        Connections {
+            target: BLE
+            onMotorServiceIsReady: { busyIndication.running = false; root.state="CONNECTED" }
+            onBusError: { root.state = "I2CERROR"; root.resetSliders(); }
+            onStageIsReset: { root.state = "CONNECTED" }
+        }
+
+        onResetSliders: {
+
+            xAxis.value = xAxis.minValue;
+
+
+            yAxis.value = yAxis.minValue;
+
+
+            zAxis.value = zAxis.minValue;
+
+
+            roll.value = roll.minValue;
+
+
+            pitch.value = pitch.minValue;
+
+        }
+
         id: root
         height: 593
         anchors.right: parent.right
@@ -83,13 +109,9 @@ ApplicationWindow {
         ]
 
         // Feedback from Sensor Tag's status characteristic
-        Connections {
-            target: BLE
-            onStageIsConnected: { busyIndication.running = false; root.state="CONNECTED" }
-            onBusError: { root.state = "I2CERROR"}
-            onStageIsReset: { root.state = "CONNECTED" }
-        }
+        /*
 
+    */
         Component.onCompleted: {
             busyIndication.running = true
         }
@@ -100,7 +122,7 @@ ApplicationWindow {
         // This timer is activating when an I2C bus error is detected
         Timer {
             id: waitTimer
-            interval: 10000
+            interval: 20000
             running: false
             repeat: false
 
@@ -118,7 +140,7 @@ ApplicationWindow {
             title: "Stage Error"
             text: "Power off the main board and try again"
             onAccepted: {
-                applicationWindow1.close()
+                applicationWindow1.destroy()
             }
             onRejected: {
                 applicationWindow1.close()
@@ -139,23 +161,7 @@ ApplicationWindow {
 
         }
 
-        function resetSliders() {
-            xAxis.motorIgnore = true;
-            xAxis.value = xAxis.minValue;
-            xAxis.motorIgnore = false;
 
-            yAxis.motorIgnore = true;
-            yAxis.value = yAxis.minValue;
-            yAxis.motorIgnore = false;
-
-            zAxis.motorIgnore = true;
-            zAxis.value = yAxis.minValue;
-            zAxis.motorIgnore = false;
-
-            //yawKnob.currentValue = 0;
-            //roll.value = roll.minValue;
-            //pitch.value = pitch.value;
-        }
 
 
         // Busy Indicator
@@ -183,14 +189,14 @@ ApplicationWindow {
 
 
         // Translatory Motor Controls
-        MotorX{ id: xAxis ; anchors.topMargin: 0 }
-        MotorY{ id: yAxis ; anchors.right: yaw.left; anchors.rightMargin: -1 }
-        MotorZ{ id: zAxis }
+        MotorX{ id: xAxis ; anchors.topMargin: 0; step: 1; minValue: 0; maxValue: 100 }
+        MotorY{ id: yAxis ; anchors.right: yaw.left; anchors.rightMargin: -1; step: 1; minValue: 0; maxValue: 100 }
+        MotorZ{ id: zAxis ; step: 1; minValue: 0; maxValue: 100 }
 
 
         // Rotational Axises
-        MotorRoll{ id: roll ; step: 1; maxValue: 10;anchors.bottomMargin: 4 }
-        MotorPitch{ id: pitch ; step: 1; maxValue: 10;anchors.leftMargin: 8 }
+        MotorRoll{ id: roll ; step: 1; anchors.bottomMargin: 4 ; minValue: 0; maxValue: 100 }
+        MotorPitch{ id: pitch ; step: 1; anchors.leftMargin: 8 ; minValue: 0; maxValue: 100 }
         Rectangle{
             id: yaw
             width: 200
@@ -200,11 +206,22 @@ ApplicationWindow {
 
             Knob {
                 id: yawKnob
+                Connections {
+                    target: BLE
+                    onMotorIgnore: { yawKnob.motorIgnore = true}
+                }
+
+                property bool motorIgnore: false
                 style: Knob.Arc
                 value: 0
                 color: "#69BAFB"
                 textColor: "#000000"
-                maximumValue: 359
+                maximumValue: 100
+
+                onEndValueChanged: {
+                    if (!yawKnob.motorIgnore)
+                        BLE.setYaw(value)
+                }
             }
         }
 

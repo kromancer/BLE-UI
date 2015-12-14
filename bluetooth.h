@@ -28,10 +28,15 @@ public:
     Q_INVOKABLE void setX(char value);
     Q_INVOKABLE void setY(char value);
     Q_INVOKABLE void setZ(char value);
+    Q_INVOKABLE void setRoll(char value);
+    Q_INVOKABLE void setPitch(char value);
+    Q_INVOKABLE void setYaw(char value);
+
 
     //Q_INVOKABLE void setYaw(char value);
     Q_INVOKABLE void resetStage();
 
+    //Q_INVOKABLE void connectToMotorService();
     Q_INVOKABLE void connectToLEDService();
 
 public slots:
@@ -40,8 +45,6 @@ public slots:
      void connectToMotorSensorTag();
 
 signals:
-     void stageIsConnected();
-     void ledIsConnected();
      //Signals emitted when receiving status notifications
      //emitted              received
      void stageIsReset();   //1
@@ -49,8 +52,41 @@ signals:
      void stageIsIdle();    //3
      void busError();       //4
 
+
      void ledSensorTagNotFound();
+     void ledSensorTagIsFound();
      void motorSensorTagNotFound();
+     void motorSensorTagIsFound();
+
+     void motorServiceIsFound();
+     void motorServiceIsReady();
+
+
+     void ledServiceIsFound();
+     void ledServiceIsReady();
+
+//Reset situations
+     void motorIgnore();
+
+     void xAxisMinReached();
+
+     void xAxisMaxReached();
+
+     void yAxisMinReached();
+
+     void yAxisMaxReached();
+
+     void zAxisMinReached();
+
+     void zAxisMaxReached();
+
+     void rollMinReached();
+
+     void rollMaxReached();
+
+     void pitchMinReached();
+
+     void pitchMaxReached();
 
 
 

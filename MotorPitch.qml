@@ -2,11 +2,20 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 
 Rectangle {
+    Connections {
+        target: BLE
+        onMotorIgnore: {motorIgnore = true;}
+        onPitchMinReached: {motorIgnore = true; pitchSlider.value = pitchSlider.minimumValue; motorIgnore = false}
+        onPitchMaxReached: {motorIgnore = true; pitchSlider.value = pitchSlider.maximumValue; motorIgnore = false}
+    }
+
     id: pitch
     property alias value: pitchSlider.value
     property alias minValue: pitchSlider.minimumValue
     property alias maxValue: pitchSlider.maximumValue
     property alias step:     pitchSlider.stepSize
+    property bool motorIgnore: false
+
     width: 50
     height: 100
     anchors.left: yaw.right
@@ -20,6 +29,12 @@ Rectangle {
         height: 110
         updateValueWhileDragging: false
         orientation: Qt.Vertical
+        onValueChanged: {
+            if ( !pitch.motorIgnore )
+            {
+                BLE.setPitch(value);
+            }
+        }
     }
 
     Label {

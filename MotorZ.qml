@@ -3,6 +3,13 @@ import QtQuick.Controls 1.4
 
 
 Rectangle{
+    Connections {
+        target: BLE
+        onMotorIgnore: {motorIgnore = true;}
+        onZAxisMinReached: {motorIgnore = true; zSlider.value = zSlider.minimumValue; motorIgnore = false}
+        onZAxisMaxReached: {motorIgnore = true; zSlider.value = zSlider.maximumValue; motorIgnore = false}
+    }
+
     id: zAxis
     property alias value: zSlider.value
     property alias minValue: zSlider.minimumValue
@@ -28,7 +35,7 @@ Rectangle{
         orientation: Qt.Vertical
 
         onValueChanged: {
-            if (!motorIgnore)
+            if (!zAxis.motorIgnore)
                 BLE.setZ(value);
         }
     }

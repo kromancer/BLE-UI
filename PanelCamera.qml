@@ -104,9 +104,8 @@ Rectangle {
 
 
 
-        //Connect button
+/////////////////////// BLUETOOTH SCAN BUTTON ////////////////////////////////////////////////////////
         Image {
-
             id: bluetoothsearchbutton
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top
@@ -133,34 +132,22 @@ Rectangle {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if(!busyIndicationStage.running){
                         BLE.deviceSearch();
-
-                        if(bluetoothsearchstage.state != "CONNECTED"){
-                            busyIndicationStage.running = true;
-                            busyIndicationStage.text = "Connecting to Stage controller"
-                            bluetoothsearchstage.source = "qrc:/pics/Empty.png";
-                        }
-
-
-                        if(bluetoothsearchled.state != "CONNECTED"){
-                            busyIndicationLed.running = true;
-                            busyIndicationLed.text = "Connecting to LED controller"
-                            bluetoothsearchled.source = "qrc:/pics/Empty.png";
-                        }
-
-                    }
+                        busyIndicationStage.text = "Searching for Motor SensorTag";
+                        busyIndicationLed.text = "Searching for LED SensorTag";
+                        bluetoothsearchstage.source = "qrc:/pics/Empty.png";
+                        bluetoothsearchled.source = "qrc:/pics/Empty.png";
+                        busyIndicationStage.running = true;
+                        busyIndicationLed.running = true;
                 }
             }
         }
 
 
 
-        ////////////////////////////////////////////////////////
 
-        // Bluetooth stage connect button
+////////////////////////MOTOR SPINNER HOLDER///////////////////////////////////////////////////
         Image {
-
             id: bluetoothsearchstage
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top
@@ -187,36 +174,10 @@ Rectangle {
 
             Connections {
                 target: BLE
-                onStageIsConnected: { bluetoothsearchstage.state="CONNECTED"; busyIndicationStage.running=false }
-                onMotorSensorTagNotFound: {bluetoothsearchstage.source = "qrc:/pics/error.png"; busyIndicationStage.running = false; busyIndicationStage.text = "Motor sensor tag not found"}
-
+                onMotorSensorTagIsFound: { bluetoothsearchstage.state="CONNECTED"; busyIndicationStage.running=false }
+                onMotorSensorTagNotFound:{ bluetoothsearchstage.source = "qrc:/pics/error.png"; busyIndicationStage.running = false; busyIndicationStage.text = "Motor sensor tag not found"}
             }
-
-
-            /*MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    if(!busyIndicationStage.running){
-                        BLE.deviceSearch();
-
-                        if(bluetoothsearchstage.state != "CONNECTED"){
-                            busyIndicationStage.running = true;
-                            busyIndicationStage.text = "Connecting to Stage controller"
-                        }
-
-
-                        if(bluetoothsearchled.state != "CONNECTED"){
-                            busyIndicationLed.running = true;
-                            busyIndicationLed.text = "Connecting to LED controller"
-                        }
-
-                    }
-                }
-            }*/
-
-
-
-            // Busy Indicator
+///////////////////////////////MOTOR SPINNER///////////////////////////////////////////////////////////
             BusyIndicator {
                 id: busyIndicationStage
                 property alias text: busyTextStage.text
@@ -225,12 +186,12 @@ Rectangle {
                 //anchors.bottomMargin: 0
                 //anchors.bottom: root.bottom
                 clip: false
-                running: true
+                running: false
 
                 Text {
                     //visible: busyIndicationStage.running
                     id: busyTextStage
-                    text: "Connecting to Stage controller"
+                    text: ""
                     anchors.left: parent.right
                     anchors.leftMargin: 4
                     anchors.verticalCenterOffset: 2
@@ -239,75 +200,21 @@ Rectangle {
                 }
             }
         }
-
-        Button{
-            onClicked: {
-                BLE.connectToLEDService();
-            }
-        }
-
-        // Bluetooth led connect button
+///////////////////////MOTOR PANEL BUTTON///////////////////////////////////////////////
         Image {
-
-            id: bluetoothsearchled
-            anchors.bottom: parent.bottom
-            anchors.top: ribbon.top
-            anchors.left: stageMovement.right
-            anchors.leftMargin: 140
-            fillMode: Image.PreserveAspectFit
-            smooth: true
-            source: "qrc:/pics/Empty.png"
-            scale: iconScale
-
-            state: "NOT_CONNECTED"
-            states: [
-                State {
-                    name: "NOT_CONNECTED"
-                    PropertyChanges { target: bluetoothsearchled; visible: true }
-                    PropertyChanges { target: ledControl; visible: false }
-                },
-                State {
-                    name: "CONNECTED"
-                    PropertyChanges { target: bluetoothsearchled; visible: false }
-                    PropertyChanges { target: ledControl; visible: true }
-                }
-            ]
 
             Connections {
                 target: BLE
-                onStageIsConnected: { bluetoothsearchled.state="CONNECTED" }
-                onLedSensorTagNotFound: {bluetoothsearchled.source = "qrc:/pics/error.png"; busyIndicationLed.running = false; busyIndicationLed.text = "LED Sensor tag not found"}
+                onMotorServiceIsFound: {
+                    stagePanelWindow.show();
+                    stageMovement.state = "EXPOSED";
+                    stagePanelWindow.closing.connect(toggleState) }
 
-            }
-
-            // Busy Indicator
-            BusyIndicator {
-                id: busyIndicationLed
-                property alias text: busyTextLed.text
-                anchors.fill: parent
-                //anchors.horizontalCenter: parent.horizontalCenter
-                //anchors.bottomMargin: 0
-                //anchors.bottom: root.bottom
-                clip: false
-                running: true
-
-                Text {
-                    //visible: busyIndicationLed.running
-                    id: busyTextLed
-                    text: "Connecting to LED controller"
-                    anchors.left: parent.right
-                    anchors.leftMargin: 4
-                    anchors.verticalCenterOffset: 2
-                    font.pixelSize: 12
-                    anchors.verticalCenter: parent.verticalCenter
+                function toggleState()
+                {
+                    stageMovement.state = "NOT_EXPOSED"
                 }
             }
-        }
-
-
-
-        // Stage Movement Button
-        Image {
 
             id: stageMovement
             anchors.bottom: parent.bottom
@@ -329,27 +236,100 @@ Rectangle {
                     PropertyChanges { target: stageMovement; visible: false }
                 }
             ]
-
-
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    stageMovement.state = "EXPOSED"
-                    stagePanelWindow.closing.connect(toggleState)
-                    stagePanelWindow.show()
-                }
-
-                function toggleState()
-                {
-                    stageMovement.state = "NOT_EXPOSED"
+                    BLE.connectToMotorSensorTag();
                 }
             }
         }
-        //////////////////////////////////////////////////////////////
 
 
-        // LED Control Button
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+//////////////////////LED SPINNER PLACEHOLDER///////////////////////////////////////////////////////////
         Image {
+            id: bluetoothsearchled
+            anchors.bottom: parent.bottom
+            anchors.top: ribbon.top
+            anchors.left: stageMovement.right
+            anchors.leftMargin: 160
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "qrc:/pics/Empty.png"
+            scale: iconScale
+
+            state: "NOT_CONNECTED"
+            states: [
+                State {
+                    name: "NOT_CONNECTED"
+                    PropertyChanges { target: bluetoothsearchled; visible: true }
+                    PropertyChanges { target: ledControl; visible: false }
+                },
+                State {
+                    name: "CONNECTED"
+                    PropertyChanges { target: bluetoothsearchled; visible: false }
+                    PropertyChanges { target: ledControl; visible: true }
+                }
+            ]
+
+            Connections {
+                target: BLE
+                onLedSensorTagIsFound: { bluetoothsearchled.state="CONNECTED"; busyIndicationLed.running = false; }
+                onLedSensorTagNotFound: {bluetoothsearchled.source = "qrc:/pics/error.png"; busyIndicationLed.running = false; busyIndicationLed.text = "LED Sensor tag not found"}
+            }
+/////////////////// LED SPINNER /////////////////////////////////////////////////////////////
+            BusyIndicator {
+                id: busyIndicationLed
+                property alias text: busyTextLed.text
+                anchors.fill: parent
+                //anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.bottomMargin: 0
+                //anchors.bottom: root.bottom
+                clip: false
+                running: false
+
+                Text {
+                    //visible: busyIndicationLed.running
+                    id: busyTextLed
+                    text: ""
+                    anchors.left: parent.right
+                    anchors.leftMargin: 4
+                    anchors.verticalCenterOffset: 2
+                    font.pixelSize: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+///////////////////LED PANEL BUTTON///////////////////////////////////////////////////////////////////
+        Image {
+
+            Connections {
+                target: BLE
+                onLedServiceIsFound: { ledPanelWindow.show(); ledControl.state = "EXPOSED"; ledPanelWindow.closing.connect(toggleState) }
+
+                function toggleState()
+                {
+                    ledControl.state = "NOT_EXPOSED"
+                }
+            }
+
+
+
             id: ledControl
             anchors.bottom: parent.bottom
             anchors.top: ribbon.top
@@ -372,22 +352,17 @@ Rectangle {
                 }
             ]
 
-
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    ledControl.state = "EXPOSED"
-                    ledPanelWindow.closing.connect(toggleState)
-                    ledPanelWindow.show()
-                }
+                    BLE.connectToLEDSensorTag();
 
-                function toggleState()
-                {
-                    ledControl.state = "NOT_EXPOSED"
                 }
             }
         }
-        /////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 
