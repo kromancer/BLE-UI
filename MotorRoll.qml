@@ -7,6 +7,7 @@ Rectangle {
         onMotorIgnore: {motorIgnore = true;}
         onRollMinReached: {motorIgnore = true; rollSlider.value = rollSlider.minimumValue; motorIgnore = false}
         onRollMaxReached: {motorIgnore = true; rollSlider.value = rollSlider.maximumValue; motorIgnore = false}
+        onStageIsReset: {motorIgnore = false;}
     }
 
     id: roll

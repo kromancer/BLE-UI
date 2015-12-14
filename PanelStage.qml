@@ -25,21 +25,11 @@ ApplicationWindow {
         }
 
         onResetSliders: {
-
             xAxis.value = xAxis.minValue;
-
-
             yAxis.value = yAxis.minValue;
-
-
             zAxis.value = zAxis.minValue;
-
-
             roll.value = roll.minValue;
-
-
             pitch.value = pitch.minValue;
-
         }
 
         id: root
@@ -148,19 +138,38 @@ ApplicationWindow {
         }
 
 
-
-        Button {
+//////////// RESET BUTTON /////////////////////////////////////////////////////////////////
+        Image {
             id: resetButton
-            visible: false
-            text: "Reset"
-            onClicked: {
-                //Reset sliders and stage
-                root.resetSliders();
-                BLE.resetStage();
+            anchors.centerIn: parent
+            width: 116
+            height: 74
+            fillMode: Image.PreserveAspectFit
+            anchors.verticalCenterOffset: -141
+            anchors.horizontalCenterOffset: 166
+            smooth: true
+            source: "pics/reset.png"
+
+            Label {
+                id: resetLable
+                x: 40
+                y: 19
+                width: 41
+                height: 63
+                text: "Reset"
+                font.pointSize: 7
+                font.bold: true
             }
 
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    BLE.resetStage();
+                    root.resetSliders();
+                }
+            }
         }
-
+///////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -206,12 +215,15 @@ ApplicationWindow {
 
             Knob {
                 id: yawKnob
+                property bool motorIgnore: false
+
                 Connections {
                     target: BLE
-                    onMotorIgnore: { yawKnob.motorIgnore = true}
+                    onMotorIgnore: {motorIgnore = true}
+                    onStageIsReset: {motorIgnore = false;}
                 }
 
-                property bool motorIgnore: false
+
                 style: Knob.Arc
                 value: 0
                 color: "#69BAFB"

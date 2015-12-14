@@ -8,6 +8,7 @@ Rectangle{
         onMotorIgnore: {motorIgnore = true;}
         onZAxisMinReached: {motorIgnore = true; zSlider.value = zSlider.minimumValue; motorIgnore = false}
         onZAxisMaxReached: {motorIgnore = true; zSlider.value = zSlider.maximumValue; motorIgnore = false}
+        onStageIsReset: {motorIgnore = false;}
     }
 
     id: zAxis

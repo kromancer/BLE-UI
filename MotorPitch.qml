@@ -7,6 +7,7 @@ Rectangle {
         onMotorIgnore: {motorIgnore = true;}
         onPitchMinReached: {motorIgnore = true; pitchSlider.value = pitchSlider.minimumValue; motorIgnore = false}
         onPitchMaxReached: {motorIgnore = true; pitchSlider.value = pitchSlider.maximumValue; motorIgnore = false}
+        onStageIsReset: {motorIgnore = false;}
     }
 
     id: pitch

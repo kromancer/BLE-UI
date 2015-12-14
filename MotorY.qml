@@ -8,6 +8,7 @@ Rectangle {
         onMotorIgnore: {motorIgnore = true;}
         onYAxisMinReached: {motorIgnore = true; ySlider.value = ySlider.minimumValue; motorIgnore = false}
         onYAxisMaxReached: {motorIgnore = true; ySlider.value = ySlider.maximumValue; motorIgnore = false}
+        onStageIsReset: {motorIgnore = false;}
     }
 
 
