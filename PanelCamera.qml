@@ -410,7 +410,6 @@ Rectangle {
             }
             onRejected: {
                 console.log("Saving snapshot cancelled")
-                Qt.quit()
             }
         }
         ///////////////////////////////////////////////////////////

@@ -99,11 +99,13 @@ void PG_Camera::paint(QPainter *painter)
 // Super easy. The method is called from the FileDialog item, onAccepted.
 void PG_Camera::saveFrame(QString path)
 {
+    if(path != NULL){
     // I hope that this calls the move assignment operator
     QImage frame = getFrame();
 
-    frame.save(path);
 
+        frame.save(path);
+    }
     return;
 }
 

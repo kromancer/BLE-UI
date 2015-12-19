@@ -219,8 +219,8 @@ ApplicationWindow {
 
                 Connections {
                     target: BLE
-                    onMotorIgnore: {motorIgnore = true}
-                    onStageIsReset: {motorIgnore = false;}
+                    onMotorIgnore: {yawKnob.motorIgnore = true}
+                    onStageIsReset:{yawKnob.motorIgnore = false;}
                 }
 
 

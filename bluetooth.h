@@ -144,6 +144,8 @@ private:
     QLowEnergyCharacteristic LEDid_char;
     QLowEnergyCharacteristic LEDval_char;
     QLowEnergyCharacteristic LEDmaster_char;
+
+    QLowEnergyDescriptor motorNotificationDesc;
 };
 
 

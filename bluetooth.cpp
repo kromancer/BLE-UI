@@ -21,29 +21,52 @@ Bluetooth::Bluetooth():
 }
 
 Bluetooth::~Bluetooth()
-{
-    delete m_deviceDiscoveryAgent;
-    delete m_control;
-    delete l_control;
-    delete m_service;
-    delete l_service;
+{   
 }
 
 void Bluetooth::releaseBLE()
 {
-    qWarning() << "Exiting Application";
-    m_control->disconnectFromDevice();
-    delete m_control;
-    m_control = 0;
-    l_control->disconnectFromDevice();
-    delete l_control;
-    l_control = 0;
-    m_service->disconnect();
-    delete m_service;
-    m_service = 0;
-    l_service->disconnect();
-    delete l_service;
-    l_service = 0;
+    qWarning() << "Releasing BLE stack ...";
+
+    // Unsuscribe from any notifications
+    if (motorNotificationDesc.isValid() && m_service) {
+        m_service->writeDescriptor(motorNotificationDesc, QByteArray::fromHex("0000"));
+        qWarning() << "Unsuscribed from stage notifications";
+    }
+
+    qWarning() << "Deleting discovery agent";
+    delete m_deviceDiscoveryAgent;
+
+    qWarning() << "Deleting motor controller";
+    if (m_control)
+    {
+        m_control->disconnectFromDevice();
+        delete m_control;
+    }
+
+    qWarning() << "Deleting led controller";
+    if (l_control)
+    {
+        l_control->disconnectFromDevice();
+        delete l_control;
+    }
+
+    qWarning() << "Deleting motor service";
+    if (m_service)
+    {
+        motorNotificationDesc.~QLowEnergyDescriptor();
+        m_service->disconnect();
+        delete m_service;
+    }
+
+    qWarning() << "Deleting led service";
+    if (l_service)
+    {
+        l_service->disconnect();
+        delete l_service;
+    }
+
+    qWarning() << "BLE stack released";
 }
 
 /***************************************************
@@ -448,9 +471,9 @@ void Bluetooth::m_serviceStateChanged(QLowEnergyService::ServiceState newState)
 
         // Status characteristic. From this characteristic we get all our notifications
         qWarning() << "Connecting to status characteristic, enable notifications";
-        Status_char =   m_service->characteristic( QBluetoothUuid(QUuid("{00000006-0000-1000-8000-00805f9b34fb}")));
-        const QLowEnergyDescriptor m_notificationDesc = Status_char.descriptor( QBluetoothUuid::ClientCharacteristicConfiguration);
-        m_service->writeDescriptor(m_notificationDesc, QByteArray::fromHex("0100"));
+        Status_char           = m_service->characteristic( QBluetoothUuid(QUuid("{00000006-0000-1000-8000-00805f9b34fb}")));
+        motorNotificationDesc = Status_char.descriptor( QBluetoothUuid::ClientCharacteristicConfiguration);
+        m_service->writeDescriptor(motorNotificationDesc, QByteArray::fromHex("0100"));
 
 
         // This characteristic resets the Arduino (The mcu on the main board, responsible for controlling the motors)
