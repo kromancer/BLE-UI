@@ -5,6 +5,8 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
 import QtKnobs 1.0
+
+
 ApplicationWindow {
     id: applicationWindow1
     width: 457
@@ -14,6 +16,16 @@ ApplicationWindow {
     minimumHeight: 500
     maximumHeight: 500
     title: "Stage Control"
+
+
+
+    onClosing: {
+        BLE.disconnectFromStage();
+        root.state = "NOT_CONNECTED"
+        busyIndication.running = true
+    }
+
+
 
     Rectangle {
         signal resetSliders;

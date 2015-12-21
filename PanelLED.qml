@@ -5,6 +5,7 @@ import QtQuick.Controls 1.4
 
 
 ApplicationWindow{
+    id: ledcontrolwindow
     width: 420
     height: 420
     minimumWidth: 420
@@ -13,8 +14,16 @@ ApplicationWindow{
     maximumHeight: 420
     color: "#ffffff"
 
+    signal ledWindowClosed
+
     title: "LED Ring"
 
+    onClosing: {
+        BLE.disconnectFromLED();
+        root.connected = false;
+        root.state = "NOT_CONNECTED"
+        busyIndication.running = true
+    }
 
     Rectangle{
         id: root
@@ -25,17 +34,8 @@ ApplicationWindow{
         border.width: 0
         anchors.centerIn: parent
         signal ledSelected(var ledID)
-        property var selectedLEDid: l1
         property bool connected:false
 
-        onLedSelected: {
-            selectedLEDid.source = "qrc:/pics/ledButton.png"
-            selectedLEDid.selected = false
-            selectedLEDid = ledID
-            selectedLEDid.source = "qrc:/pics/ledButtonSelected.png"
-            selectedLEDid.selected = true
-            selectedSlider.value = selectedLEDid.value
-        }
         /*
         Image {
             id: root
@@ -59,53 +59,118 @@ ApplicationWindow{
 
         Connections {
             target: BLE
-            onLedServiceIsReady: { root.connected = true }
+            onLedServiceIsReady: { busyIndication.running = false; root.state="CONNECTED"; root.connected = true }
         }
 
-        Slider {
-            id: masterSlider
-            x: 95
-            y: 249
-            width: 214
-            height: 46
-            updateValueWhileDragging: false
-            value: 100
-            stepSize: 1
-            maximumValue: 100
-            orientation: Qt.Horizontal
-            onValueChanged: {
-                if (root.connected)
-                    BLE.setLED(0, masterSlider.value);
+        state: "NOT_CONNECTED"
+        states: [
+            State {
+                name: "NOT_CONNECTED"
+                PropertyChanges { target: l1; visible: false }
+                PropertyChanges { target: l2; visible: false }
+                PropertyChanges { target: l3; visible: false }
+                PropertyChanges { target: l4; visible: false }
+                PropertyChanges { target: l5; visible: false }
+                PropertyChanges { target: l6; visible: false }
+                PropertyChanges { target: l7; visible: false }
+                PropertyChanges { target: l8; visible: false }
+                PropertyChanges { target: l9; visible: false }
+                PropertyChanges { target: l10; visible: false }
+                PropertyChanges { target: l11; visible: false }
+                PropertyChanges { target: l12; visible: false }
+                PropertyChanges { target: l13; visible: false }
+                PropertyChanges { target: l14; visible: false }
+                PropertyChanges { target: l15; visible: false }
+                PropertyChanges { target: l16; visible: false }
+                PropertyChanges { target: l17; visible: false }
+                PropertyChanges { target: l18; visible: false }
+                PropertyChanges { target: l19; visible: false }
+                PropertyChanges { target: l20; visible: false }
+                PropertyChanges { target: l21; visible: false }
+                PropertyChanges { target: l22; visible: false }
+                PropertyChanges { target: l23; visible: false }
+                PropertyChanges { target: l24; visible: false }
+                PropertyChanges { target: l25; visible: false }
+                PropertyChanges { target: l26; visible: false }
+                PropertyChanges { target: l27; visible: false }
+                PropertyChanges { target: l28; visible: false }
+                PropertyChanges { target: l29; visible: false }
+                PropertyChanges { target: l30; visible: false }
+                PropertyChanges { target: l31; visible: false }
+                PropertyChanges { target: l32; visible: false }
+                PropertyChanges { target: l33; visible: false }
+                PropertyChanges { target: l34; visible: false }
+                PropertyChanges { target: l35; visible: false }
+                PropertyChanges { target: l36; visible: false }
+            },
+            State {
+                name: "CONNECTED"
+                PropertyChanges { target: l1; visible: true }
+                PropertyChanges { target: l2; visible: true }
+                PropertyChanges { target: l3; visible: true }
+                PropertyChanges { target: l4; visible: true }
+                PropertyChanges { target: l5; visible: true }
+                PropertyChanges { target: l6; visible: true }
+                PropertyChanges { target: l7; visible: true }
+                PropertyChanges { target: l8; visible: true }
+                PropertyChanges { target: l9; visible: true }
+                PropertyChanges { target: l10; visible: true }
+                PropertyChanges { target: l11; visible: true }
+                PropertyChanges { target: l12; visible: true }
+                PropertyChanges { target: l13; visible: true }
+                PropertyChanges { target: l14; visible: true }
+                PropertyChanges { target: l15; visible: true }
+                PropertyChanges { target: l16; visible: true }
+                PropertyChanges { target: l17; visible: true }
+                PropertyChanges { target: l18; visible: true }
+                PropertyChanges { target: l19; visible: true }
+                PropertyChanges { target: l20; visible: true }
+                PropertyChanges { target: l21; visible: true }
+                PropertyChanges { target: l22; visible: true }
+                PropertyChanges { target: l23; visible: true }
+                PropertyChanges { target: l24; visible: true }
+                PropertyChanges { target: l25; visible: true }
+                PropertyChanges { target: l26; visible: true }
+                PropertyChanges { target: l27; visible: true }
+                PropertyChanges { target: l28; visible: true }
+                PropertyChanges { target: l29; visible: true }
+                PropertyChanges { target: l30; visible: true }
+                PropertyChanges { target: l31; visible: true }
+                PropertyChanges { target: l32; visible: true }
+                PropertyChanges { target: l33; visible: true }
+                PropertyChanges { target: l34; visible: true }
+                PropertyChanges { target: l35; visible: true }
+                PropertyChanges { target: l36; visible: true }
             }
+        ]
+
+        Component.onCompleted: {
+            busyIndication.running = true
         }
 
-        Slider {
-            id: selectedSlider
-            x: 95
-            y: 133
-            width: 214
-            height: 50
-            updateValueWhileDragging: false
-            value: 0
-            stepSize: 1
-            maximumValue: 100
-            orientation: Qt.Horizontal
-            onValueChanged:
-            {
-                if (root.connected)
-                {
-                    if (root.selectedLEDid.value != selectedSlider.value)
-                    {
-                        BLE.setLED(root.selectedLEDid.intID, value);
-                        root.selectedLEDid.value = selectedSlider.value
-                    }
-                }
+        // Busy Indicator
+        BusyIndicator {
+            id: busyIndication
+            property alias text: busyText.text
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 0
+            anchors.bottom: root.bottom
+            clip: false
+            running: false
+
+            Text {
+                visible: busyIndication.running
+                id: busyText
+                text: "Connecting to LED ring"
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenterOffset: 2
+                font.pixelSize: 12
+                anchors.verticalCenter: parent.verticalCenter
             }
         }
 
 
         // INDIVIDUAL LEDS
-
         Image {
             id: l1
             x: 199
@@ -116,13 +181,24 @@ ApplicationWindow{
             fillMode: Image.PreserveAspectFit
             source: "qrc:/pics/ledButtonSelected.png"
             property bool selected: true
-            property int intID: 1
             property int value: 0
+
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l1.selected)
-                        root.ledSelected(l1);
+                    if (l1.selected)
+                    {
+                        l1.selected = false;
+                        l1.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x00);
+                    }
+                    else
+                    {
+                        l1.selected = true;
+                        l1.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x80);
+                    }
+
                 }
             }
         }
@@ -137,13 +213,22 @@ ApplicationWindow{
             fillMode: Image.PreserveAspectFit
             source: "qrc:/pics/ledButton.png"
             property bool selected: false
-            property int intID: 2
             property int value: 0
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l2.selected)
-                        root.ledSelected(l2);
+                    if (l2.selected)
+                    {
+                        l2.selected = false;
+                        l2.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x01);
+                    }
+                    else
+                    {
+                        l2.selected = true;
+                        l2.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x81);
+                    }
                 }
             }
         }
@@ -163,10 +248,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l3.selected)
-                        root.ledSelected(l3);
+                    if (l3.selected)
+                    {
+                        l3.selected = false;
+                        l3.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x02);
+                    }
+                    else
+                    {
+                        l3.selected = true;
+                        l3.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x82);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -184,10 +280,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l4.selected)
-                        root.ledSelected(l4);
+                    if (l4.selected)
+                    {
+                        l4.selected = false;
+                        l4.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x03);
+                    }
+                    else
+                    {
+                        l4.selected = true;
+                        l4.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x83);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -205,10 +312,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l5.selected)
-                        root.ledSelected(l5);
+                    if (l5.selected)
+                    {
+                        l5.selected = false;
+                        l5.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x04);
+                    }
+                    else
+                    {
+                        l5.selected = true;
+                        l5.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x84);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -226,10 +344,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l6.selected)
-                        root.ledSelected(l6);
+                    if (l6.selected)
+                    {
+                        l6.selected = false;
+                        l6.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x05);
+                    }
+                    else
+                    {
+                        l6.selected = true;
+                        l6.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x85);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -248,13 +377,23 @@ ApplicationWindow{
             property int intID: 7
             property int value: 0
             MouseArea{
-                anchors.topMargin: 0
                 anchors.fill: parent
                 onClicked: {
-                    if (!l7.selected)
-                        root.ledSelected(l7);
+                    if (l7.selected)
+                    {
+                        l7.selected = false;
+                        l7.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x06);
+                    }
+                    else
+                    {
+                        l7.selected = true;
+                        l7.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x86);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -272,10 +411,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l8.selected)
-                        root.ledSelected(l8);
+                    if (l8.selected)
+                    {
+                        l8.selected = false;
+                        l8.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x07);
+                    }
+                    else
+                    {
+                        l8.selected = true;
+                        l8.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x87);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -293,10 +443,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l9.selected)
-                        root.ledSelected(l9);
+                    if (l9.selected)
+                    {
+                        l9.selected = false;
+                        l9.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x08);
+                    }
+                    else
+                    {
+                        l9.selected = true;
+                        l9.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x88);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -314,10 +475,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l10.selected)
-                        root.ledSelected(l10);
+                    if (l10.selected)
+                    {
+                        l10.selected = false;
+                        l10.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x09);
+                    }
+                    else
+                    {
+                        l10.selected = true;
+                        l10.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x89);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -334,10 +506,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l11.selected)
-                        root.ledSelected(l11);
+                    if (l11.selected)
+                    {
+                        l11.selected = false;
+                        l11.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x0a);
+                    }
+                    else
+                    {
+                        l11.selected = true;
+                        l11.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x8a);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -354,10 +537,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l12.selected)
-                        root.ledSelected(l12);
+                    if (l12.selected)
+                    {
+                        l12.selected = false;
+                        l12.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x0b);
+                    }
+                    else
+                    {
+                        l12.selected = true;
+                        l12.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x8b);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -374,10 +568,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l13.selected)
-                        root.ledSelected(l13);
+                    if (l13.selected)
+                    {
+                        l13.selected = false;
+                        l13.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x0c);
+                    }
+                    else
+                    {
+                        l13.selected = true;
+                        l13.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x8c);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -394,10 +599,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l14.selected)
-                        root.ledSelected(l14);
+                    if (l14.selected)
+                    {
+                        l14.selected = false;
+                        l14.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x0d);
+                    }
+                    else
+                    {
+                        l14.selected = true;
+                        l14.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x8d);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -414,10 +630,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l15.selected)
-                        root.ledSelected(l15);
+                    if (l15.selected)
+                    {
+                        l15.selected = false;
+                        l15.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x0e);
+                    }
+                    else
+                    {
+                        l15.selected = true;
+                        l15.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x8e);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -434,10 +661,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l16.selected)
-                        root.ledSelected(l16);
+                    if (l16.selected)
+                    {
+                        l16.selected = false;
+                        l16.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x0f);
+                    }
+                    else
+                    {
+                        l16.selected = true;
+                        l16.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x8f);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -454,10 +692,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l17.selected)
-                        root.ledSelected(l17);
+                    if (l17.selected)
+                    {
+                        l17.selected = false;
+                        l17.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x10);
+                    }
+                    else
+                    {
+                        l17.selected = true;
+                        l17.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x90);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -474,10 +723,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l18.selected)
-                        root.ledSelected(l18);
+                    if (l18.selected)
+                    {
+                        l18.selected = false;
+                        l18.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x11);
+                    }
+                    else
+                    {
+                        l18.selected = true;
+                        l18.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x91);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -494,10 +754,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l19.selected)
-                        root.ledSelected(l19);
+                    if (l19.selected)
+                    {
+                        l19.selected = false;
+                        l19.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x12);
+                    }
+                    else
+                    {
+                        l19.selected = true;
+                        l19.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x92);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -514,10 +785,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l20.selected)
-                        root.ledSelected(l20);
+                    if (l20.selected)
+                    {
+                        l20.selected = false;
+                        l20.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x13);
+                    }
+                    else
+                    {
+                        l20.selected = true;
+                        l20.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x93);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -534,10 +816,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l21.selected)
-                        root.ledSelected(l21);
+                    if (l21.selected)
+                    {
+                        l21.selected = false;
+                        l21.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x14);
+                    }
+                    else
+                    {
+                        l21.selected = true;
+                        l21.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x94);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -554,10 +847,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l22.selected)
-                        root.ledSelected(l22);
+                    if (l22.selected)
+                    {
+                        l22.selected = false;
+                        l22.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x15);
+                    }
+                    else
+                    {
+                        l22.selected = true;
+                        l22.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x95);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -574,10 +878,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l23.selected)
-                        root.ledSelected(l23);
+                    if (l23.selected)
+                    {
+                        l23.selected = false;
+                        l23.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x16);
+                    }
+                    else
+                    {
+                        l23.selected = true;
+                        l23.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x96);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -594,10 +909,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l24.selected)
-                        root.ledSelected(l24);
+                    if (l24.selected)
+                    {
+                        l24.selected = false;
+                        l24.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x17);
+                    }
+                    else
+                    {
+                        l24.selected = true;
+                        l24.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x97);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -614,10 +940,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l25.selected)
-                        root.ledSelected(l25);
+                    if (l25.selected)
+                    {
+                        l25.selected = false;
+                        l25.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x18);
+                    }
+                    else
+                    {
+                        l25.selected = true;
+                        l25.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x98);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -634,10 +971,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l26.selected)
-                        root.ledSelected(l26);
+                    if (l26.selected)
+                    {
+                        l26.selected = false;
+                        l26.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x19);
+                    }
+                    else
+                    {
+                        l26.selected = true;
+                        l26.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x99);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -654,10 +1002,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l27.selected)
-                        root.ledSelected(l27);
+                    if (l27.selected)
+                    {
+                        l27.selected = false;
+                        l27.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x1a);
+                    }
+                    else
+                    {
+                        l27.selected = true;
+                        l27.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x9a);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -674,10 +1033,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l28.selected)
-                        root.ledSelected(l28);
+                    if (l28.selected)
+                    {
+                        l28.selected = false;
+                        l28.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x1b);
+                    }
+                    else
+                    {
+                        l28.selected = true;
+                        l28.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x9b);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -694,10 +1064,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l29.selected)
-                        root.ledSelected(l29);
+                    if (l29.selected)
+                    {
+                        l29.selected = false;
+                        l29.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x1c);
+                    }
+                    else
+                    {
+                        l29.selected = true;
+                        l29.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x9c);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -714,10 +1095,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l30.selected)
-                        root.ledSelected(l30);
+                    if (l30.selected)
+                    {
+                        l30.selected = false;
+                        l30.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x1d);
+                    }
+                    else
+                    {
+                        l30.selected = true;
+                        l30.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x9d);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -734,10 +1126,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l31.selected)
-                        root.ledSelected(l31);
+                    if (l31.selected)
+                    {
+                        l31.selected = false;
+                        l31.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x1e);
+                    }
+                    else
+                    {
+                        l31.selected = true;
+                        l31.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x9e);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -754,10 +1157,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l32.selected)
-                        root.ledSelected(l32);
+                    if (l32.selected)
+                    {
+                        l32.selected = false;
+                        l32.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x1f);
+                    }
+                    else
+                    {
+                        l32.selected = true;
+                        l32.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0x9f);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -774,10 +1188,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l33.selected)
-                        root.ledSelected(l33);
+                    if (l33.selected)
+                    {
+                        l33.selected = false;
+                        l33.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x20);
+                    }
+                    else
+                    {
+                        l33.selected = true;
+                        l33.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0xa0);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -794,10 +1219,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l34.selected)
-                        root.ledSelected(l34);
+                    if (l34.selected)
+                    {
+                        l34.selected = false;
+                        l34.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x21);
+                    }
+                    else
+                    {
+                        l34.selected = true;
+                        l34.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0xa1);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -814,10 +1250,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l35.selected)
-                        root.ledSelected(l35);
+                    if (l35.selected)
+                    {
+                        l35.selected = false;
+                        l35.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x22);
+                    }
+                    else
+                    {
+                        l35.selected = true;
+                        l35.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0xa2);
+                    }
                 }
             }
+
         }
 
         Image {
@@ -834,32 +1281,21 @@ ApplicationWindow{
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    if (!l36.selected)
-                        root.ledSelected(l36);
+                    if (l36.selected)
+                    {
+                        l36.selected = false;
+                        l36.source = "qrc:/pics/ledButton.png";
+                        BLE.setLED(0x23);
+                    }
+                    else
+                    {
+                        l36.selected = true;
+                        l36.source = "qrc:/pics/ledButtonSelected.png";
+                        BLE.setLED(0xa3);
+                    }
                 }
             }
-        }
 
-
-
-        // SLIDER LABELS
-        Label {
-            id: label1
-            x: 110
-            y: 93
-            text: qsTr("Selected LED level")
-            font.bold: true
-            font.pointSize: 15
-        }
-
-        Label {
-            id: label2
-            x: 140
-            y: 220
-            text: qsTr("Master Level")
-            font.family: "Ubuntu"
-            font.bold: true
-            font.pointSize: 15
         }
     }
 }

@@ -9,8 +9,6 @@ ApplicationWindow {
     minimumWidth: 634
     minimumHeight: 482
 
-
-
     PanelCamera {
         id: cameraPanel;
         anchors.fill: parent
@@ -40,12 +38,6 @@ ApplicationWindow {
 
 
     }
-
-    onClosing: {
-        cameraPanel.destroy()
-    }
-
-
 }
 
 

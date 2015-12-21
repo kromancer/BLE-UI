@@ -37,36 +37,54 @@ void Bluetooth::releaseBLE()
     qWarning() << "Deleting discovery agent";
     delete m_deviceDiscoveryAgent;
 
-    qWarning() << "Deleting motor controller";
-    if (m_control)
+    if (connectedToStage)
     {
+        qWarning() << "Deleting motor service";
+        m_service->disconnect();
+        delete m_service;
+        qWarning() << "Deleting motor controller";
         m_control->disconnectFromDevice();
         delete m_control;
     }
 
-    qWarning() << "Deleting led controller";
-    if (l_control)
+    if (connectedToLed)
     {
+        qWarning() << "Deleting led service";
+        l_service->disconnect();
+        delete l_service;
+        qWarning() << "Deleting led controller";
         l_control->disconnectFromDevice();
         delete l_control;
     }
 
-    qWarning() << "Deleting motor service";
-    if (m_service)
-    {
-        motorNotificationDesc.~QLowEnergyDescriptor();
-        m_service->disconnect();
-        delete m_service;
-    }
-
-    qWarning() << "Deleting led service";
-    if (l_service)
-    {
-        l_service->disconnect();
-        delete l_service;
-    }
-
     qWarning() << "BLE stack released";
+
+    return;
+}
+
+
+void Bluetooth::disconnectFromStage(){
+    qWarning() << "Deleting motor service";
+    m_service->disconnect();
+    delete m_service;
+    qWarning() << "Deleting motor controller";
+    m_control->disconnectFromDevice();
+    delete m_control;
+    connectedToStage = false;
+    return;
+}
+
+
+void Bluetooth::disconnectFromLED()
+{ 
+    qWarning() << "Deleting led service";
+    l_service->disconnect();
+    delete l_service;
+    qWarning() << "Deleting led controller";
+    l_control->disconnectFromDevice();
+    delete l_control;
+    connectedToLed = false;
+    return;
 }
 
 /***************************************************
@@ -76,7 +94,7 @@ void Bluetooth::setX(char value)
 {
     if(connectedToStage)
     {
-        qWarning("Changing X Value\n");    
+        qWarning("Changing X Value\n");
         m_service->writeCharacteristic(X_char, QByteArray(1,value));
     }
     return;
@@ -143,17 +161,10 @@ void Bluetooth::resetStage(){
 /***************************************************
 LED Controlling Methods
 ****************************************************/
-void Bluetooth::setLED(char id, char value){
-    qWarning("Changing LED: %d Value: %d\n", id, value);
-
-    if (id!=0)
-    {
-        l_service->writeCharacteristic(LEDid_char, QByteArray(1,id));
-        l_service->writeCharacteristic(LEDval_char, QByteArray(1,value));
-    }
-    else
-        l_service->writeCharacteristic(LEDmaster_char,QByteArray(1,value));
-
+void Bluetooth::setLED(char value){
+    QLowEnergyCharacteristic LED_char = l_service->characteristic( QBluetoothUuid(QUuid("{00000000-0000-1000-8000-00805f9b34fb}")));
+    qWarning() << "Changing LED: " << hex << QByteArray(1,value).toHex();
+    l_service->writeCharacteristic(LED_char, QByteArray(1,value));
     return;
 }
 
@@ -282,7 +293,7 @@ void Bluetooth::connectToMotorSensorTag()
         qWarning() << "I will try to connect to the motors SensorTag ";
 
         m_control->connectToDevice();
-     }
+    }
 
     return;
 }
@@ -506,64 +517,64 @@ void Bluetooth::m_statusNotification(const QLowEnergyCharacteristic &c, const QB
     qWarning() << flags;
 
     switch(flags){
-        case 1:
-            emit stageIsReset();
+    case 1:
+        emit stageIsReset();
         break;
 
-        case 2:
-            emit stageIsBusy();
+    case 2:
+        emit stageIsBusy();
         break;
 
-        case 3:
-            emit stageIsIdle();
+    case 3:
+        emit stageIsIdle();
         break;
 
-        case 4:
-            resetStage();
-            emit busError();
+    case 4:
+        resetStage();
+        emit busError();
         break;
 
-        case 17:
-            emit xAxisMinReached();
+    case 17:
+        emit xAxisMinReached();
         break;
 
-        case 18:
-            emit xAxisMaxReached();
+    case 18:
+        emit xAxisMaxReached();
         break;
 
-        case 19:
-            emit yAxisMinReached();
+    case 19:
+        emit yAxisMinReached();
         break;
 
-        case 20:
-            emit yAxisMaxReached();
+    case 20:
+        emit yAxisMaxReached();
         break;
 
-        case 21:
-            emit zAxisMinReached();
+    case 21:
+        emit zAxisMinReached();
         break;
 
-        case 22:
-            emit zAxisMaxReached();
+    case 22:
+        emit zAxisMaxReached();
         break;
 
-        case 23:
-            emit rollMinReached();
+    case 23:
+        emit rollMinReached();
         break;
 
-        case 24:
-            emit rollMaxReached();
+    case 24:
+        emit rollMaxReached();
         break;
 
-        case 25:
-            emit pitchMinReached();
+    case 25:
+        emit pitchMinReached();
         break;
 
-        case 26:
-            emit pitchMaxReached();
+    case 26:
+        emit pitchMaxReached();
         break;
 
-        default:
+    default:
         break;
     }
     return;
@@ -578,10 +589,6 @@ void Bluetooth::l_serviceStateChanged(QLowEnergyService::ServiceState newState)
     qWarning() << "LED Service State changed to: " << newState;
     if (newState==3)
     {
-        LEDid_char      = l_service->characteristic( QBluetoothUuid(QUuid("{00000000-0000-1000-8000-00805f9b34fb}")));
-        LEDval_char     = l_service->characteristic( QBluetoothUuid(QUuid("{00000001-0000-1000-8000-00805f9b34fb}")));
-        LEDmaster_char  = l_service->characteristic( QBluetoothUuid(QUuid("{00000002-0000-1000-8000-00805f9b34fb}")));
-
         connectedToLed = true;
         qWarning("Now you can proceed with Lighting the Stage!");
         emit ledServiceIsReady();

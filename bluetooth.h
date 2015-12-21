@@ -21,7 +21,7 @@ public:
     ~Bluetooth();
 
     //LED control methods
-    Q_INVOKABLE void setLED(char id, char value);
+    Q_INVOKABLE void setLED(char value);
 
 
     //Stage control methods
@@ -38,6 +38,8 @@ public:
 
     //Q_INVOKABLE void connectToMotorService();
     Q_INVOKABLE void connectToLEDService();
+    Q_INVOKABLE void disconnectFromStage();
+    Q_INVOKABLE void disconnectFromLED();
 
 public slots:
      void deviceSearch();
@@ -64,6 +66,7 @@ signals:
 
      void ledServiceIsFound();
      void ledServiceIsReady();
+     void restoreLED(int i);
 
 //Reset situations
      void motorIgnore();
@@ -141,9 +144,7 @@ private:
     QLowEnergyCharacteristic Status_char;
     QLowEnergyCharacteristic Reset_char;
 
-    QLowEnergyCharacteristic LEDid_char;
-    QLowEnergyCharacteristic LEDval_char;
-    QLowEnergyCharacteristic LEDmaster_char;
+
 
     QLowEnergyDescriptor motorNotificationDesc;
 };
