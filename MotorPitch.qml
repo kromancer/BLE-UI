@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 
 Rectangle {
@@ -16,9 +16,10 @@ Rectangle {
     property alias maxValue: pitchSlider.maximumValue
     property alias step:     pitchSlider.stepSize
     property bool motorIgnore: false
+    property int initialValue
 
     width: 50
-    height: 100
+    height: 192
     anchors.left: yaw.right
     anchors.leftMargin: 71
     anchors.verticalCenter: parent.verticalCenter
@@ -27,10 +28,11 @@ Rectangle {
         id: pitchSlider
         anchors.fill: parent
         y: 147
-        height: 110
+        height: 192
         updateValueWhileDragging: false
         orientation: Qt.Vertical
         onValueChanged: {
+            textP.text = value;
             if ( !pitch.motorIgnore )
             {
                 BLE.setPitch(value);
@@ -42,18 +44,38 @@ Rectangle {
         id: pitchLabel
         y: 307
         text: qsTr("Pitch")
-        anchors.left: pitchSlider.right
-        anchors.leftMargin: 6
-        anchors.verticalCenter: pitchSlider.verticalCenter
+        anchors.horizontalCenter: pitchSlider.horizontalCenter
+        anchors.bottom: pitchSlider.top
+        anchors.bottomMargin: 0
         font.bold: true
         font.pointSize: 11
     }
 
-    Text {
-        id: text5
-        x: 21
-        y: 106
-        text: pitchSlider.value
-        font.pixelSize: 12
+    Rectangle {
+        border.color: "black"
+        border.width: 1
+        height: textP.height
+        anchors.right: pitch.right
+        anchors.rightMargin: 0
+        anchors.left: pitch.left
+        anchors.leftMargin: 0
+        anchors.top: pitch.bottom
+        anchors.topMargin: 7
+
+
+
+        TextInput {
+            id: textP
+            validator: IntValidator{bottom: pitchSlider.minimumValue; top: pitchSlider.maximumValue}
+
+            text: pitchSlider.value
+            anchors.centerIn: parent
+            horizontalAlignment: TextInput.AlignHCenter
+
+
+            onAccepted: {
+                pitchSlider.value = Number(text);
+            }
+        }
     }
 }

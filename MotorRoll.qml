@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 
 Rectangle {
@@ -16,6 +16,7 @@ Rectangle {
     property alias maxValue: rollSlider.maximumValue
     property alias step:     rollSlider.stepSize
     property bool motorIgnore: false
+    property int initialValue
 
     width: 100
     height: 50
@@ -30,31 +31,53 @@ Rectangle {
         width: 110
         updateValueWhileDragging: false
         onValueChanged: {
+            textR.text = value;
             if ( !roll.motorIgnore )
             {
                 BLE.setRoll(value);
             }
         }
     }
+
     Label {
         id: rollLabel
         x: 213
         y: 149
         text: qsTr("Roll")
-        anchors.horizontalCenter: rollSlider.horizontalCenter
-        anchors.bottom: rollSlider.top
-        anchors.bottomMargin: 6
+        anchors.right: rollSlider.left
+        anchors.rightMargin: 20
+        anchors.verticalCenter: rollSlider.verticalCenter
         font.bold: true
         font.pointSize: 11
 
     }
 
-    Text {
-        id: text4
-        x: 106
-        y: 18
-        text: rollSlider.value
-        font.pixelSize: 12
+    Rectangle {
+        height: textR.height
+        anchors.left: rollSlider.right
+        anchors.leftMargin: 20
+        anchors.verticalCenter: rollSlider.verticalCenter
+        width: textR.width
+        border.color: "black"
+        border.width: 1
+
+
+
+
+        TextInput {
+            id: textR
+            width: 50
+            validator: IntValidator{bottom: rollSlider.minimumValue; top: rollSlider.maximumValue}
+
+            text: rollSlider.value
+            anchors.centerIn: parent
+            horizontalAlignment: TextInput.AlignHCenter
+
+
+            onAccepted: {
+                rollSlider.value = Number(text);
+            }
+        }
     }
 }
 

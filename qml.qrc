@@ -24,5 +24,9 @@
         <file>pics/bluetooth_connect.png</file>
         <file>pics/play.png</file>
         <file>pics/reset.png</file>
+        <file>Knob2.qml</file>
+        <file>fn.js</file>
+        <file>pics/circularSlider.png</file>
+        <file>pics/circularSliderHandle.png</file>
     </qresource>
 </RCC>

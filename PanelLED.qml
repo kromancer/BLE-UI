@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 
 
@@ -35,27 +35,6 @@ ApplicationWindow{
         anchors.centerIn: parent
         signal ledSelected(var ledID)
         property bool connected:false
-
-        /*
-        Image {
-            id: root
-            property int scaleFactor: 20
-            property int sliderSize: maximumWidth/scaleFactor
-            antialiasing: true
-            z: 0
-            rotation: 180
-            anchors.rightMargin: 0
-            anchors.bottomMargin: 0
-            anchors.leftMargin: 0
-            anchors.topMargin: 0
-            visible: true
-            fillMode: Image.PreserveAspectFit
-            source: "qrc:/pics/LEDlayoutSMALL.png"
-            anchors.fill: parent
-            sourceSize.height: 900
-            sourceSize.width: 900
-        }
-        */
 
         Connections {
             target: BLE
@@ -169,6 +148,13 @@ ApplicationWindow{
             }
         }
 
+        // Master switch
+        Switch {
+            id: master
+            x: 181
+            y: 183
+        }
+
 
         // INDIVIDUAL LEDS
         Image {
@@ -179,8 +165,8 @@ ApplicationWindow{
             height: 32
             antialiasing: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/pics/ledButtonSelected.png"
-            property bool selected: true
+            source: "qrc:/pics/ledButton.png"
+            property bool selected: false
             property int value: 0
 
             MouseArea{

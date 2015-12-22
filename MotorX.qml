@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 
 Rectangle {
@@ -17,7 +17,7 @@ Rectangle {
     property alias maxValue: xSlider.maximumValue
     property alias step:     xSlider.stepSize
     property bool motorIgnore: false
-    x: 117
+    //x: 117
     width: 192
     height: 50
     anchors.horizontalCenter: parent.horizontalCenter
@@ -36,6 +36,7 @@ Rectangle {
         value: 0
 
         onValueChanged: {
+            textX.text = value;
             if ( !xAxis.motorIgnore )
             {
                 BLE.setX(value);
@@ -46,18 +47,39 @@ Rectangle {
         id: xLabel
         x: 214
         text: qsTr("X")
-        anchors.top: xSlider.bottom
-        anchors.topMargin: 6
-        anchors.horizontalCenter: xSlider.horizontalCenter
+        anchors.right: xSlider.left
+        anchors.rightMargin: 20
+        anchors.verticalCenter: xSlider.verticalCenter
         font.bold: true
-        font.pointSize: 16
+        font.pointSize: 11
     }
 
-    Text {
-        id: text3
-        x: 91
-        y: 87
-        text: xSlider.value
-        font.pixelSize: 12
+    Rectangle {
+        height: textX.height
+        anchors.left: xSlider.right
+        anchors.leftMargin: 20
+        anchors.verticalCenter: xSlider.verticalCenter
+        width: textX.width
+        border.color: "black"
+        border.width: 1
+
+
+
+        TextInput {
+            id: textX
+            width: 50
+            validator: IntValidator{bottom: xSlider.minimumValue; top: xSlider.maximumValue}
+
+            text: xSlider.value
+            anchors.verticalCenterOffset: 0
+            anchors.horizontalCenterOffset: 0
+            anchors.centerIn: parent
+            horizontalAlignment: TextInput.AlignHCenter
+
+
+            onAccepted: {
+                xSlider.value = Number(text);
+            }
+        }
     }
 }

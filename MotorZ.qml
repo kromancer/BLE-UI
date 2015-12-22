@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 
 
@@ -36,6 +36,7 @@ Rectangle{
         orientation: Qt.Vertical
 
         onValueChanged: {
+            textZ.text = value;
             if (!zAxis.motorIgnore)
                 BLE.setZ(value);
         }
@@ -49,14 +50,35 @@ Rectangle{
         anchors.bottom: zSlider.top
         anchors.bottomMargin: 0
         font.bold: true
-        font.pointSize: 16
+        font.pointSize: 11
     }
 
-    Text {
-        id: text1
-        x: 21
-        y: 198
-        text: zSlider.value
-        font.pixelSize: 12
+    Rectangle {
+        border.color: "black"
+        border.width: 1
+        height: textZ.height
+        anchors.right: zSlider.right
+        anchors.rightMargin: 0
+        anchors.left: zSlider.left
+        anchors.leftMargin: 0
+        anchors.top: zSlider.bottom
+        anchors.topMargin: 7
+
+
+
+        TextInput {
+            id: textZ
+            validator: IntValidator{bottom: zSlider.minimumValue; top: zSlider.maximumValue}
+
+            text: zSlider.value
+            anchors.centerIn: parent
+            horizontalAlignment: TextInput.AlignHCenter
+
+
+            onAccepted: {
+                zSlider.value = Number(text);
+            }
+        }
     }
+
 }

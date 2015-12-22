@@ -1,7 +1,7 @@
 // Open the component in the design view
 // Source code was automatically generated
 
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
 import QtKnobs 1.0
@@ -9,10 +9,10 @@ import QtKnobs 1.0
 
 ApplicationWindow {
     id: applicationWindow1
-    width: 457
-    height: 493
-    minimumWidth: 493
-    maximumWidth: 493
+    width: 503
+    height: 500
+    minimumWidth: 550
+    maximumWidth: 550
     minimumHeight: 500
     maximumHeight: 500
     title: "Stage Control"
@@ -29,19 +29,32 @@ ApplicationWindow {
 
     Rectangle {
         signal resetSliders;
+        width: 550
         Connections {
             target: BLE
             onMotorServiceIsReady: { busyIndication.running = false; root.state="CONNECTED" }
-            onBusError: { root.state = "I2CERROR"; root.resetSliders(); }
-            onStageIsReset: { root.state = "CONNECTED" }
+            onBusError: {
+                root.state = "I2CERROR";
+                root.resetSliders();
+            }
+            onStageIsReset: {
+                waitTimer.running = false;
+                root.state = "CONNECTED";
+            }
+            onStageIsBusy: { busyIndication.running = true }
+            onStageIsIdle: { busyIndication.running = false }
+        }
+
+        Component.onCompleted: {
+            busyIndication.running = true
         }
 
         onResetSliders: {
             xAxis.value = xAxis.minValue;
             yAxis.value = yAxis.minValue;
             zAxis.value = zAxis.minValue;
-            roll.value = roll.minValue;
-            pitch.value = pitch.minValue;
+            roll.value = roll.initialValue;
+            pitch.value = pitch.initialValue;
         }
 
         id: root
@@ -59,7 +72,6 @@ ApplicationWindow {
         states: [
             State {
                 name: "NOT_CONNECTED"
-                //PropertyChanges { target: connectButton; visible: true }
                 PropertyChanges { target: resetButton; visible: false }
                 PropertyChanges { target: xAxis; visible: false }
                 PropertyChanges { target: yAxis; visible: false }
@@ -70,13 +82,12 @@ ApplicationWindow {
             },
             State {
                 name: "CONNECTED"
-                //PropertyChanges { target: connectButton; visible: false }
-                PropertyChanges { target: resetButton; visible: true }
                 PropertyChanges {
                     target: busyIndication;
                     running: false
                     text: "Moving..."
                 }
+                PropertyChanges { target: resetButton; visible: true }
                 PropertyChanges { target: xAxis; visible: true }
                 PropertyChanges { target: yAxis; visible: true }
                 PropertyChanges { target: zAxis; visible: true  }
@@ -93,7 +104,7 @@ ApplicationWindow {
                     text: "I2C error encountered, attempting to recover..."
                     running: true
                 }
-                PropertyChanges { target: resetButton; enabled: false }
+                PropertyChanges { target: resetButton; visible: false }
                 PropertyChanges { target: waitTimer; running: true }
                 PropertyChanges { target: resetButton; visible: false }
                 PropertyChanges { target: xAxis; enabled: false; value: minValue }
@@ -109,14 +120,6 @@ ApplicationWindow {
             }
 
         ]
-
-        // Feedback from Sensor Tag's status characteristic
-        /*
-
-    */
-        Component.onCompleted: {
-            busyIndication.running = true
-        }
 
 
 
@@ -134,6 +137,7 @@ ApplicationWindow {
             }
         }
 
+
         // This the bus error Warning pop window
         MessageDialog {
             id: errorMsg
@@ -148,41 +152,6 @@ ApplicationWindow {
                 applicationWindow1.close()
             }
         }
-
-
-//////////// RESET BUTTON /////////////////////////////////////////////////////////////////
-        Image {
-            id: resetButton
-            anchors.centerIn: parent
-            width: 116
-            height: 74
-            fillMode: Image.PreserveAspectFit
-            anchors.verticalCenterOffset: -141
-            anchors.horizontalCenterOffset: 166
-            smooth: true
-            source: "pics/reset.png"
-
-            Label {
-                id: resetLable
-                x: 40
-                y: 19
-                width: 41
-                height: 63
-                text: "Reset"
-                font.pointSize: 7
-                font.bold: true
-            }
-
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    BLE.resetStage();
-                    root.resetSliders();
-                }
-            }
-        }
-///////////////////////////////////////////////////////////////////////////////////////////
-
 
 
         // Busy Indicator
@@ -210,14 +179,66 @@ ApplicationWindow {
 
 
         // Translatory Motor Controls
-        MotorX{ id: xAxis ; anchors.topMargin: 0; step: 1; minValue: 0; maxValue: 100 }
-        MotorY{ id: yAxis ; anchors.right: yaw.left; anchors.rightMargin: -1; step: 1; minValue: 0; maxValue: 100 }
-        MotorZ{ id: zAxis ; step: 1; minValue: 0; maxValue: 100 }
+        MotorX{ id: xAxis ; anchors.horizontalCenterOffset: 0; anchors.topMargin: -283; step: 1; minValue: 0; maxValue: 80 }
+        MotorY{ id: yAxis ; x: 126; anchors.verticalCenterOffset: 0; anchors.right: yaw.left; anchors.rightMargin: 24; step: 1; minValue: 0; maxValue: 80 }
+        MotorZ{ id: zAxis ; x: 50; anchors.verticalCenterOffset: 0; anchors.rightMargin: 16; step: 1; minValue: 0; maxValue: 80 }
 
 
         // Rotational Axises
-        MotorRoll{ id: roll ; step: 1; anchors.bottomMargin: 4 ; minValue: 0; maxValue: 100 }
-        MotorPitch{ id: pitch ; step: 1; anchors.leftMargin: 8 ; minValue: 0; maxValue: 100 }
+        MotorRoll{ id: roll ; y: 74; width: 192; anchors.horizontalCenterOffset: 0; step: 1; anchors.bottomMargin: 76; value: 90; minValue: 0; maxValue: 180; initialValue: 90 }
+        MotorPitch{ id: pitch ; anchors.verticalCenterOffset: 0; step: 1; anchors.leftMargin: 51; value: 90; minValue: 0; maxValue: 180; initialValue: 90 }
+        Knob2 {
+            property bool motorIgnore: false
+            id: yaw
+            width: 200
+            height: 200
+            anchors.horizontalCenterOffset: 0
+            anchors.verticalCenter: root.verticalCenter
+            anchors.horizontalCenter: root.horizontalCenter
+
+            Connections {
+                target: BLE
+                onMotorIgnore: {yaw.motorIgnore = true}
+                onStageIsReset:{yaw.motorIgnore = false;}
+            }
+
+            onStableValueChanged: {
+                if (!yaw.motorIgnore)
+                    BLE.setYaw(value)
+            }
+        }
+
+        Image {
+            id: resetButton
+            width: 116
+            height: 74
+            anchors.top: yaw.bottom
+            anchors.topMargin: 11
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "pics/reset.png"
+
+            Label {
+                id: resetLable
+                x: 40
+                y: 19
+                width: 41
+                height: 63
+                text: "Reset"
+                font.pointSize: 7
+                font.bold: true
+            }
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    BLE.resetStage();
+                    root.resetSliders();
+                }
+            }
+        }
+        /*
         Rectangle{
             id: yaw
             width: 200
@@ -248,11 +269,11 @@ ApplicationWindow {
                 }
             }
         }
+        */
 
 
 
-
-   } // Root rectangle ends here
+    } // Root rectangle ends here
 } // Application Window ends here
 
 
@@ -315,6 +336,9 @@ Button {
                 BLE.deviceSearch();
             }
         }
+
+
+
 
  */
 

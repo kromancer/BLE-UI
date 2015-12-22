@@ -1,4 +1,4 @@
-import QtQuick 2.1
+import QtQuick 2.5
 import QtQuick.Dialogs 1.1
 import mymodule 1.0
 import QtQuick.Controls 1.4
@@ -71,6 +71,7 @@ Rectangle {
             onTriggered: camera.update()
         }
 
+        // Camera not connected image
         Image {
             id: notConnectedIcon
             visible: false
@@ -110,6 +111,11 @@ Rectangle {
         source: "qrc:/pics/bluetooth_connect.png"
         scale: iconScale
 
+        Connections {
+            target: BLE
+            onDeviceScanDone: {bluetoothsearchbutton.visible = true}
+        }
+
         state: "NOT_CONNECTED"
         states: [
             State {
@@ -127,6 +133,7 @@ Rectangle {
         MouseArea{
             anchors.fill: parent
             onClicked: {
+                bluetoothsearchbutton.visible = false;
                 BLE.deviceSearch();
                 busyIndicationStage.text = "Searching for Motor SensorTag";
                 busyIndicationLed.text = "Searching for LED SensorTag";
@@ -168,15 +175,11 @@ Rectangle {
         title: "Please choose a directory"
         folder: shortcuts.home
         onAccepted: {
-            //**********************************************************************************************************************
-            // Why on earth don't they provide a function to convert a qml url to a string, representing the system's absolute path?
-            //**********************************************************************************************************************
             var path = fileDialog.fileUrl.toString();
             // remove prefixed "file:///"
             path = path.replace(/^(file:\/{2})/,"");
             // unescape html codes like '%23' for '#'
             var cleanPath = decodeURIComponent(path);
-
             camera.saveFrame(cleanPath + "/Snapshot" + Math.random() + ".bmp")
             console.log(cleanPath)
         }
@@ -276,11 +279,18 @@ Rectangle {
     }
 
 
-
-
-   //////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Motor Spinner holder
+    //Motor SensorTag Spinner
     Image {
+        Connections {
+            target: BLE
+            onMotorSensorTagIsFound: { busyIndicationStage.running=false; busyIndicationStage.text = "Found Stage SensorTag" }
+            onMotorSensorTagNotFound:{ busyIndicationStage.running = false; bluetoothsearchstage.source = "qrc:/pics/error.png"; busyIndicationStage.text = "Motor sensor tag not found"}
+            onDeviceScanDone: {
+                busyIndicationStage.running=false;
+                if ( BLE.isMotorsSensorTagFound() )
+                    busyIndicationStage.text = ""
+            }
+        }
         id: bluetoothsearchstage
         anchors.bottom: parent.bottom
         anchors.top: ribbon.top
@@ -300,17 +310,10 @@ Rectangle {
             State {
                 name: "CONNECTED"
                 PropertyChanges { target: bluetoothsearchstage; visible: false }
-                PropertyChanges { target: stageMovement; visible: true }
+                //PropertyChanges { target: stageMovement; visible: true }
             }
         ]
 
-
-        Connections {
-            target: BLE
-            onMotorSensorTagIsFound: { bluetoothsearchstage.state="CONNECTED"; busyIndicationStage.running=false }
-            onMotorSensorTagNotFound:{ bluetoothsearchstage.source = "qrc:/pics/error.png"; busyIndicationStage.running = false; busyIndicationStage.text = "Motor sensor tag not found"}
-        }
-        ///////////////////////////////MOTOR SPINNER///////////////////////////////////////////////////////////
         BusyIndicator {
             id: busyIndicationStage
             property alias text: busyTextStage.text
@@ -340,6 +343,15 @@ Rectangle {
 
         Connections {
             target: BLE
+            onDeviceScanStarted: {
+                stageMovement.visible = false;
+            }
+
+            onDeviceScanDone: {
+                if ( BLE.isMotorsSensorTagFound() )
+                    stageMovement.visible = true;
+            }
+
             onMotorServiceIsFound: {
                 stagePanelWindow.show();
                 stageMovement.state = "EXPOSED";
@@ -381,11 +393,19 @@ Rectangle {
     }
 
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //LED spinner placeholder
+    //LED SensorTag Spinner
     Image {
+        Connections {
+            target: BLE
+            onLedSensorTagIsFound: { busyIndicationLed.running = false; busyIndicationLed.text = "Found LED SensorTag"}
+            onLedSensorTagNotFound:{ busyIndicationLed.running = false; bluetoothsearchled.source = "qrc:/pics/error.png";  busyIndicationLed.text = "LED SensorTag not found"}
+            onDeviceScanDone: {
+                busyIndicationLed.running = false;
+                if ( BLE.isLEDSensorTagFound() )
+                    busyIndicationLed.text = ""
+            }
+        }
+
         id: bluetoothsearchled
         anchors.bottom: parent.bottom
         anchors.top: ribbon.top
@@ -406,23 +426,14 @@ Rectangle {
             State {
                 name: "CONNECTED"
                 PropertyChanges { target: bluetoothsearchled; visible: false }
-                PropertyChanges { target: ledControl; visible: true }
+                //PropertyChanges { target: ledControl; visible: true }
             }
         ]
 
-        Connections {
-            target: BLE
-            onLedSensorTagIsFound: { bluetoothsearchled.state="CONNECTED"; busyIndicationLed.running = false; }
-            onLedSensorTagNotFound: {bluetoothsearchled.source = "qrc:/pics/error.png"; busyIndicationLed.running = false; busyIndicationLed.text = "LED Sensor tag not found"}
-        }
-        /////////////////// LED SPINNER /////////////////////////////////////////////////////////////
         BusyIndicator {
             id: busyIndicationLed
             property alias text: busyTextLed.text
             anchors.fill: parent
-            //anchors.horizontalCenter: parent.horizontalCenter
-            //anchors.bottomMargin: 0
-            //anchors.bottom: root.bottom
             clip: false
             running: false
 
@@ -440,19 +451,29 @@ Rectangle {
     }
 
 
-    //LED panel button
+    //LED control button
     Image {
         id: ledControl
         Connections {
             target: BLE
-            onLedServiceIsFound: { ledPanelWindow.show(); ledControl.state = "EXPOSED"; ledPanelWindow.closing.connect(toggleState) }
+            onDeviceScanStarted: {
+                ledControl.visible = false;
+            }
+
+            onDeviceScanDone: {
+                if ( BLE.isLEDSensorTagFound() )
+                    ledControl.visible = true;
+            }
+            onLedServiceIsFound: {
+                ledPanelWindow.show();
+                ledControl.state = "EXPOSED";
+                ledPanelWindow.closing.connect(toggleState)
+            }
             function toggleState()
             {
                 ledControl.state = "NOT_EXPOSED"
             }
         }
-
-
         anchors.bottom: parent.bottom
         anchors.top: ribbon.top
         anchors.left: stageMovement.right

@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 
 // Y axis
@@ -18,7 +18,7 @@ Rectangle {
     property alias maxValue: ySlider.maximumValue
     property alias step:     ySlider.stepSize
     property bool motorIgnore: false
-    x: 80
+    //x: 80
     width: 50
     height: 192
     anchors.verticalCenterOffset: 0
@@ -36,6 +36,7 @@ Rectangle {
         orientation: Qt.Vertical
 
         onValueChanged: {
+            textY.text = value;
             if ( !yAxis.motorIgnore )
             {
                 BLE.setY(value);
@@ -51,14 +52,34 @@ Rectangle {
         anchors.bottomMargin: 0
         anchors.horizontalCenter: ySlider.horizontalCenter
         font.bold: true
-        font.pointSize: 16
+        font.pointSize: 11
     }
 
-    Text {
-        id: text2
-        x: 20
-        y: 198
-        text: ySlider.value
-        font.pixelSize: 12
+    Rectangle {
+        border.color: "black"
+        border.width: 1
+        height: textY.height
+        anchors.right: ySlider.right
+        anchors.rightMargin: 0
+        anchors.left: ySlider.left
+        anchors.leftMargin: 0
+        anchors.top: ySlider.bottom
+        anchors.topMargin: 7
+
+
+
+        TextInput {
+            id: textY
+            validator: IntValidator{bottom: ySlider.minimumValue; top: ySlider.maximumValue}
+
+            text: ySlider.value
+            anchors.centerIn: parent
+            horizontalAlignment: TextInput.AlignHCenter
+
+
+            onAccepted: {
+                ySlider.value = Number(text);
+            }
+        }
     }
 }

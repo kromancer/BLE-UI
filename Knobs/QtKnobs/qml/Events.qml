@@ -13,13 +13,6 @@ MouseArea {
             percent = chunk.endValueFromPoint(dx,dy)
     }
 
-    onWheel: {
-        if(mode===10)
-            wheel.angleDelta.y < 0 ? value < maxValue ? ++value : maxValue : value > minValue ? --value : minValue
-        else
-            wheel.angleDelta.y < 0 ? percent < 100 ? ++percent : 100 : percent > 0 ? --percent : 0
-    }
-
     onClicked: calculateValue(mouseX,mouseY)
-    onPositionChanged: calculateValue(mouseX,mouseY)
+    //onPositionChanged: calculateValue(mouseX,mouseY)
 }
