@@ -74,10 +74,21 @@ Rectangle {
         // Camera not connected image
         Image {
             id: notConnectedIcon
+            width: 100
+            height: 100
             visible: false
             anchors.centerIn: parent
             scale: 0.5
-            source: "qrc:/pics/oops.png"
+            source: "qrc:/pics/error.png"
+
+            Label {
+                anchors.top: parent.bottom
+                horizontalAlignment: parent.horizontalAlignment
+                text: "Camera not connected"
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.bold: true
+                font.pixelSize: 32
+            }
         }
 
         Component.onCompleted: {

@@ -12,8 +12,6 @@
         <file>pics/Empty.png</file>
         <file>pics/error.png</file>
         <file>pics/led.png</file>
-        <file>pics/ledButton.png</file>
-        <file>pics/ledButtonSelected.png</file>
         <file>pics/maximize.png</file>
         <file>pics/minimize.png</file>
         <file>pics/move.png</file>
@@ -28,5 +26,7 @@
         <file>fn.js</file>
         <file>pics/circularSlider.png</file>
         <file>pics/circularSliderHandle.png</file>
+        <file>pics/ledButton.png</file>
+        <file>pics/ledButtonSelected.png</file>
     </qresource>
 </RCC>

@@ -25,6 +25,7 @@ ApplicationWindow{
         busyIndication.running = true
     }
 
+
     Rectangle{
         id: root
         width: 400
@@ -33,8 +34,10 @@ ApplicationWindow{
         border.color: "#ffffff"
         border.width: 0
         anchors.centerIn: parent
-        signal ledSelected(var ledID)
+        signal masterOn()
+        signal masterOff()
         property bool connected:false
+        property int ledsOn: 0
 
         Connections {
             target: BLE
@@ -45,6 +48,7 @@ ApplicationWindow{
         states: [
             State {
                 name: "NOT_CONNECTED"
+                PropertyChanges { target: masterRect; visible: false }
                 PropertyChanges { target: l1; visible: false }
                 PropertyChanges { target: l2; visible: false }
                 PropertyChanges { target: l3; visible: false }
@@ -84,6 +88,8 @@ ApplicationWindow{
             },
             State {
                 name: "CONNECTED"
+                PropertyChanges { target: masterRect; visible: true }
+                PropertyChanges { target: master; visible: true}
                 PropertyChanges { target: l1; visible: true }
                 PropertyChanges { target: l2; visible: true }
                 PropertyChanges { target: l3; visible: true }
@@ -127,6 +133,157 @@ ApplicationWindow{
             busyIndication.running = true
         }
 
+        onMasterOn: {
+            ledsOn = 36;
+            l1.source = "qrc:/pics/ledButtonSelected.png";
+            l2.source = "qrc:/pics/ledButtonSelected.png";
+            l3.source = "qrc:/pics/ledButtonSelected.png";
+            l4.source = "qrc:/pics/ledButtonSelected.png";
+            l5.source = "qrc:/pics/ledButtonSelected.png";
+            l6.source = "qrc:/pics/ledButtonSelected.png";
+            l7.source = "qrc:/pics/ledButtonSelected.png";
+            l8.source = "qrc:/pics/ledButtonSelected.png";
+            l9.source = "qrc:/pics/ledButtonSelected.png";
+            l10.source = "qrc:/pics/ledButtonSelected.png";
+            l11.source = "qrc:/pics/ledButtonSelected.png";
+            l12.source = "qrc:/pics/ledButtonSelected.png";
+            l13.source = "qrc:/pics/ledButtonSelected.png";
+            l14.source = "qrc:/pics/ledButtonSelected.png";
+            l15.source = "qrc:/pics/ledButtonSelected.png";
+            l16.source = "qrc:/pics/ledButtonSelected.png";
+            l17.source = "qrc:/pics/ledButtonSelected.png";
+            l18.source = "qrc:/pics/ledButtonSelected.png";
+            l19.source = "qrc:/pics/ledButtonSelected.png";
+            l20.source = "qrc:/pics/ledButtonSelected.png";
+            l21.source = "qrc:/pics/ledButtonSelected.png";
+            l22.source = "qrc:/pics/ledButtonSelected.png";
+            l23.source = "qrc:/pics/ledButtonSelected.png";
+            l24.source = "qrc:/pics/ledButtonSelected.png";
+            l25.source = "qrc:/pics/ledButtonSelected.png";
+            l26.source = "qrc:/pics/ledButtonSelected.png";
+            l27.source = "qrc:/pics/ledButtonSelected.png";
+            l28.source = "qrc:/pics/ledButtonSelected.png";
+            l29.source = "qrc:/pics/ledButtonSelected.png";
+            l30.source = "qrc:/pics/ledButtonSelected.png";
+            l31.source = "qrc:/pics/ledButtonSelected.png";
+            l32.source = "qrc:/pics/ledButtonSelected.png";
+            l33.source = "qrc:/pics/ledButtonSelected.png";
+            l34.source = "qrc:/pics/ledButtonSelected.png";
+            l35.source = "qrc:/pics/ledButtonSelected.png";
+            l36.source = "qrc:/pics/ledButtonSelected.png";
+            l1.selected = true;
+            l2.selected = true;
+            l3.selected = true;
+            l4.selected = true;
+            l5.selected = true;
+            l6.selected = true;
+            l7.selected = true;
+            l8.selected = true;
+            l9.selected = true;
+            l10.selected = true;
+            l11.selected = true;
+            l12.selected = true;
+            l13.selected = true;
+            l14.selected = true;
+            l15.selected = true;
+            l16.selected = true;
+            l17.selected = true;
+            l18.selected = true;
+            l19.selected = true;
+            l20.selected = true;
+            l21.selected = true;
+            l22.selected = true;
+            l23.selected = true;
+            l24.selected = true;
+            l25.selected = true;
+            l26.selected = true;
+            l27.selected = true;
+            l28.selected = true;
+            l29.selected = true;
+            l30.selected = true;
+            l31.selected = true;
+            l32.selected = true;
+            l33.selected = true;
+            l34.selected = true;
+            l35.selected = true;
+            l36.selected = true;
+        }
+        onMasterOff: {
+            ledsOn = 0;
+            l1.source = "qrc:/pics/ledButton.png";
+            l2.source = "qrc:/pics/ledButton.png";
+            l3.source = "qrc:/pics/ledButton.png";
+            l4.source = "qrc:/pics/ledButton.png";
+            l5.source = "qrc:/pics/ledButton.png";
+            l6.source = "qrc:/pics/ledButton.png";
+            l7.source = "qrc:/pics/ledButton.png";
+            l8.source = "qrc:/pics/ledButton.png";
+            l9.source = "qrc:/pics/ledButton.png";
+            l10.source = "qrc:/pics/ledButton.png";
+            l11.source = "qrc:/pics/ledButton.png";
+            l12.source = "qrc:/pics/ledButton.png";
+            l13.source = "qrc:/pics/ledButton.png";
+            l14.source = "qrc:/pics/ledButton.png";
+            l15.source = "qrc:/pics/ledButton.png";
+            l16.source = "qrc:/pics/ledButton.png";
+            l17.source = "qrc:/pics/ledButton.png";
+            l18.source = "qrc:/pics/ledButton.png";
+            l19.source = "qrc:/pics/ledButton.png";
+            l20.source = "qrc:/pics/ledButton.png";
+            l21.source = "qrc:/pics/ledButton.png";
+            l22.source = "qrc:/pics/ledButton.png";
+            l23.source = "qrc:/pics/ledButton.png";
+            l24.source = "qrc:/pics/ledButton.png";
+            l25.source = "qrc:/pics/ledButton.png";
+            l26.source = "qrc:/pics/ledButton.png";
+            l27.source = "qrc:/pics/ledButton.png";
+            l28.source = "qrc:/pics/ledButton.png";
+            l29.source = "qrc:/pics/ledButton.png";
+            l30.source = "qrc:/pics/ledButton.png";
+            l31.source = "qrc:/pics/ledButton.png";
+            l32.source = "qrc:/pics/ledButton.png";
+            l33.source = "qrc:/pics/ledButton.png";
+            l34.source = "qrc:/pics/ledButton.png";
+            l35.source = "qrc:/pics/ledButton.png";
+            l36.source = "qrc:/pics/ledButton.png";
+            l1.selected = false;
+            l2.selected = false;
+            l3.selected = false;
+            l4.selected = false;
+            l5.selected = false;
+            l6.selected = false;
+            l7.selected = false;
+            l8.selected = false;
+            l9.selected = false;
+            l10.selected = false;
+            l11.selected = false;
+            l12.selected = false;
+            l13.selected = false;
+            l14.selected = false;
+            l15.selected = false;
+            l16.selected = false;
+            l17.selected = false;
+            l18.selected = false;
+            l19.selected = false;
+            l20.selected = false;
+            l21.selected = false;
+            l22.selected = false;
+            l23.selected = false;
+            l24.selected = false;
+            l25.selected = false;
+            l26.selected = false;
+            l27.selected = false;
+            l28.selected = false;
+            l29.selected = false;
+            l30.selected = false;
+            l31.selected = false;
+            l32.selected = false;
+            l33.selected = false;
+            l34.selected = false;
+            l35.selected = false;
+            l36.selected = false;
+        }
+
         // Busy Indicator
         BusyIndicator {
             id: busyIndication
@@ -149,12 +306,52 @@ ApplicationWindow{
         }
 
         // Master switch
-        Switch {
-            id: master
-            x: 181
-            y: 183
-        }
+        Rectangle {
+            id: masterRect
+            property alias checked: master.checked
+            width: 100
+            height: 64
+            anchors.verticalCenterOffset: -7
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            Switch {
+                id: master
+                x: 177
+                y: 205
+                width: 50
+                height: 20
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                scale: 2
 
+                onClicked: {
+                    if (checked)
+                    {
+                        root.masterOn();
+                        BLE.setLED(0xff);
+                    }
+                    else
+                    {
+                        root.masterOff();
+                        BLE.setLED(0x7f);
+                    }
+                }
+            }
+
+            Label {
+                x: 0
+                text: "LED Power"
+                anchors.top: parent.top
+                anchors.topMargin: 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: master.top
+                anchors.bottomMargin: 17
+                font.bold: true
+                font.pointSize: 14
+
+            }
+        }
 
         // INDIVIDUAL LEDS
         Image {
@@ -174,15 +371,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l1.selected)
                     {
+                        BLE.setLED(0x00);
                         l1.selected = false;
                         l1.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x00);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0 )
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x80);
                         l1.selected = true;
                         l1.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x80);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
 
                 }
@@ -205,15 +407,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l2.selected)
                     {
+                        BLE.setLED(0x01);
                         l2.selected = false;
                         l2.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x01);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x81);
                         l2.selected = true;
                         l2.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x81);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -236,15 +443,21 @@ ApplicationWindow{
                 onClicked: {
                     if (l3.selected)
                     {
+                        BLE.setLED(0x02);
                         l3.selected = false;
                         l3.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x02);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
+
                     }
                     else
                     {
+                        BLE.setLED(0x82);
                         l3.selected = true;
                         l3.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x82);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -268,15 +481,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l4.selected)
                     {
+                        BLE.setLED(0x03);
                         l4.selected = false;
                         l4.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x03);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x83);
                         l4.selected = true;
                         l4.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x83);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -300,15 +518,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l5.selected)
                     {
+                        BLE.setLED(0x04);
                         l5.selected = false;
                         l5.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x04);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x84);
                         l5.selected = true;
                         l5.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x84);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -332,15 +555,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l6.selected)
                     {
+                        BLE.setLED(0x05);
                         l6.selected = false;
                         l6.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x05);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x85);
                         l6.selected = true;
                         l6.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x85);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -367,15 +595,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l7.selected)
                     {
+                        BLE.setLED(0x06);
                         l7.selected = false;
                         l7.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x06);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x86);
                         l7.selected = true;
                         l7.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x86);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -399,15 +632,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l8.selected)
                     {
+                        BLE.setLED(0x07);
                         l8.selected = false;
                         l8.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x07);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x87);
                         l8.selected = true;
                         l8.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x87);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -431,15 +669,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l9.selected)
                     {
+                        BLE.setLED(0x08);
                         l9.selected = false;
                         l9.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x08);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x88);
                         l9.selected = true;
                         l9.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x88);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -463,15 +706,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l10.selected)
                     {
+                        BLE.setLED(0x09);
                         l10.selected = false;
                         l10.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x09);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x89);
                         l10.selected = true;
                         l10.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x89);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -494,15 +742,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l11.selected)
                     {
+                        BLE.setLED(0x0a);
                         l11.selected = false;
                         l11.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x0a);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x8a);
                         l11.selected = true;
                         l11.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x8a);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -525,15 +778,19 @@ ApplicationWindow{
                 onClicked: {
                     if (l12.selected)
                     {
+                        BLE.setLED(0x0b);
                         l12.selected = false;
                         l12.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x0b);
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x8b);
                         l12.selected = true;
                         l12.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x8b);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -556,15 +813,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l13.selected)
                     {
+                        BLE.setLED(0x0c);
                         l13.selected = false;
                         l13.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x0c);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x8c);
                         l13.selected = true;
                         l13.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x8c);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -587,15 +849,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l14.selected)
                     {
+                        BLE.setLED(0x0d);
                         l14.selected = false;
                         l14.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x0d);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x8d);
                         l14.selected = true;
                         l14.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x8d);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -618,15 +885,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l15.selected)
                     {
+                        BLE.setLED(0x0e);
                         l15.selected = false;
                         l15.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x0e);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x8e);
                         l15.selected = true;
                         l15.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x8e);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -649,15 +921,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l16.selected)
                     {
+                        BLE.setLED(0x0f);
                         l16.selected = false;
                         l16.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x0f);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x8f);
                         l16.selected = true;
                         l16.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x8f);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -680,15 +957,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l17.selected)
                     {
+                        BLE.setLED(0x10);
                         l17.selected = false;
                         l17.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x10);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x90);
                         l17.selected = true;
                         l17.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x90);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -711,15 +993,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l18.selected)
                     {
+                        BLE.setLED(0x11);
                         l18.selected = false;
                         l18.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x11);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x91);
                         l18.selected = true;
                         l18.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x91);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -742,15 +1029,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l19.selected)
                     {
+                        BLE.setLED(0x12);
                         l19.selected = false;
                         l19.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x12);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x92);
                         l19.selected = true;
                         l19.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x92);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -773,15 +1065,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l20.selected)
                     {
+                        BLE.setLED(0x13);
                         l20.selected = false;
                         l20.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x13);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x93);
                         l20.selected = true;
                         l20.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x93);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -804,15 +1101,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l21.selected)
                     {
+                        BLE.setLED(0x14);
                         l21.selected = false;
                         l21.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x14);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x94);
                         l21.selected = true;
                         l21.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x94);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -835,15 +1137,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l22.selected)
                     {
+                        BLE.setLED(0x15);
                         l22.selected = false;
                         l22.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x15);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x95);
                         l22.selected = true;
                         l22.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x95);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -866,15 +1173,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l23.selected)
                     {
+                        BLE.setLED(0x16);
                         l23.selected = false;
                         l23.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x16);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x96);
                         l23.selected = true;
                         l23.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x96);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -897,15 +1209,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l24.selected)
                     {
+                        BLE.setLED(0x17);
                         l24.selected = false;
                         l24.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x17);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x97);
                         l24.selected = true;
                         l24.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x97);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -928,15 +1245,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l25.selected)
                     {
+                        BLE.setLED(0x18);
                         l25.selected = false;
                         l25.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x18);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x98);
                         l25.selected = true;
                         l25.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x98);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -959,15 +1281,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l26.selected)
                     {
+                        BLE.setLED(0x19);
                         l26.selected = false;
                         l26.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x19);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x99);
                         l26.selected = true;
                         l26.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x99);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -990,15 +1317,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l27.selected)
                     {
+                        BLE.setLED(0x1a);
                         l27.selected = false;
                         l27.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x1a);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x9a);
                         l27.selected = true;
                         l27.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x9a);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1021,15 +1353,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l28.selected)
                     {
+                        BLE.setLED(0x1b);
                         l28.selected = false;
                         l28.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x1b);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x9b);
                         l28.selected = true;
                         l28.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x9b);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1052,15 +1389,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l29.selected)
                     {
+                        BLE.setLED(0x1c);
                         l29.selected = false;
                         l29.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x1c);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x9c);
                         l29.selected = true;
                         l29.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x9c);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1083,15 +1425,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l30.selected)
                     {
+                        BLE.setLED(0x1d);
                         l30.selected = false;
                         l30.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x1d);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x9d);
                         l30.selected = true;
                         l30.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x9d);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1114,15 +1461,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l31.selected)
                     {
+                        BLE.setLED(0x1e);
                         l31.selected = false;
                         l31.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x1e);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x9e);
                         l31.selected = true;
                         l31.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x9e);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1145,15 +1497,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l32.selected)
                     {
+                        BLE.setLED(0x1f);
                         l32.selected = false;
                         l32.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x1f);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0x9f);
                         l32.selected = true;
                         l32.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0x9f);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1176,15 +1533,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l33.selected)
                     {
+                        BLE.setLED(0x20);
                         l33.selected = false;
                         l33.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x20);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0xa0);
                         l33.selected = true;
                         l33.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0xa0);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1207,15 +1569,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l34.selected)
                     {
+                        BLE.setLED(0x21);
                         l34.selected = false;
                         l34.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x21);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0xa1);
                         l34.selected = true;
                         l34.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0xa1);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1238,15 +1605,20 @@ ApplicationWindow{
                 onClicked: {
                     if (l35.selected)
                     {
+                        BLE.setLED(0x22);
                         l35.selected = false;
                         l35.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x22);
+                        root.ledsOn--;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0xa2);
                         l35.selected = true;
                         l35.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0xa2);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
@@ -1269,15 +1641,21 @@ ApplicationWindow{
                 onClicked: {
                     if (l36.selected)
                     {
+                        BLE.setLED(0x23);
                         l36.selected = false;
                         l36.source = "qrc:/pics/ledButton.png";
-                        BLE.setLED(0x23);
+                        root.ledsOn--;
+                        masterRect.checked = true;
+                        if ( root.ledsOn == 0)
+                            masterRect.checked = false;
                     }
                     else
                     {
+                        BLE.setLED(0xa3);
                         l36.selected = true;
                         l36.source = "qrc:/pics/ledButtonSelected.png";
-                        BLE.setLED(0xa3);
+                        root.ledsOn++;
+                        masterRect.checked = true;
                     }
                 }
             }
