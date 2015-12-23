@@ -781,6 +781,7 @@ ApplicationWindow{
                         BLE.setLED(0x0b);
                         l12.selected = false;
                         l12.source = "qrc:/pics/ledButton.png";
+                        root.ledsOn--;
                         if ( root.ledsOn == 0)
                             masterRect.checked = false;
                     }
