@@ -143,6 +143,7 @@ Rectangle {
 
         MouseArea{
             anchors.fill: parent
+            hoverEnabled: true
             onClicked: {
                 bluetoothsearchbutton.visible = false;
                 BLE.deviceSearch();
@@ -290,7 +291,7 @@ Rectangle {
     }
 
 
-    //Motor SensorTag Spinner
+    // Motor SensorTag Spinner
     Image {
         Connections {
             target: BLE
@@ -349,7 +350,7 @@ Rectangle {
     }
 
 
-    //Motor Panel Button
+    // Motor Panel Button
     Image {
 
         Connections {
@@ -401,10 +402,19 @@ Rectangle {
                 BLE.connectToMotorSensorTag();
             }
         }
+
+        Text {
+            id: connectToStageText
+            text: "Connect to Stage"
+            anchors.left: parent.right
+            anchors.leftMargin: 4
+            font.pixelSize: 12
+            anchors.verticalCenter: parent.verticalCenter
+        }
     }
 
 
-    //LED SensorTag Spinner
+    // LED SensorTag Spinner
     Image {
         Connections {
             target: BLE
@@ -462,7 +472,7 @@ Rectangle {
     }
 
 
-    //LED control button
+    // LED control button
     Image {
         id: ledControl
         Connections {
@@ -511,6 +521,15 @@ Rectangle {
             onClicked: {
                 BLE.connectToLEDSensorTag();
             }
+        }
+
+        Text {
+            id: connectToLEDText
+            text: "Connect to LED ring"
+            anchors.left: parent.right
+            anchors.leftMargin: 4
+            font.pixelSize: 12
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 }

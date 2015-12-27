@@ -54,15 +54,16 @@ Rectangle{
     }
 
     Rectangle {
+        width: 50
+        height: 20
         border.color: "black"
         border.width: 1
-        height: textZ.height
         anchors.right: zSlider.right
         anchors.rightMargin: 0
         anchors.left: zSlider.left
         anchors.leftMargin: 0
         anchors.top: zSlider.bottom
-        anchors.topMargin: 7
+        anchors.topMargin: 9
 
 
 
@@ -71,7 +72,8 @@ Rectangle{
             validator: IntValidator{bottom: zSlider.minimumValue; top: zSlider.maximumValue}
 
             text: zSlider.value
-            anchors.centerIn: parent
+            //anchors.centerIn: parent
+            anchors.fill: parent
             horizontalAlignment: TextInput.AlignHCenter
 
 

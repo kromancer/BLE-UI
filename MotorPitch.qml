@@ -52,9 +52,10 @@ Rectangle {
     }
 
     Rectangle {
+        width: 50
+        height: 20
         border.color: "black"
         border.width: 1
-        height: textP.height
         anchors.right: pitch.right
         anchors.rightMargin: 0
         anchors.left: pitch.left
@@ -69,7 +70,7 @@ Rectangle {
             validator: IntValidator{bottom: pitchSlider.minimumValue; top: pitchSlider.maximumValue}
 
             text: pitchSlider.value
-            anchors.centerIn: parent
+            anchors.fill: parent
             horizontalAlignment: TextInput.AlignHCenter
 
 

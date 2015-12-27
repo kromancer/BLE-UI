@@ -40,6 +40,7 @@ ApplicationWindow {
             onStageIsReset: {
                 waitTimer.running = false;
                 root.state = "CONNECTED";
+                busyIndication.running = false;
             }
             onStageIsBusy: { busyIndication.running = true }
             onStageIsIdle: { busyIndication.running = false }
@@ -58,7 +59,7 @@ ApplicationWindow {
         }
 
         id: root
-        height: 593
+        height: 577
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left
@@ -73,6 +74,7 @@ ApplicationWindow {
             State {
                 name: "NOT_CONNECTED"
                 PropertyChanges { target: resetButton; visible: false }
+                PropertyChanges { target: busyIndication; text: "Connecting to stage..." }
                 PropertyChanges { target: xAxis; visible: false }
                 PropertyChanges { target: yAxis; visible: false }
                 PropertyChanges { target: zAxis; visible: false }
@@ -117,11 +119,21 @@ ApplicationWindow {
             State {
                 name: "NOT_RECOVERED_FROM_I2C_ERROR"
                 PropertyChanges { target: busyIndication; running: false }
+            },
+            State {
+                name: "Reseting"
+                PropertyChanges { target: busyIndication; running: true; text: "Reseting stage..." }
+                PropertyChanges { target: resetButton; enabled: false }
+                PropertyChanges { target: xAxis; enabled: false }
+                PropertyChanges { target: yAxis; enabled: false }
+                PropertyChanges { target: zAxis; enabled: false }
+                PropertyChanges { target: roll;  enabled: false }
+                PropertyChanges { target: pitch; enabled: false }
+                PropertyChanges { target: yaw;   enabled: false }
+
             }
 
         ]
-
-
 
 
         // This timer is activating when an I2C bus error is detected
@@ -158,16 +170,15 @@ ApplicationWindow {
         BusyIndicator {
             id: busyIndication
             property alias text: busyText.text
+            anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottomMargin: 0
-            anchors.bottom: root.bottom
             clip: false
             running: false
 
             Text {
                 visible: busyIndication.running
                 id: busyText
-                text: "Connecting to stage"
+                text: ""
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenterOffset: 2
                 font.pixelSize: 12
@@ -176,15 +187,14 @@ ApplicationWindow {
         }
 
 
-
-
         // Translatory Motor Controls
         MotorX{ id: xAxis ; anchors.horizontalCenterOffset: 0; anchors.topMargin: -283; step: 1; minValue: 0; maxValue: 80 }
-        MotorY{ id: yAxis ; x: 126; anchors.verticalCenterOffset: 0; anchors.right: yaw.left; anchors.rightMargin: 24; step: 1; minValue: 0; maxValue: 80 }
+        MotorY{ id: yAxis ; x: 126; rotation: 180; anchors.verticalCenterOffset: 0; anchors.right: yaw.left; anchors.rightMargin: 24; step: 1; minValue: 0; maxValue: 80 }
         MotorZ{ id: zAxis ; x: 50; anchors.verticalCenterOffset: 0; anchors.rightMargin: 16; step: 1; minValue: 0; maxValue: 80 }
 
 
         // Rotational Axises
+
         MotorRoll{ id: roll ; y: 74; width: 192; anchors.horizontalCenterOffset: 0; step: 1; anchors.bottomMargin: 76; value: 90; minValue: 0; maxValue: 180; initialValue: 90 }
         MotorPitch{ id: pitch ; anchors.verticalCenterOffset: 0; step: 1; anchors.leftMargin: 51; value: 90; minValue: 0; maxValue: 180; initialValue: 90 }
         Knob2 {
@@ -208,36 +218,25 @@ ApplicationWindow {
             }
         }
 
-        Image {
+
+        // Reset Button
+        Button {
             id: resetButton
-            width: 116
-            height: 74
+            x: 210
+            text: "Reset"
             anchors.top: yaw.bottom
-            anchors.topMargin: 11
-            anchors.horizontalCenter: parent.horizontalCenter
-            fillMode: Image.PreserveAspectFit
-            smooth: true
-            source: "pics/reset.png"
+            anchors.topMargin: 60
+            anchors.horizontalCenter: yaw.horizontalCenter
 
-            Label {
-                id: resetLable
-                x: 40
-                y: 19
-                width: 41
-                height: 63
-                text: "Reset"
-                font.pointSize: 7
-                font.bold: true
-            }
-
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    BLE.resetStage();
-                    root.resetSliders();
-                }
+            onClicked: {
+                BLE.resetStage();
+                root.state = "Reseting"
+                root.resetSliders();
             }
         }
+
+
+
         /*
         Rectangle{
             id: yaw
@@ -266,6 +265,39 @@ ApplicationWindow {
                 onEndValueChanged: {
                     if (!yawKnob.motorIgnore)
                         BLE.setYaw(value)
+                }
+            }
+        }
+
+        Image {
+            id: resetButton
+            width: 116
+            height: 74
+            opacity: 0.6
+            anchors.horizontalCenterOffset: 0
+            anchors.top: yaw.bottom
+            anchors.topMargin: 27
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            source: "pics/reset.png"
+
+            Label {
+                id: resetLable
+                x: 42
+                y: 30
+                width: 41
+                height: 63
+                text: "Reset"
+                font.pointSize: 8
+                font.bold: true
+            }
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    BLE.resetStage();
+                    root.resetSliders();
                 }
             }
         }
@@ -338,7 +370,45 @@ Button {
         }
 
 
+            Label {
+                id: yawLabel
+                x: -152
+                y: 200
+                text: qsTr("Yaw")
+                anchors.verticalCenter: textYRect.verticalCenter
+                anchors.right: textYRect.left
+                anchors.rightMargin: 9
+                font.bold: true
+                font.pointSize: 11
+            }
 
+            Rectangle {
+                id: textYRect
+                width: 50
+                height: 20
+                anchors.topMargin: 6
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.bottom
+
+
+                border.color: "black"
+                border.width: 1
+
+
+                TextInput {
+                    id: textY
+                    validator: IntValidator{bottom: yaw.minimumValue; top: yaw.maximumValue}
+
+                    text: yaw.stableValue
+                    anchors.fill: parent
+                    horizontalAlignment: TextInput.AlignHCenter
+
+
+                    onAccepted: {
+                        yaw.stableValue = Number(text);
+                    }
+                }
+            }
 
  */
 

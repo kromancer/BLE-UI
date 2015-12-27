@@ -26,6 +26,7 @@ BorderImage {
             text: value
             font.pixelSize: 12
         }
+
     }
 
     MouseArea{

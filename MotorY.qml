@@ -46,10 +46,10 @@ Rectangle {
     Label {
         id: yLabel
         x: 0
-        y: 455
         text: qsTr("Y")
-        anchors.bottom: ySlider.top
-        anchors.bottomMargin: 0
+        rotation: 180
+        anchors.top: parent.bottom
+        anchors.topMargin: 0
         anchors.horizontalCenter: ySlider.horizontalCenter
         font.bold: true
         font.pointSize: 11
@@ -58,13 +58,15 @@ Rectangle {
     Rectangle {
         border.color: "black"
         border.width: 1
-        height: textY.height
+        width: 50
+        height: 20
+        rotation: 180
+        anchors.bottom: parent.top
+        anchors.bottomMargin: 9
         anchors.right: ySlider.right
         anchors.rightMargin: 0
         anchors.left: ySlider.left
         anchors.leftMargin: 0
-        anchors.top: ySlider.bottom
-        anchors.topMargin: 7
 
 
 
@@ -73,7 +75,7 @@ Rectangle {
             validator: IntValidator{bottom: ySlider.minimumValue; top: ySlider.maximumValue}
 
             text: ySlider.value
-            anchors.centerIn: parent
+            anchors.fill: parent
             horizontalAlignment: TextInput.AlignHCenter
 
 

@@ -55,11 +55,11 @@ Rectangle {
     }
 
     Rectangle {
-        height: textX.height
+        width: 50
+        height: 20
         anchors.left: xSlider.right
         anchors.leftMargin: 20
         anchors.verticalCenter: xSlider.verticalCenter
-        width: textX.width
         border.color: "black"
         border.width: 1
 
@@ -67,13 +67,10 @@ Rectangle {
 
         TextInput {
             id: textX
-            width: 50
             validator: IntValidator{bottom: xSlider.minimumValue; top: xSlider.maximumValue}
 
             text: xSlider.value
-            anchors.verticalCenterOffset: 0
-            anchors.horizontalCenterOffset: 0
-            anchors.centerIn: parent
+            anchors.fill: parent
             horizontalAlignment: TextInput.AlignHCenter
 
 
