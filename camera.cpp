@@ -156,7 +156,7 @@ void PG_Camera::printBuildInfo()
     timeStamp << "Application build date: " << __DATE__ << " " << __TIME__;
     cout << timeStamp.str() << endl << endl;
 
-    qWarning("Button pressed\n");
+    // qWarning("Button pressed\n");
 }
 
 void PG_Camera::printCameraInfo( FlyCapture2::CameraInfo* pCamInfo )

@@ -28,8 +28,19 @@ ApplicationWindow {
 
 
     Rectangle {
-        signal resetSliders;
+        id: root
         width: 550
+        height: 577
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+
+        signal resetSliders;
+
         Connections {
             target: BLE
             onMotorServiceIsReady: { busyIndication.running = false; root.state="CONNECTED" }
@@ -44,6 +55,16 @@ ApplicationWindow {
             }
             onStageIsBusy: { busyIndication.running = true }
             onStageIsIdle: { busyIndication.running = false }
+            onXAxisMinReached: { busyIndication.running = false }
+            onXAxisMaxReached: { busyIndication.running = false }
+            onYAxisMinReached: { busyIndication.running = false }
+            onYAxisMaxReached: { busyIndication.running = false }
+            onZAxisMinReached: { busyIndication.running = false }
+            onZAxisMaxReached: { busyIndication.running = false }
+            onRollMinReached:  { busyIndication.running = false }
+            onRollMaxReached:  { busyIndication.running = false }
+            onPitchMinReached: { busyIndication.running = false }
+            onPitchMaxReached: { busyIndication.running = false }
         }
 
         Component.onCompleted: {
@@ -57,16 +78,6 @@ ApplicationWindow {
             roll.value = roll.initialValue;
             pitch.value = pitch.initialValue;
         }
-
-        id: root
-        height: 577
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.top: parent.top
 
 
         state: "NOT_CONNECTED"
